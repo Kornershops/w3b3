@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  walletAddress String   @unique
+  chainId       Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  stakes  UserStake[]
+  rewards Reward[]
+
+  @@map("users")
+}
+
+model StakingPool {
+  id              String   @id @default(cuid())
+  name            String
+  chainId         Int
+  contractAddress String
+  tokenSymbol     String
+  tokenDecimals   Int
+  apyPercentage   Decimal  @db.Decimal(5, 2)
+  tvlAmount       Decimal  @db.Decimal(30, 8)
+  minimumStake    Decimal  @db.Decimal(20, 8)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  userStakes UserStake[]
+
+  @@unique([chainId, contractAddress])
+  @@index([chainId])
+  @@map("staking_pools")
+}
+
+model UserStake {
+  id              String   @id @default(cuid())
+  userId          String
+  poolId          String
+  amountStaked    Decimal  @db.Decimal(20, 8)
+  rewardsClaimed  Decimal  @default(0) @db.Decimal(20, 8)
+  transactionHash String?
+  stakedAt        DateTime @default(now())
+  unstakedAt      DateTime?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pool    StakingPool  @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  rewards Reward[]
+
+  @@index([userId])
+  @@index([poolId])
+  @@map("user_stakes")
+}
+
+model Reward {
+  id              String   @id @default(cuid())
+  stakeId         String
+  userId          String
+  amount          Decimal  @db.Decimal(20, 8)
+  claimedAt       DateTime?
+  transactionHash String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  stake UserStake @relation(fields: [stakeId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([stakeId])
+  @@index([userId])
+  @@map("rewards")
+}

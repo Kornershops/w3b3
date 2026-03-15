@@ -1,0 +1,240 @@
+import prisma from '../config/database';
+import { getRedis } from '../config/redis';
+import { StakingPool, PoolFilter, PaginatedResponse } from '../types';
+import logger from '../utils/logger';
+
+const POOL_CACHE_TTL = 60; // 1 minute
+
+export class PoolService {
+  async getPools(
+    filter: PoolFilter = {},
+    page = 1,
+    limit = 20
+  ): Promise<PaginatedResponse<StakingPool>> {
+    try {
+      const skip = (page - 1) * limit;
+
+      // Build where clause
+      const where: any = {};
+      if (filter.chainId) where.chainId = filter.chainId;
+      if (filter.isActive !== undefined) where.isActive = filter.isActive;
+
+      // Get total count
+      const total = await prisma.stakingPool.count({ where });
+
+      // Get pools
+      const pools = await prisma.stakingPool.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return {
+        data: pools,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+      };
+    } catch (error) {
+      logger.error('Error fetching pools:', error);
+      throw error;
+    }
+  }
+
+  async getPoolById(poolId: string): Promise<StakingPool | null> {
+    try {
+      const redis = getRedis();
+      const cacheKey = `pool:${poolId}`;
+
+      // Try cache first
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        return JSON.parse(cached);
+      }
+
+      // Get from database
+      const pool = await prisma.stakingPool.findUnique({
+        where: { id: poolId },
+      });
+
+      if (pool) {
+        // Cache the result
+        await redis.setEx(cacheKey, POOL_CACHE_TTL, JSON.stringify(pool));
+      }
+
+      return pool;
+    } catch (error) {
+      logger.error('Error fetching pool:', error);
+      throw error;
+    }
+  }
+
+  async getPoolsByChain(chainId: number): Promise<StakingPool[]> {
+    try {
+      return await prisma.stakingPool.findMany({
+        where: {
+          chainId,
+          isActive: true,
+        },
+        orderBy: { apyPercentage: 'desc' },
+      });
+    } catch (error) {
+      logger.error('Error fetching pools by chain:', error);
+      throw error;
+    }
+  }
+
+  async createPool(data: {
+    name: string;
+    chainId: number;
+    contractAddress: string;
+    tokenSymbol: string;
+    tokenDecimals: number;
+    apyPercentage: string;
+    tvlAmount: string;
+    minimumStake: string;
+  }): Promise<StakingPool> {
+    try {
+      const pool = await prisma.stakingPool.create({
+        data,
+      });
+
+      // Invalidate cache
+      const redis = getRedis();
+      await redis.del(`pools:${data.chainId}`);
+
+      logger.info(`Pool created: ${pool.id}`);
+      return pool;
+    } catch (error) {
+      logger.error('Error creating pool:', error);
+      throw error;
+    }
+  }
+
+  async updatePool(
+    poolId: string,
+    data: Partial<StakingPool>
+  ): Promise<StakingPool> {
+    try {
+      const pool = await prisma.stakingPool.update({
+        where: { id: poolId },
+        data,
+      });
+
+      // Invalidate cache
+      const redis = getRedis();
+      await redis.del(`pool:${poolId}`);
+
+      logger.info(`Pool updated: ${poolId}`);
+      return pool;
+    } catch (error) {
+      logger.error('Error updating pool:', error);
+      throw error;
+    }
+  }
+
+  async updatePoolApy(poolId: string, newApy: string): Promise<StakingPool> {
+    try {
+      const pool = await prisma.stakingPool.update({
+        where: { id: poolId },
+        data: { apyPercentage: newApy },
+      });
+
+      // Invalidate cache
+      const redis = getRedis();
+      await redis.del(`pool:${poolId}`);
+
+      logger.info(`Pool APY updated: ${poolId} -> ${newApy}`);
+      return pool;
+    } catch (error) {
+      logger.error('Error updating pool APY:', error);
+      throw error;
+    }
+  }
+
+  async updatePoolTvl(poolId: string, newTvl: string): Promise<StakingPool> {
+    try {
+      const pool = await prisma.stakingPool.update({
+        where: { id: poolId },
+        data: { tvlAmount: newTvl },
+      });
+
+      // Invalidate cache
+      const redis = getRedis();
+      await redis.del(`pool:${poolId}`);
+
+      logger.info(`Pool TVL updated: ${poolId} -> ${newTvl}`);
+      return pool;
+    } catch (error) {
+      logger.error('Error updating pool TVL:', error);
+      throw error;
+    }
+  }
+
+  async deactivatePool(poolId: string): Promise<StakingPool> {
+    try {
+      const pool = await prisma.stakingPool.update({
+        where: { id: poolId },
+        data: { isActive: false },
+      });
+
+      // Invalidate cache
+      const redis = getRedis();
+      await redis.del(`pool:${poolId}`);
+
+      logger.info(`Pool deactivated: ${poolId}`);
+      return pool;
+    } catch (error) {
+      logger.error('Error deactivating pool:', error);
+      throw error;
+    }
+  }
+
+  async getTopPoolsByApy(limit = 10): Promise<StakingPool[]> {
+    try {
+      return await prisma.stakingPool.findMany({
+        where: { isActive: true },
+        orderBy: { apyPercentage: 'desc' },
+        take: limit,
+      });
+    } catch (error) {
+      logger.error('Error fetching top pools:', error);
+      throw error;
+    }
+  }
+
+  async getPoolStats() {
+    try {
+      const pools = await prisma.stakingPool.findMany({
+        where: { isActive: true },
+      });
+
+      const totalTvl = pools.reduce((sum, pool) => {
+        return sum + parseFloat(pool.tvlAmount.toString());
+      }, 0);
+
+      const avgApy =
+        pools.length > 0
+          ? pools.reduce((sum, pool) => {
+              return sum + parseFloat(pool.apyPercentage.toString());
+            }, 0) / pools.length
+          : 0;
+
+      return {
+        totalPools: pools.length,
+        totalTvl: totalTvl.toString(),
+        averageApy: avgApy.toFixed(2),
+        pools,
+      };
+    } catch (error) {
+      logger.error('Error fetching pool stats:', error);
+      throw error;
+    }
+  }
+}
+
+export const poolService = new PoolService();
