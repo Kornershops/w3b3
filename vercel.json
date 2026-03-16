@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm run build:frontend",
+  "outputDirectory": "frontend/.next",
+  "rootDirectory": "frontend",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@next_public_api_url",
+    "NEXT_PUBLIC_WC_PROJECT_ID": "@next_public_wc_project_id",
+    "NEXT_PUBLIC_ALCHEMY_API_KEY": "@next_public_alchemy_api_key"
+  }
+}
