@@ -1,7 +1,7 @@
 import { createClient } from 'redis';
 import { config } from './env';
 
-let redis: ReturnType<typeof createClient>;
+let redis: ReturnType<typeof createClient> | null = null;
 
 export async function initializeRedis() {
   redis = createClient({
@@ -29,4 +29,4 @@ export async function closeRedis() {
   }
 }
 
-export default redis;
+export { redis };
