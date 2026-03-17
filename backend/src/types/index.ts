@@ -137,6 +137,7 @@ export interface Portfolio {
   activeStakes: number;
   totalStakes: number;
   netGain: string;
+  estimatedAnnual: string;
   breakdown: PortfolioBreakdown[];
 }
 
@@ -147,7 +148,13 @@ export interface PortfolioBreakdown {
   rewardsClaimed: string;
   apy: string;
   isActive: boolean;
-  byChain?: Record<string, unknown>;
+  byChain?: Array<{
+    chainId: number;
+    chainName: string;
+    totalStaked: string;
+    totalRewards: string;
+    percentage: number;
+  }>;
 }
 
 // Decimal type from Prisma
