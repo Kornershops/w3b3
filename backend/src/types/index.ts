@@ -131,24 +131,24 @@ export interface TransactionConfirmationEvent {
 }
 
 export interface Portfolio {
-  userId: string;
+  userId?: string;
   totalStaked: string;
   totalRewards: string;
-  activeStakes: number;
-  totalStakes: number;
   netGain: string;
   estimatedAnnual: string;
+  activeStakes: number;
+  totalStakes: number;
   lastUpdated: string;
-  breakdown: PortfolioBreakdown[];
+  breakdown?: PortfolioBreakdown[];
 }
 
 export interface PortfolioBreakdown {
-  poolId: string;
-  poolName: string;
-  amountStaked: string;
-  rewardsClaimed: string;
-  apy: string;
-  isActive: boolean;
+  poolId?: string;
+  poolName?: string;
+  amountStaked?: string;
+  rewardsClaimed?: string;
+  apy?: string;
+  isActive?: boolean;
   byChain?: Array<{
     chainId: number;
     chainName: string;
