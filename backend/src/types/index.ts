@@ -138,7 +138,7 @@ export interface Portfolio {
   totalStakes: number;
   netGain: string;
   estimatedAnnual: string;
-  lastUpdated: Date;
+  lastUpdated: string;
   breakdown: PortfolioBreakdown[];
 }
 
@@ -157,8 +157,9 @@ export interface PortfolioBreakdown {
     percentage: number;
   }>;
   byAsset?: Array<{
-    assetName: string;
-    amount: string;
+    symbol: string;
+    totalStaked: string;
+    totalRewards: string;
     percentage: number;
   }>;
 }
