@@ -3,7 +3,7 @@
 export interface User {
   id: string;
   walletAddress: string;
-  chainId?: number;
+  chainId: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -29,9 +29,9 @@ export interface UserStake {
   poolId: string;
   amountStaked: Decimal;
   rewardsClaimed: Decimal;
-  transactionHash?: string;
+  transactionHash: string | null;
   stakedAt: Date;
-  unstakedAt?: Date;
+  unstakedAt: Date | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
