@@ -130,5 +130,23 @@ export interface TransactionConfirmationEvent {
   timestamp: Date;
 }
 
+export interface Portfolio {
+  userId: string;
+  totalStaked: string;
+  totalRewards: string;
+  activeStakes: number;
+  totalStakes: number;
+  breakdown: PortfolioBreakdown[];
+}
+
+export interface PortfolioBreakdown {
+  poolId: string;
+  poolName: string;
+  amountStaked: string;
+  rewardsClaimed: string;
+  apy: string;
+  isActive: boolean;
+}
+
 // Decimal type from Prisma
 export type Decimal = any;
