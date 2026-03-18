@@ -3,11 +3,6 @@
   "version": "1.0.0",
   "description": "Multi-Chain Staking & Yield Portal",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend",
-    "contracts"
-  ],
   "scripts": {
     "dev": "npm run dev --workspaces",
     "dev:frontend": "npm run dev --workspace=frontend",
