@@ -1,11 +1,6 @@
 [build]
 command = "cd frontend && npm install --legacy-peer-deps --force && npm run build"
-publish = "frontend/.next"
+publish = "frontend/out"
 
 [build.environment]
 SECRETS_SCAN_ENABLED = "false"
-
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
