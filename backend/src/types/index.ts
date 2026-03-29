@@ -4,6 +4,10 @@ export interface User {
   id: string;
   walletAddress: string;
   chainId: number | null;
+  role: string;
+  referralCode: string;
+  referredById: string | null;
+  points: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,6 +55,7 @@ export interface Reward {
 export interface JwtPayload {
   userId: string;
   walletAddress: string;
+  role: string;
   iat: number;
   exp: number;
 }

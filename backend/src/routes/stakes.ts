@@ -17,10 +17,10 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
 
     const result = await stakeService.getUserStakes(req.user.userId, page, limit);
 
-    res.json(result);
+    return res.json(result);
   } catch (error) {
     logger.error('Error fetching stakes:', error);
-    res.status(500).json({ error: 'Failed to fetch stakes' });
+    return res.status(500).json({ error: 'Failed to fetch stakes' });
   }
 });
 
@@ -44,10 +44,59 @@ router.get('/:id', authMiddleware, async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Forbidden' });
     }
 
-    res.json(stake);
+    return res.json(stake);
   } catch (error) {
     logger.error('Error fetching stake:', error);
-    res.status(500).json({ error: 'Failed to fetch stake' });
+    return res.status(500).json({ error: 'Failed to fetch stake' });
+  }
+});
+
+// Create stake
+router.post('/', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { poolId, amountStaked, transactionHash } = req.body;
+
+    if (!poolId || !amountStaked || !transactionHash) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const stake = await stakeService.createStake({
+      userId: req.user.userId,
+      poolId,
+      amountStaked: amountStaked.toString(),
+      transactionHash
+    });
+
+    return res.json(stake);
+  } catch (error) {
+    logger.error('Error creating stake:', error);
+    return res.status(500).json({ error: 'Failed to create stake' });
+  }
+});
+
+// Unstake
+router.post('/:id/unstake', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { id } = req.params;
+    const { transactionHash } = req.body;
+
+    if (!transactionHash) {
+      return res.status(400).json({ error: 'Missing transactionHash' });
+    }
+
+    const stake = await stakeService.getStakeById(id);
+    if (!stake) return res.status(404).json({ error: 'Stake not found' });
+    if (stake.userId !== req.user.userId) return res.status(403).json({ error: 'Forbidden' });
+
+    const updatedStake = await stakeService.unstakeTokens(id, transactionHash);
+    return res.json(updatedStake);
+  } catch (error) {
+    logger.error('Error unstaking:', error);
+    return res.status(500).json({ error: 'Failed to unstake' });
   }
 });
 
@@ -88,14 +137,14 @@ router.post('/claim', authMiddleware, async (req: Request, res: Response) => {
       transactionHash
     );
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Rewards claimed successfully',
       stake: updatedStake,
     });
   } catch (error) {
     logger.error('Error claiming rewards:', error);
-    res.status(500).json({ error: 'Failed to claim rewards' });
+    return res.status(500).json({ error: 'Failed to claim rewards' });
   }
 });
 
@@ -108,13 +157,13 @@ router.get('/active/list', authMiddleware, async (req: Request, res: Response) =
 
     const stakes = await stakeService.getActiveStakes(req.user.userId);
 
-    res.json({
+    return res.json({
       data: stakes,
       count: stakes.length,
     });
   } catch (error) {
     logger.error('Error fetching active stakes:', error);
-    res.status(500).json({ error: 'Failed to fetch active stakes' });
+    return res.status(500).json({ error: 'Failed to fetch active stakes' });
   }
 });
 

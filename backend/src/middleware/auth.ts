@@ -24,7 +24,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
     req.user = decoded;
 
-    next();
+    return next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
       return res.status(401).json({ error: 'Token expired' });
@@ -48,23 +48,34 @@ export function optionalAuthMiddleware(req: Request, res: Response, next: NextFu
 
     next();
   } catch (error) {
-    // Continue without authentication
     next();
   }
 }
 
-export function generateToken(userId: string, walletAddress: string): string {
+export function authAdminMiddleware(req: Request, res: Response, next: NextFunction) {
+  authMiddleware(req, res, () => {
+    if (req.user && req.user.role === 'ADMIN') {
+      next();
+    } else {
+      res.status(403).json({ error: 'Requires admin privileges' });
+    }
+  });
+}
+
+export function generateToken(userId: string, walletAddress: string, role: string): string {
+  const secret = config.jwt.secret as string;
   return jwt.sign(
-    { userId, walletAddress },
-    config.jwt.secret,
-    { expiresIn: config.jwt.expiry }
+    { userId, walletAddress, role },
+    secret,
+    { expiresIn: config.jwt.expiry as any }
   );
 }
 
-export function generateRefreshToken(userId: string, walletAddress: string): string {
+export function generateRefreshToken(userId: string, walletAddress: string, role: string): string {
+  const refreshSecret = config.jwt.refreshSecret as string;
   return jwt.sign(
-    { userId, walletAddress },
-    config.jwt.secret,
-    { expiresIn: config.jwt.refreshExpiry }
+    { userId, walletAddress, role },
+    refreshSecret,
+    { expiresIn: config.jwt.refreshExpiry as any }
   );
 }

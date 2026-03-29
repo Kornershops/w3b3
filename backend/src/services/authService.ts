@@ -31,7 +31,8 @@ export class AuthService {
   async authenticate(
     walletAddress: string,
     message: string,
-    signature: string
+    signature: string,
+    referralCode?: string
   ): Promise<AuthResponse> {
     try {
       // Verify signature
@@ -42,11 +43,11 @@ export class AuthService {
       }
 
       // Get or create user
-      const user = await userService.getOrCreateUser(walletAddress);
+      const user = await userService.getOrCreateUser(walletAddress, referralCode);
 
       // Generate tokens
-      const token = generateToken(user.id, user.walletAddress);
-      const refreshToken = generateRefreshToken(user.id, user.walletAddress);
+      const token = generateToken(user.id, user.walletAddress, user.role);
+      const refreshToken = generateRefreshToken(user.id, user.walletAddress, user.role);
 
       logger.info(`User authenticated: ${user.id}`);
 

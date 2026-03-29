@@ -47,11 +47,17 @@ export class PoolService {
 
   async getPoolById(poolId: string): Promise<StakingPool | null> {
     try {
-      const redis = getRedis();
       const cacheKey = `pool:${poolId}`;
+      let cached: string | null = null;
 
       // Try cache first
-      const cached = await redis.get(cacheKey);
+      try {
+        const redis = getRedis();
+        cached = await redis.get(cacheKey);
+      } catch (redisErr) {
+        logger.error('Redis get error:', redisErr);
+      }
+
       if (cached) {
         return JSON.parse(cached);
       }
@@ -63,7 +69,12 @@ export class PoolService {
 
       if (pool) {
         // Cache the result
-        await redis.setEx(cacheKey, POOL_CACHE_TTL, JSON.stringify(pool));
+        try {
+          const redis = getRedis();
+          await redis.setEx(cacheKey, POOL_CACHE_TTL, JSON.stringify(pool));
+        } catch (redisErr) {
+          logger.error('Redis set error:', redisErr);
+        }
       }
 
       return pool;
@@ -104,8 +115,12 @@ export class PoolService {
       });
 
       // Invalidate cache
-      const redis = getRedis();
-      await redis.del(`pools:${data.chainId}`);
+      try {
+        const redis = getRedis();
+        await redis.del(`pools:${data.chainId}`);
+      } catch (redisErr) {
+        logger.error('Redis del error:', redisErr);
+      }
 
       logger.info(`Pool created: ${pool.id}`);
       return pool;
@@ -126,8 +141,12 @@ export class PoolService {
       });
 
       // Invalidate cache
-      const redis = getRedis();
-      await redis.del(`pool:${poolId}`);
+      try {
+        const redis = getRedis();
+        await redis.del(`pool:${poolId}`);
+      } catch (redisErr) {
+        logger.error('Redis del error:', redisErr);
+      }
 
       logger.info(`Pool updated: ${poolId}`);
       return pool;
@@ -145,8 +164,12 @@ export class PoolService {
       });
 
       // Invalidate cache
-      const redis = getRedis();
-      await redis.del(`pool:${poolId}`);
+      try {
+        const redis = getRedis();
+        await redis.del(`pool:${poolId}`);
+      } catch (redisErr) {
+        logger.error('Redis del error:', redisErr);
+      }
 
       logger.info(`Pool APY updated: ${poolId} -> ${newApy}`);
       return pool;
@@ -164,8 +187,12 @@ export class PoolService {
       });
 
       // Invalidate cache
-      const redis = getRedis();
-      await redis.del(`pool:${poolId}`);
+      try {
+        const redis = getRedis();
+        await redis.del(`pool:${poolId}`);
+      } catch (redisErr) {
+        logger.error('Redis del error:', redisErr);
+      }
 
       logger.info(`Pool TVL updated: ${poolId} -> ${newTvl}`);
       return pool;
@@ -183,8 +210,12 @@ export class PoolService {
       });
 
       // Invalidate cache
-      const redis = getRedis();
-      await redis.del(`pool:${poolId}`);
+      try {
+        const redis = getRedis();
+        await redis.del(`pool:${poolId}`);
+      } catch (redisErr) {
+        logger.error('Redis del error:', redisErr);
+      }
 
       logger.info(`Pool deactivated: ${poolId}`);
       return pool;

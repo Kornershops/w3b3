@@ -28,10 +28,14 @@ export class UserService {
   async createUser(data: {
     walletAddress: string;
     chainId?: number;
+    referredById?: string;
   }): Promise<User> {
     try {
       const user = await prisma.user.create({
-        data,
+        data: {
+          ...data,
+          points: data.referredById ? 50 : 0 // Bonus for being referred
+        },
       });
 
       logger.info(`User created: ${user.id}`);
@@ -57,12 +61,29 @@ export class UserService {
     }
   }
 
-  async getOrCreateUser(walletAddress: string): Promise<User> {
+  async getOrCreateUser(walletAddress: string, referralCode?: string): Promise<User> {
     try {
       let user = await this.getUserByWallet(walletAddress);
 
       if (!user) {
-        user = await this.createUser({ walletAddress });
+        let referredById: string | undefined = undefined;
+
+        if (referralCode) {
+          const referrer = await prisma.user.findUnique({
+            where: { referralCode }
+          });
+          
+          if (referrer) {
+            referredById = referrer.id;
+            // Reward the referrer natively
+            await prisma.user.update({
+              where: { id: referrer.id },
+              data: { points: { increment: 100 } }
+            });
+          }
+        }
+
+        user = await this.createUser({ walletAddress, referredById });
       }
 
       return user;

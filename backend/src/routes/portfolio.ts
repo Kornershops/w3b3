@@ -14,10 +14,10 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
 
     const portfolio = await portfolioService.getPortfolioSummary(req.user.userId);
 
-    res.json(portfolio);
+    return res.json(portfolio);
   } catch (error) {
     logger.error('Error fetching portfolio:', error);
-    res.status(500).json({ error: 'Failed to fetch portfolio' });
+    return res.status(500).json({ error: 'Failed to fetch portfolio' });
   }
 });
 
@@ -30,10 +30,10 @@ router.get('/breakdown', authMiddleware, async (req: Request, res: Response) => 
 
     const breakdown = await portfolioService.getPortfolioBreakdown(req.user.userId);
 
-    res.json(breakdown);
+    return res.json(breakdown);
   } catch (error) {
     logger.error('Error fetching portfolio breakdown:', error);
-    res.status(500).json({ error: 'Failed to fetch portfolio breakdown' });
+    return res.status(500).json({ error: 'Failed to fetch portfolio breakdown' });
   }
 });
 
@@ -49,10 +49,10 @@ router.get('/history', authMiddleware, async (req: Request, res: Response) => {
 
     const history = await portfolioService.getPortfolioHistory(req.user.userId, page, limit);
 
-    res.json(history);
+    return res.json(history);
   } catch (error) {
     logger.error('Error fetching portfolio history:', error);
-    res.status(500).json({ error: 'Failed to fetch portfolio history' });
+    return res.status(500).json({ error: 'Failed to fetch portfolio history' });
   }
 });
 

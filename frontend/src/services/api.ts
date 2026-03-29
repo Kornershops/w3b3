@@ -58,8 +58,8 @@ class ApiService {
     return response.data.data || [];
   }
 
-  async stake(poolId: string, amount: number) {
-    const response = await this.client.post('/stakes', { poolId, amount });
+  async stake(poolId: string, amount: number, transactionHash: string) {
+    const response = await this.client.post('/stakes', { poolId, amountStaked: amount, transactionHash });
     return response.data;
   }
 

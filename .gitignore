@@ -1,37 +1,88 @@
-# Dependencies
+# ============================================
+# ENVIRONMENT VARIABLES & SECRETS
+# ============================================
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.example.local
+backend/.env
+backend/.env.local
+backend/.env.*.local
+frontend/.env.local
+frontend/.env.*.local
+contracts/.env
+contracts/.env.local
+contracts/.env.*.local
+
+# ============================================
+# PRIVATE KEYS & CREDENTIALS
+# ============================================
+*.key
+*.pem
+private/
+secrets/
+.aws/
+aws-credentials
+.ssh/
+
+# ============================================
+# DEPENDENCIES
+# ============================================
 node_modules/
 /.pnp
 .pnp.js
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 
-# Testing
+# ============================================
+# BUILD & DIST
+# ============================================
+build
+dist
+.next
+out
+artifacts/
+cache/
+typechain-types/
+.next/
+.vercel/
+.netlify/
+
+# ============================================
+# TESTING & COVERAGE
+# ============================================
 /coverage
 *.lcov
+.nyc_output/
 
-# Production
-/build
-/dist
-/.next
-/out
+# ============================================
+# DATABASE & CACHE
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+dump.rdb
+.prisma/
+prisma/migrations/
 
-# Misc
-.DS_Store
-*.pem
-.env
-.env.local
-.env.*.local
-.env.production.local
-
-# Logs
+# ============================================
+# LOGS
+# ============================================
 logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# IDE
+# ============================================
+# IDE & EDITOR
+# ============================================
 .vscode/
 .idea/
 *.swp
@@ -43,73 +94,45 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
+*.sublime-project
 
-# OS
-Thumbs.db
+# ============================================
+# OS SPECIFIC
+# ============================================
 .DS_Store
+Thumbs.db
+.gitkeep
 
-# Hardhat
-artifacts/
-cache/
-typechain-types/
-
-# Prisma
-prisma/migrations/
-.prisma/
-
-# Temporary files
+# ============================================
+# TEMPORARY FILES
+# ============================================
 tmp/
 temp/
 *.tmp
+*.temp
+.cache/
+.eslintcache
+.parcel-cache/
 
-# Build outputs
-dist/
-build/
-.next/
+# ============================================
+# DEPLOYMENT
+# ============================================
+.vercel/
+.netlify/
+.render/
+.railway/
 
-# Environment
-.env
-.env.local
-.env.*.local
-.env.production.local
-
-# IDE specific
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS specific
-.DS_Store
-Thumbs.db
-
-# Dependencies lock files (optional - uncomment if using npm ci)
-# package-lock.json
-# yarn.lock
-
-# Logs
-logs/
-*.log
-
-# Runtime data
+# ============================================
+# RUNTIME
+# ============================================
 pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Coverage
-coverage/
-.nyc_output/
-
-# Misc
-.cache/
-.parcel-cache/
-dist/
-.cache/
-.vuepress/dist/
-.serverless/
-.fusebox/
-.dynamodb/
+# ============================================
+# MISC
+# ============================================
 .tern-port
 .vscode-test
 .yarn/cache
@@ -117,155 +140,15 @@ dist/
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+.dynamodb/
+.fusebox/
+.serverless/
+.vuepress/dist/
 
-# Private keys and secrets
-*.key
-*.pem
-private/
-secrets/
-
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Redis
-dump.rdb
-
-# Temporary deployment files
-.vercel/
-.netlify/
-
-# Local development
-.env.development.local
-.env.test.local
-
-# Compiled files
-*.o
-*.a
-*.so
-*.dylib
-*.dll
-*.exe
-
-# Archives
-*.zip
-*.tar.gz
-*.rar
-
-# IDE workspace settings
-.vscode/settings.json
-.vscode/launch.json
-.idea/workspace.xml
-
-# Node modules
-node_modules/
-npm-debug.log
-yarn-error.log
-
-# Build artifacts
-dist/
-build/
-out/
-
-# Cache
-.cache/
-.eslintcache
-
-# Temporary files
-*.tmp
-*.temp
-tmp/
-temp/
-
-# OS files
-.DS_Store
-Thumbs.db
-.gitkeep
-
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# IDE files
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-
-# Dependencies
-node_modules/
-/.pnp
-.pnp.js
-
-# Testing
-/coverage
-
-# Production
-/build
-/dist
-/.next
-/out
-
-# Misc
-.DS_Store
-*.pem
-
-# Debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Vercel
-.vercel/
-
-# Render
-.render/
-
-# Railway
-.railway/
-
-# AWS
-.aws/
-aws-credentials
-
-# Private keys
-*.key
-*.pem
-private/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Redis
-dump.rdb
-
-# Temporary
-tmp/
-temp/
-*.tmp
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
+# ============================================
+# PROJECT BLUEPRINT (internal docs — not for repo)
+# ============================================
+.project blueprint/
+project/
+*.docx
+*.doc

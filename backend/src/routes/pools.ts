@@ -14,10 +14,10 @@ router.get('/', optionalAuthMiddleware, async (req: Request, res: Response) => {
 
     const result = await poolService.getPools({ chainId }, page, limit);
 
-    res.json(result);
+    return res.json(result);
   } catch (error) {
     logger.error('Error fetching pools:', error);
-    res.status(500).json({ error: 'Failed to fetch pools' });
+    return res.status(500).json({ error: 'Failed to fetch pools' });
   }
 });
 
@@ -32,10 +32,10 @@ router.get('/:id', optionalAuthMiddleware, async (req: Request, res: Response) =
       return res.status(404).json({ error: 'Pool not found' });
     }
 
-    res.json(pool);
+    return res.json(pool);
   } catch (error) {
     logger.error('Error fetching pool:', error);
-    res.status(500).json({ error: 'Failed to fetch pool' });
+    return res.status(500).json({ error: 'Failed to fetch pool' });
   }
 });
 
@@ -50,14 +50,14 @@ router.get('/:id/apy', optionalAuthMiddleware, async (req: Request, res: Respons
       return res.status(404).json({ error: 'Pool not found' });
     }
 
-    res.json({
+    return res.json({
       poolId: id,
       currentApy: pool.apyPercentage,
       lastUpdated: pool.updatedAt,
     });
   } catch (error) {
     logger.error('Error fetching pool APY:', error);
-    res.status(500).json({ error: 'Failed to fetch pool APY' });
+    return res.status(500).json({ error: 'Failed to fetch pool APY' });
   }
 });
 
@@ -68,13 +68,13 @@ router.get('/chain/:chainId', optionalAuthMiddleware, async (req: Request, res: 
 
     const pools = await poolService.getPoolsByChain(parseInt(chainId));
 
-    res.json({
+    return res.json({
       data: pools,
       count: pools.length,
     });
   } catch (error) {
     logger.error('Error fetching pools by chain:', error);
-    res.status(500).json({ error: 'Failed to fetch pools' });
+    return res.status(500).json({ error: 'Failed to fetch pools' });
   }
 });
 
@@ -85,13 +85,13 @@ router.get('/top/apy', optionalAuthMiddleware, async (req: Request, res: Respons
 
     const pools = await poolService.getTopPoolsByApy(limit);
 
-    res.json({
+    return res.json({
       data: pools,
       count: pools.length,
     });
   } catch (error) {
     logger.error('Error fetching top pools:', error);
-    res.status(500).json({ error: 'Failed to fetch top pools' });
+    return res.status(500).json({ error: 'Failed to fetch top pools' });
   }
 });
 
@@ -100,10 +100,10 @@ router.get('/stats/all', optionalAuthMiddleware, async (req: Request, res: Respo
   try {
     const stats = await poolService.getPoolStats();
 
-    res.json(stats);
+    return res.json(stats);
   } catch (error) {
     logger.error('Error fetching pool stats:', error);
-    res.status(500).json({ error: 'Failed to fetch pool stats' });
+    return res.status(500).json({ error: 'Failed to fetch pool stats' });
   }
 });
 

@@ -21,9 +21,9 @@ export const config = {
     password: process.env.REDIS_PASSWORD,
   },
 
-  // JWT
   jwt: {
     secret: process.env.JWT_SECRET || 'your_secret_key_change_in_production',
+    refreshSecret: process.env.JWT_REFRESH_SECRET || 'your_refresh_secret_change_in_production',
     expiry: process.env.JWT_EXPIRY || '15m',
     refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
   },
