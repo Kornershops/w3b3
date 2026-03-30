@@ -60,11 +60,13 @@ jobs:
 
       - name: Run tests
         run: |
-          npx prisma db push --schema=backend/prisma/schema.prisma
+          npx prisma db push --schema=backend/prisma/schema.prisma --accept-data-loss
           npm run test
         env:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/w3b3_test
           REDIS_URL: redis://localhost:6379
+          HARDHAT_DISABLE_TELEMETRY: 1
+          CI: true
 
   build:
     runs-on: ubuntu-latest
