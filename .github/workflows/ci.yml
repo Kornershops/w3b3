@@ -59,7 +59,9 @@ jobs:
         run: npm run type-check
 
       - name: Run tests
-        run: npm run test
+        run: |
+          npx prisma db push --schema=backend/prisma/schema.prisma
+          npm run test
         env:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/w3b3_test
           REDIS_URL: redis://localhost:6379
