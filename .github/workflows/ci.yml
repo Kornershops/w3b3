@@ -52,21 +52,39 @@ jobs:
         run: cd backend && npx prisma generate
 
       - name: Lint code
-        run: npm run lint
+        run: npm run lint --workspaces --if-present
 
       - name: Type check
-        run: npm run type-check
+        run: npm run type-check --workspaces --if-present
 
-      - name: Run tests
+      - name: Backend Tests
         run: |
-          cd backend && npx prisma db push --accept-data-loss
-          cd ../contracts && npx hardhat telemetry --disable
-          cd .. && npm run test
+          cd backend
+          npx prisma db push --accept-data-loss
+          npm run test
         env:
           DATABASE_URL: postgresql://postgres:password@localhost:5432/w3b3_test
           REDIS_URL: redis://localhost:6379
-          HARDHAT_DISABLE_TELEMETRY: 1
           CI: true
+          NO_COLOR: 1
+
+      - name: Contract Tests
+        run: |
+          cd contracts
+          npx hardhat telemetry --disable
+          npm run test
+        env:
+          CI: true
+          NO_COLOR: 1
+          HARDHAT_DISABLE_TELEMETRY: 1
+
+      - name: Frontend Tests
+        run: |
+          cd frontend
+          npm run test
+        env:
+          CI: true
+          NO_COLOR: 1
 
   build:
     runs-on: ubuntu-latest
@@ -82,9 +100,8 @@ jobs:
         run: npm install
       - name: Generate Prisma Client
         run: cd backend && npx prisma generate
-
       - name: Build All
-        run: npm run build
+        run: npm run build --workspaces --if-present
 
   security:
     runs-on: ubuntu-latest
