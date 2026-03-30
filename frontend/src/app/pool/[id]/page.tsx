@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { apiService } from '@/services/api';
 import { StakingPool } from '@/types';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, CheckCircle, ShieldWarning } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import { StakeModal } from '@/components/staking/StakeModal';
@@ -44,7 +44,9 @@ export default function PoolDetailPage({ params }: { params: { id: string } }) {
   return (
     <div className="container-max py-12">
       <Link href="/explore" className="inline-flex items-center text-slate-400 hover:text-indigo-400 transition-colors mb-8 group gap-2">
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        <span className="group-hover:-translate-x-1 transition-transform inline-block">
+          <ArrowLeft size={16} />
+        </span>
         Back to Pools
       </Link>
 
@@ -77,7 +79,9 @@ export default function PoolDetailPage({ params }: { params: { id: string } }) {
             </p>
 
             <div className="bg-black/20 rounded-xl p-4 border border-white/5 flex gap-3 items-start">
-               <ShieldAlert className="text-yellow-500 mt-1" size={20} />
+               <span className="mt-1">
+                 <ShieldWarning color="#eab308" size={20} weight="fill" />
+               </span>
                <p className="text-sm text-slate-500">
                  Smart contracts carry intrinsic risk. While this pool carries a W3B3 verified signature, always evaluate your risk appetite before deploying capital on-chain.
                </p>

@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-import { userService } from '../services/userService';
 import logger from '../utils/logger';
 import prisma from '../config/database';
 

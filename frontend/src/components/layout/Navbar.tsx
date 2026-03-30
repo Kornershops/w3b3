@@ -3,16 +3,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Activity, LayoutDashboard, Compass } from 'lucide-react';
+import { Pulse, SquaresFour, Compass } from '@phosphor-icons/react';
 
 export function Navbar() {
   const pathname = usePathname();
 
   const links = [
-    { href: '/', label: 'Home', icon: Activity },
+    { href: '/', label: 'Home', icon: Pulse },
     { href: '/explore', label: 'Explore', icon: Compass },
-    { href: '/portfolio', label: 'Portfolio', icon: LayoutDashboard },
-    { href: '/leaderboard', label: 'Leaderboard', icon: Activity }
+    { href: '/portfolio', label: 'Portfolio', icon: SquaresFour },
+    { href: '/leaderboard', label: 'Leaderboard', icon: Pulse }
   ];
 
   return (

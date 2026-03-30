@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowRight, ShieldCheck, Activity, BarChart4 } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Pulse, ChartBar } from '@phosphor-icons/react';
 
 export default function Home() {
   return (
@@ -39,7 +39,9 @@ export default function Home() {
                className="btn-primary w-full sm:w-auto px-8 py-4 text-lg flex items-center justify-center gap-2 group"
              >
                Launch App 
-               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+               <span className="group-hover:translate-x-1 transition-transform inline-block">
+                 <ArrowRight size={20} />
+               </span>
              </Link>
              <Link 
                href="#features" 
@@ -54,12 +56,12 @@ export default function Home() {
         <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 w-full max-w-5xl">
           {[
              { 
-               icon: Activity, 
+               icon: Pulse, 
                title: 'Live Reward Ticking', 
                desc: 'Watch your wealth scale in absolute real-time down to the micro-cent. Never calculate intervals again.' 
              },
              { 
-               icon: BarChart4, 
+               icon: ChartBar, 
                title: 'Dynamic Aggregation', 
                desc: 'Cross-reference pools by real algorithmic performance metrics across Ethereum, Arbitrum, and more.' 
              },

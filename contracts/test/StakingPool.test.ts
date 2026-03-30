@@ -18,14 +18,23 @@ describe('StakingPool', function () {
     stakingToken = await MockToken.deploy('Staking Token', 'STK', ethers.parseEther('1000000'));
     rewardToken = await MockToken.deploy('Reward Token', 'RWD', ethers.parseEther('1000000'));
 
+    // Deploy W3Token
+    const W3Token = await ethers.getContractFactory('W3Token');
+    const w3TokenObj = await W3Token.deploy();
+
     // Deploy StakingPool
     const StakingPool = await ethers.getContractFactory('StakingPool');
     const rewardRate = ethers.parseEther('0.00001'); // 0.00001 tokens per second
     stakingPool = await StakingPool.deploy(
       await stakingToken.getAddress(),
       await rewardToken.getAddress(),
+      await w3TokenObj.getAddress(),
+      owner.address,
       rewardRate
     );
+
+    // Authorize pool on W3Token
+    await w3TokenObj.setPoolStatus(await stakingPool.getAddress(), true);
 
     // Mint tokens to users
     await stakingToken.mint(user1.address, ethers.parseEther('1000'));

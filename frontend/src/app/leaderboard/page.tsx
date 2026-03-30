@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trophy, Compass, ArrowUpRight } from 'lucide-react';
+import { Trophy, Compass, ArrowUpRight } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
-import { apiService } from '@/services/api';
 
 export default function LeaderboardPage() {
   const [leaders, setLeaders] = useState<any[]>([]);
@@ -31,7 +30,7 @@ export default function LeaderboardPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-4xl md:text-5xl font-bold font-sans text-white mb-4 flex items-center gap-4">
-            <Trophy className="text-yellow-400" size={48} /> Global Leaderboard
+            <Trophy color="#facc15" size={48} weight="fill" /> Global Leaderboard
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl">
             Invite friends to W3B3 and earn points organically. Higher tiered participants gain early access to native $W3B3 governance drops.
@@ -83,7 +82,7 @@ export default function LeaderboardPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-400 font-bold border border-green-500/20 rounded-lg">
-                        <ArrowUpRight size={14} /> {user.points.toLocaleString()}
+                        <ArrowUpRight color="#4ade80" size={14} /> {user.points.toLocaleString()}
                       </span>
                     </td>
                   </motion.tr>
@@ -92,8 +91,8 @@ export default function LeaderboardPage() {
                 <tr>
                    <td colSpan={3} className="px-6 py-12 text-center">
                      <div className="flex flex-col items-center justify-center text-slate-500">
-                       <Compass size={32} className="mb-4 opacity-50" />
-                       <p>The leaderboard is currently empty.</p>
+                       <Compass size={32} color="currentColor" weight="regular" />
+                       <p className="mt-4">The leaderboard is currently empty.</p>
                        <p className="text-sm">Be the first to invite a friend to rank #1.</p>
                      </div>
                    </td>

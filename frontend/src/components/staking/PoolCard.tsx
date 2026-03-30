@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { StakingPool } from '@/types';
 import Link from 'next/link';
-import { ArrowUpRight, Activity, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, Pulse, ShieldWarning, ShieldCheck } from '@phosphor-icons/react';
 
 interface PoolCardProps {
   pool: StakingPool;
@@ -51,7 +51,7 @@ export function PoolCard({ pool, onStake }: PoolCardProps) {
       <div className="flex gap-2 mb-6 relative z-10 text-[10px] uppercase font-bold tracking-wider">
         {isHighRisk ? (
           <span className="flex items-center gap-1 bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2 py-1 rounded w-fit">
-            <ShieldAlert size={12} /> Unverified Limit
+            <ShieldWarning size={12} weight="fill" /> Unverified Limit
           </span>
         ) : (
           <span className="flex items-center gap-1 bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded w-fit">
@@ -90,7 +90,7 @@ export function PoolCard({ pool, onStake }: PoolCardProps) {
           href={`/pool/${pool.id}`} 
           className="btn-secondary py-2.5 px-4 flex items-center justify-center"
         >
-          <Activity size={18} />
+          <Pulse size={18} />
         </Link>
       </div>
     </motion.div>

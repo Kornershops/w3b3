@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import logger from '../utils/logger';
-import { ApiError } from '../types';
 
 export class AppError extends Error {
   constructor(
@@ -17,7 +16,7 @@ export function errorHandler(
   error: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) {
   logger.error({
     message: error.message,

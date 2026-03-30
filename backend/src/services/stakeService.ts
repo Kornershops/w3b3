@@ -1,5 +1,5 @@
 import prisma from '../config/database';
-import { UserStake, StakeFilter, PaginatedResponse } from '../types';
+import { UserStake, PaginatedResponse } from '../types';
 import logger from '../utils/logger';
 
 export class StakeService {
@@ -96,7 +96,7 @@ export class StakeService {
 
   async unstakeTokens(
     stakeId: string,
-    transactionHash: string
+    _transactionHash: string
   ): Promise<UserStake> {
     try {
       const stake = await prisma.userStake.update({

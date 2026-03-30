@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { config } from './env';
 
 let prisma: PrismaClient;
 

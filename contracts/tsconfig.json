@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "node16",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node16",
+    "ignoreDeprecations": "5.0",
+    "rootDir": "."
+  },
+  "include": ["./scripts", "./test", "./hardhat.config.ts"],
+  "files": ["./hardhat.config.ts"]
+}

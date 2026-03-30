@@ -1,7 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { authService } from '../services/authService';
-import { authMiddleware } from '../middleware/auth';
+import { authMiddleware, generateToken } from '../middleware/auth';
 import logger from '../utils/logger';
+import jwt from 'jsonwebtoken';
+import { config } from '../config/env';
 
 const router = Router();
 
@@ -72,12 +74,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Refresh token required' });
     }
 
-    // Verify using the dedicated refresh secret
-    const jwt = require('jsonwebtoken');
-    const { config } = require('../config/env');
-    const { generateToken } = require('../middleware/auth');
-    
-    const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret as string);
+    const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret as string) as any;
     const newToken = generateToken(decoded.userId, decoded.walletAddress, decoded.role);
 
     return res.json({ token: newToken });

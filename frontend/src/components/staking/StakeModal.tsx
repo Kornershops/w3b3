@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { useAccount, useChainId, useSwitchChain } from 'wagmi';
+import { X, Warning, CheckCircle, CircleNotch } from '@phosphor-icons/react';
+import { useAccount, useChainId, useSwitchNetwork } from 'wagmi';
 import { apiService } from '@/services/api';
 import { StakingPool } from '@/types';
 
@@ -15,9 +15,9 @@ interface StakeModalProps {
 }
 
 export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps) {
-  const { isConnected } = useAccount();
+  useAccount();
   const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
+  const { switchNetwork } = useSwitchNetwork();
   
   const [amount, setAmount] = useState('');
   const [step, setStep] = useState<'input' | 'approving' | 'staking' | 'success'>('input');
@@ -28,8 +28,8 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
   const isWrongNetwork = chainId !== pool.chainId;
 
   const handleAction = async () => {
-    if (isWrongNetwork && switchChain) {
-      switchChain({ chainId: pool.chainId });
+    if (isWrongNetwork && switchNetwork) {
+      switchNetwork(pool.chainId);
       return;
     }
 
@@ -83,7 +83,9 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
 
           {isWrongNetwork ? (
             <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4 mb-6 flex items-start gap-3">
-              <AlertCircle className="text-orange-400 shrink-0 mt-0.5" size={18} />
+              <span className="shrink-0 mt-0.5">
+                <Warning color="#fb923c" size={18} weight="fill" />
+              </span>
               <p className="text-sm text-orange-200">You are on the wrong network. Switch your wallet to chain ID {pool.chainId} to interact with this pool.</p>
             </div>
           ) : (
@@ -106,7 +108,9 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
 
                {(step === 'approving' || step === 'staking') && (
                  <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center py-8 space-y-4">
-                   <Loader2 className="animate-spin text-indigo-400" size={48} />
+                   <span className="animate-spin inline-block">
+                     <CircleNotch color="#818cf8" size={48} weight="bold" />
+                   </span>
                    <div className="text-center">
                      <p className="text-white font-bold">{step === 'approving' ? 'Approving Spend...' : 'Staking Assets...'}</p>
                      <p className="text-slate-400 text-sm">Please confirm the pending transaction in your wallet.</p>
@@ -116,7 +120,7 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
 
                {step === 'success' && (
                  <motion.div key="success" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center py-8 space-y-4">
-                   <CheckCircle className="text-green-400" size={48} />
+                   <CheckCircle color="#4ade80" size={48} weight="fill" />
                    <div className="text-center">
                      <p className="text-white font-bold text-lg">Stake Confirmed!</p>
                      <p className="text-slate-400 text-sm">Your {pool.tokenSymbol} is now earning yield.</p>

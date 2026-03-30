@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Multi-Chain Staking & Yield Portal",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "contracts"
+  ],
   "scripts": {
     "dev": "npm run dev --workspaces",
     "dev:frontend": "npm run dev --workspace=frontend",
@@ -17,8 +22,13 @@
     "test:backend": "npm run test --workspace=backend",
     "test:contracts": "npm run test --workspace=contracts",
     "lint": "npm run lint --workspaces",
+    "type-check": "npm run type-check --workspaces",
     "format": "npm run format --workspaces",
     "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "deploy:sepolia": "npm run deploy:sepolia --workspace=contracts",
+    "deploy:mumbai": "npm run deploy:mumbai --workspace=contracts",
+    "deploy:base-sepolia": "npm run deploy:base-sepolia --workspace=contracts",
+    "deploy:mainnet": "npm run deploy:mainnet --workspace=contracts",
     "install-all": "npm install && npm install --workspaces"
   },
   "devDependencies": {

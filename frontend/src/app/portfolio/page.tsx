@@ -6,10 +6,10 @@ import { apiService } from '@/services/api';
 import { UserStake } from '@/types';
 import { motion } from 'framer-motion';
 import { LiveRewardTicker } from '@/components/portfolio/LiveRewardTicker';
-import { WalletCards } from 'lucide-react';
+import { Wallet } from '@phosphor-icons/react';
 
 export default function PortfolioPage() {
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const [stakes, setStakes] = useState<UserStake[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,7 +44,7 @@ export default function PortfolioPage() {
     return (
       <div className="container-max py-32 flex flex-col items-center text-center">
         <div className="w-24 h-24 bg-slate-800/50 rounded-full flex items-center justify-center mb-6">
-           <WalletCards className="w-12 h-12 text-slate-500" />
+           <Wallet size={48} color="#64748b" weight="duotone" />
         </div>
         <h2 className="text-3xl font-bold text-white mb-2">Connect Wallet</h2>
         <p className="text-slate-400 max-w-md">
