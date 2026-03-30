@@ -14,7 +14,7 @@ Smart Contracts -> Protocol Security -> Audit-standard 0.8.24 Solidity with Paus
 
 ## Infrastructure Matrix
 
--> Deployment Hosting -> Vercel (Front) / Render (Back) -> High-availability CI/CD.
+-> Deployment Hosting -> Netlify (Front) / Render (Back) -> High-availability CI/CD.
 -> Blockchain Access -> Alchemy -> Unified multi-chain RPC node layer.
 -> Database Persistence -> AWS RDS Postgres -> Structured data for users/stakes.
 -> Cache & Real-Time -> Redis & Socket.io -> Performance and live updates.
