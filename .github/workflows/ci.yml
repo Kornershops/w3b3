@@ -72,7 +72,7 @@ jobs:
         run: |
           cd contracts
           npx hardhat telemetry --disable
-          npm run test
+          yes n | npm run test
         env:
           CI: true
           NO_COLOR: 1
