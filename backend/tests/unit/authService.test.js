@@ -1,8 +1,8 @@
-const { authService } = require('../../src/services/authService');
+const { authService } = require('../../dist/services/authService');
 const { ethers } = require('ethers');
 
 // Mock the nested dependencies so we don't hit real Prisma instances in unit tests
-jest.mock('../../src/services/userService', () => ({
+jest.mock('../../dist/services/userService', () => ({
   userService: {
     getOrCreateUser: jest.fn().mockResolvedValue({ id: 'user_1', walletAddress: '0x1A2b3c', role: 'USER' }),
   },
