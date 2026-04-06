@@ -9,6 +9,10 @@ import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import { StakeModal } from '@/components/staking/StakeModal';
 
+export async function generateStaticParams() {
+  return [];
+}
+
 export default function PoolDetailPage({ params }: { params: { id: string } }) {
   const { isConnected } = useAccount();
   const [pool, setPool] = useState<StakingPool | null>(null);
