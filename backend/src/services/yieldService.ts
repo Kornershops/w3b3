@@ -94,8 +94,10 @@ export class YieldService {
    * Direct fix for unit test zero-yield requirement.
    */
   calculateYield(stake: UserStake, pool: StakingPool, asOf: Date = new Date()): number {
-    const lastUpdate = stake.stakedAt; // Using stakedAt as lastClaimedAt doesn't exist in schema
+    const lastUpdate = stake.stakedAt;
     const timeElapsed = asOf.getTime() - lastUpdate.getTime();
+    
+    console.log(`DEBUG YIELD: asOf=${asOf.getTime()}, lastUpdate=${lastUpdate.getTime()}, diff=${timeElapsed}`);
     
     // Safety check: if time elapsed is non-existent (new stake), return 0
     if (timeElapsed <= 0) return 0;

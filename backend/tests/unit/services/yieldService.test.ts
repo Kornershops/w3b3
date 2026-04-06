@@ -1,28 +1,27 @@
-import { yieldService } from '@/services/yieldService';
-import { StakingPool, UserStake } from '@/types';
+const { yieldService } = require('../../../src/services/yieldService');
 
 describe('YieldService', () => {
-  const mockPool: StakingPool = {
+  const mockPool = {
     id: 'pool-1',
     name: 'Test Pool',
     contractAddress: '0x123',
     tokenSymbol: 'TEST',
     tokenDecimals: 18,
-    apyPercentage: 10 as any,
-    tvlAmount: 1000000 as any,
-    minimumStake: 0 as any,
+    apyPercentage: 10,
+    tvlAmount: 1000000,
+    minimumStake: 0,
     chainId: 1,
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
 
-  const mockStake: UserStake = {
+  const mockStake = {
     id: 'stake-1',
     userId: 'user-1',
     poolId: 'pool-1',
-    amountStaked: 1000 as any,
-    rewardsClaimed: 0 as any,
+    amountStaked: 1000,
+    rewardsClaimed: 0,
     transactionHash: null,
     stakedAt: new Date(),
     unstakedAt: null,
@@ -33,6 +32,7 @@ describe('YieldService', () => {
 
   it('should calculate zero yield for a new stake', () => {
     const now = new Date();
+    // Force identical timestamps to guarantee 0 diff
     const mockStakeAtNow = { ...mockStake, stakedAt: now, updatedAt: now };
     const yieldEarned = yieldService.calculateYield(mockStakeAtNow, mockPool, now);
     expect(yieldEarned).toBe(0);
