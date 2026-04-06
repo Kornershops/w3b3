@@ -65,7 +65,7 @@ app.get('/health', async (req, res) => {
 });
 
 // API Routes
-app.get('/api', (req, res) => {
+app.get('/api', (req: express.Request, res: express.Response): void => {
   res.json({ message: 'W3B3 API v1.0.0' });
 });
 
@@ -78,7 +78,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/yield', yieldRoutes);
 
 // Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error & { status?: number }, req: express.Request, res: express.Response, _next: express.NextFunction): void => {
   logger.error('Unhandled error: %o', err);
   res.status(err.status || 500).json({
     error: err.message || 'Internal Server Error',

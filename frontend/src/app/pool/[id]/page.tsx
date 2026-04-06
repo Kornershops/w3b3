@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { apiService } from '@/services/api';
 import { StakingPool } from '@/types';
 import { motion } from 'framer-motion';
@@ -15,11 +15,7 @@ export default function PoolDetailPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [isStakeModalOpen, setIsStakeModalOpen] = useState(false);
 
-  useEffect(() => {
-    loadPool();
-  }, [params.id]);
-
-  const loadPool = async () => {
+  const loadPool = useCallback(async () => {
     try {
       const data = await apiService.getPoolById(params.id);
       setPool(data);
@@ -28,7 +24,11 @@ export default function PoolDetailPage({ params }: { params: { id: string } }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    loadPool();
+  }, [loadPool]);
 
   const handleDeposit = () => {
     if (!isConnected) {

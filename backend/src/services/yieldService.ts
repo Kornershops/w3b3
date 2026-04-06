@@ -6,7 +6,14 @@ export class YieldService {
   /**
    * Calculates the global Real Yield APR for $W3B3 stakers.
    */
-  async getYieldStats() {
+  async getYieldStats(): Promise<{
+    apr: string;
+    baseToken: string;
+    totalDistributedEth: string;
+    lastHarvestAmount: string;
+    nextEstimatedHarvest: string;
+    updatedAt: string;
+  }> {
     try {
       const treasuryData = await treasuryService.getTreasuryHoldings();
       

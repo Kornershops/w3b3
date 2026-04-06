@@ -17,7 +17,7 @@ export function errorHandler(
   req: Request,
   res: Response,
   _next: NextFunction
-) {
+): void | Response {
   logger.error({
     message: error.message,
     stack: error.stack,
@@ -43,7 +43,7 @@ export function errorHandler(
   });
 }
 
-export function notFoundHandler(req: Request, res: Response) {
+export function notFoundHandler(req: Request, res: Response): void {
   res.status(404).json({
     error: 'Not Found',
     path: req.path,

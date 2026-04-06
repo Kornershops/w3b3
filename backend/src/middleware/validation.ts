@@ -31,6 +31,19 @@ export function validateRequest(schema: ZodSchema) {
   };
 }
 
+export const asyncWrapper = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>): (req: Request, res: Response, next: NextFunction) => void => {
+  return (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+};
+
+export const notFoundHandler = (req: Request, res: Response): void => {
+  res.status(404).json({
+    error: 'Route not found',
+    path: req.originalUrl,
+  });
+};
+
 export function validateBody(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction) => {
     try {

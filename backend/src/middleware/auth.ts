@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export function authMiddleware(req: Request, res: Response, next: NextFunction): void | Response {
   try {
     // 1. Check Cookies (Primary)
     let token = req.cookies?.accessToken;
@@ -44,7 +44,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
   }
 }
 
-export function optionalAuthMiddleware(req: Request, res: Response, next: NextFunction) {
+export function optionalAuthMiddleware(req: Request, res: Response, next: NextFunction): void {
   try {
     let token = req.cookies?.accessToken;
 
@@ -66,7 +66,7 @@ export function optionalAuthMiddleware(req: Request, res: Response, next: NextFu
   }
 }
 
-export function authAdminMiddleware(req: Request, res: Response, next: NextFunction) {
+export function authAdminMiddleware(req: Request, res: Response, next: NextFunction): void {
   authMiddleware(req, res, () => {
     if (req.user && req.user.role === 'ADMIN') {
       next();
@@ -76,7 +76,7 @@ export function authAdminMiddleware(req: Request, res: Response, next: NextFunct
   });
 }
 
-export function setTokenCookies(res: Response, token: string, refreshToken: string) {
+export function setTokenCookies(res: Response, token: string, refreshToken: string): void {
   const isProduction = process.env.NODE_ENV === 'production';
   
   res.cookie('accessToken', token, {

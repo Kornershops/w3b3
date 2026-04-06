@@ -25,6 +25,8 @@
     "avoid-sha3": "error",
     "avoid-suicide": "error",
     "avoid-throw": "error",
-    "multiple-edits-on-one-line": "error"
+    "multiple-edits-on-one-line": "error",
+    "func-visibility": ["error", { "ignoreConstructors": true }],
+    "no-global-import": "error"
   }
 }

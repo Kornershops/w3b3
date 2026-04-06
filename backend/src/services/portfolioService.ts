@@ -110,7 +110,15 @@ export class PortfolioService {
     }
   }
 
-  async getPortfolioHistory(userId: string, page = 1, limit = 20) {
+  async getPortfolioHistory(userId: string, page = 1, limit = 20): Promise<{
+    data: any[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  }> {
     try {
       const skip = (page - 1) * limit;
 

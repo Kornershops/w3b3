@@ -5,10 +5,12 @@ import logger from '../utils/logger';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/env';
 
+import { JwtPayload } from '../types';
+
 const router = Router();
 
 // Connect Wallet Router
-router.post('/connect', async (req: Request, res: Response) => {
+router.post('/connect', async (req: Request, res: Response): Promise<Response> => {
   try {
     const { walletAddress, signature, message, referralCode } = req.body;
 
@@ -42,7 +44,7 @@ router.post('/connect', async (req: Request, res: Response) => {
 });
 
 // Get current user
-router.get('/user', authMiddleware, async (req: Request, res: Response) => {
+router.get('/user', authMiddleware, async (req: Request, res: Response): Promise<Response> => {
   try {
     if (!req.user) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -59,21 +61,21 @@ router.get('/user', authMiddleware, async (req: Request, res: Response) => {
 });
 
 // Logout
-router.post('/logout', (req: Request, res: Response) => {
+router.post('/logout', (req: Request, res: Response): Response => {
   res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
   return res.json({ message: 'Logged out successfully' });
 });
 
 // Refresh Token
-router.post('/refresh', async (req: Request, res: Response) => {
+router.post('/refresh', async (req: Request, res: Response): Promise<Response> => {
   try {
     const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
     if (!refreshToken) {
       return res.status(401).json({ error: 'Refresh token required' });
     }
 
-    const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret as string) as any;
+    const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret as string) as JwtPayload;
     const newToken = generateToken(decoded.userId, decoded.walletAddress, decoded.role);
 
     // Update Access Token Cookie

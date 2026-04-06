@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title W3Token
@@ -12,12 +12,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract W3Token is ERC20, Ownable {
     mapping(address => bool) public isPool;
 
+    error NotAuthorizedPool();
+
     event PoolStatusUpdated(address indexed pool, bool status);
 
     constructor() ERC20("W3B3 Liquid Staked Receipt", "w3TOKEN") Ownable(msg.sender) {}
 
     modifier onlyPool() {
-        require(isPool[msg.sender], "W3B3: Not an authorized Staking Pool");
+        if (!isPool[msg.sender]) revert NotAuthorizedPool();
         _;
     }
 

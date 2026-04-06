@@ -14,6 +14,7 @@ export class UserService {
     }
   }
 
+
   async getUserById(userId: string): Promise<User | null> {
     try {
       return await prisma.user.findUnique({
@@ -93,7 +94,14 @@ export class UserService {
     }
   }
 
-  async getUserStats(userId: string) {
+  async getUserStats(userId: string): Promise<{
+    user: User;
+    totalStaked: string;
+    totalRewards: string;
+    activeStakes: number;
+    totalStakes: number;
+    stakes: any[];
+  }> {
     try {
       const user = await this.getUserById(userId);
       if (!user) {
@@ -131,7 +139,15 @@ export class UserService {
     }
   }
 
-  async getAllUsers(page = 1, limit = 20) {
+  async getAllUsers(page = 1, limit = 20): Promise<{
+    data: User[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  }> {
     try {
       const skip = (page - 1) * limit;
 

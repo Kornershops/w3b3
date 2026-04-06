@@ -15,7 +15,11 @@ export class PoolService {
       const skip = (page - 1) * limit;
 
       // Build where clause
-      const where: any = {};
+      interface PoolWhere {
+        chainId?: number;
+        isActive?: boolean;
+      }
+      const where: PoolWhere = {};
       if (filter.chainId) where.chainId = filter.chainId;
       if (filter.isActive !== undefined) where.isActive = filter.isActive;
 
@@ -238,7 +242,12 @@ export class PoolService {
     }
   }
 
-  async getPoolStats() {
+  async getPoolStats(): Promise<{
+    totalPools: number;
+    totalTvl: string;
+    averageApy: string;
+    pools: StakingPool[];
+  }> {
     try {
       const pools = await prisma.stakingPool.findMany({
         where: { isActive: true },
