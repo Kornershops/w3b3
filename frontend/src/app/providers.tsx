@@ -62,3 +62,4 @@ export function Providers({ children }: { children: React.ReactNode }) {
     </WagmiConfig>
   );
 }
+// build stabilization ping
