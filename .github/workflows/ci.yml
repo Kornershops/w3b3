@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm install
       - name: Compile contracts
@@ -47,6 +48,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm install
       - name: Generate Prisma Client
@@ -73,6 +75,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm install
       - name: Contract Tests
@@ -98,6 +101,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm install
       - name: Frontend Tests
@@ -119,6 +123,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm install
       - name: Generate Prisma Client
