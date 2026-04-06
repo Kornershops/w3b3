@@ -1,5 +1,5 @@
-import { authService } from '../../src/services/authService';
-import { ethers } from 'ethers';
+const { authService } = require('../../src/services/authService');
+const { ethers } = require('ethers');
 
 // Mock the nested dependencies so we don't hit real Prisma instances in unit tests
 jest.mock('../../src/services/userService', () => ({
@@ -55,10 +55,8 @@ describe('AuthService', () => {
       const walletFake = ethers.Wallet.createRandom();
       const message = 'Test payload';
       
-      // walletTrue signs it
       const signature = await walletTrue.signMessage(message);
       
-      // But we claim the address belongs to walletFake
       const isValid = await authService.verifySignature(walletFake.address, message, signature);
       
       expect(isValid).toBe(false);
