@@ -1,4 +1,4 @@
-const { yieldService } = require('../../../src/services/yieldService');
+const { yieldService } = require('../../../dist/services/yieldService');
 
 describe('YieldService', () => {
   const mockPool = {
