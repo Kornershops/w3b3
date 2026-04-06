@@ -1,6 +1,7 @@
 import prisma from '../config/database';
 import { treasuryService } from './treasuryService';
 import logger from '../utils/logger';
+import { StakingPool, UserStake } from '@/types';
 
 export class YieldService {
   /**
@@ -86,6 +87,25 @@ export class YieldService {
       tvl: Math.random() * 1000000 + 500000,
       price: Math.random() * 100 + 1,
     };
+  }
+
+  /**
+   * Calculates the yield earned for a specific stake in a pool.
+   * Direct fix for unit test zero-yield requirement.
+   */
+  calculateYield(stake: UserStake, pool: StakingPool): number {
+    const now = new Date();
+    const lastUpdate = stake.lastClaimedAt || stake.stakedAt;
+    const timeElapsed = now.getTime() - lastUpdate.getTime();
+    
+    // Safety check: if time elapsed is non-existent (new stake), return 0
+    if (timeElapsed <= 0) return 0;
+    
+    // Convert to years for APY calculation
+    const yearsElapsed = timeElapsed / (1000 * 60 * 60 * 24 * 365);
+    
+    const yieldEarned = stake.amountStaked * (parseFloat(pool.apyPercentage) / 100) * yearsElapsed;
+    return Number(yieldEarned.toFixed(2));
   }
 }
 
