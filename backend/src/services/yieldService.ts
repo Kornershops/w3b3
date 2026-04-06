@@ -80,7 +80,7 @@ export class YieldService {
     }
   }
 
-  private async fetchExternalYield(address: string): Promise<any> {
+  private async fetchExternalYield(_address: string): Promise<any> {
     // Placeholder for actual external API call
     return {
       apy: Math.random() * 15 + 5,
