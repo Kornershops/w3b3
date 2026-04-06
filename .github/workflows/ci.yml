@@ -21,6 +21,8 @@ jobs:
         run: npm install
       - name: Compile contracts
         run: npm run compile --workspace=contracts
+      - name: Generate Prisma Client
+        run: cd backend && npx prisma generate
       - name: Lint
         run: npm run lint --workspaces --if-present
       - name: Type check
