@@ -39,7 +39,7 @@ export class TreasuryService {
     try {
       if (this.treasuryAddress === '0x0000000000000000000000000000000000000000') {
         logger.warn('Treasury address is not set. Returning placeholders.');
-        return { totalValuationUsd: '0', assets: [], totalEthDistributed: '0' };
+        return { totalValuationUsd: '0', assets: [], totalEthDistributed: '0', lastUpdated: new Date().toISOString() };
       }
 
       let totalValuation = 0;
