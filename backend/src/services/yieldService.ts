@@ -39,12 +39,53 @@ export class YieldService {
         totalDistributedEth: treasuryData.totalEthDistributed,
         lastHarvestAmount: '0.85', // ETH
         nextEstimatedHarvest: new Date(Date.now() + 86400000 * 3).toISOString(), // 3 days from now
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        price: externalData.price
       };
     } catch (error) {
       logger.error('Error calculating yield stats:', error);
       throw new Error('Could not calculate real yield metrics');
     }
+  }
+
+  /**
+   * Background job to sync yield data from external sources.
+   */
+  async syncYieldData(): Promise<void> {
+    try {
+      logger.info('Starting background yield data sync...');
+      
+      const pools = await prisma.stakingPool.findMany({
+        where: { isActive: true },
+      });
+
+      const updatedPools = await Promise.all(pools.map(async (pool) => {
+        const externalData = await this.fetchExternalYield(pool.contractAddress);
+        
+        return prisma.stakingPool.update({
+          where: { id: pool.id },
+          data: {
+            apyPercentage: externalData.apy.toString(),
+            tvlAmount: externalData.tvl.toString(),
+            price: externalData.price.toString()
+          },
+        });
+      }));
+
+      logger.info(`Successfully synced ${updatedPools.length} pools`);
+    } catch (error) {
+      logger.error('Error during yield sync:', error);
+      throw error;
+    }
+  }
+
+  private async fetchExternalYield(address: string): Promise<any> {
+    // Placeholder for actual external API call
+    return {
+      apy: Math.random() * 15 + 5,
+      tvl: Math.random() * 1000000 + 500000,
+      price: Math.random() * 100 + 1,
+    };
   }
 }
 
