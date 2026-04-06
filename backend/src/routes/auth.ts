@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authService } from '../services/authService';
-import { authMiddleware, generateToken } from '../middleware/auth';
+import { authMiddleware, generateToken, setTokenCookies } from '../middleware/auth';
 import logger from '../utils/logger';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/env';
@@ -30,6 +30,9 @@ router.post('/connect', async (req: Request, res: Response) => {
       referralCode
     );
 
+    // Set HttpOnly Cookies
+    setTokenCookies(res, response.token, response.refreshToken);
+
     return res.json(response);
   } catch (error) {
     logger.error('Error connecting wallet:', error);
@@ -56,26 +59,31 @@ router.get('/user', authMiddleware, async (req: Request, res: Response) => {
 });
 
 // Logout
-router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
-  try {
-    // In a real app, you might invalidate the token here
-    return res.json({ message: 'Logged out successfully' });
-  } catch (error) {
-    logger.error('Error logging out:', error);
-    return res.status(500).json({ error: 'Failed to logout' });
-  }
+router.post('/logout', (req: Request, res: Response) => {
+  res.clearCookie('accessToken');
+  res.clearCookie('refreshToken');
+  return res.json({ message: 'Logged out successfully' });
 });
 
 // Refresh Token
 router.post('/refresh', async (req: Request, res: Response) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
     if (!refreshToken) {
       return res.status(401).json({ error: 'Refresh token required' });
     }
 
     const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret as string) as any;
     const newToken = generateToken(decoded.userId, decoded.walletAddress, decoded.role);
+
+    // Update Access Token Cookie
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie('accessToken', newToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'strict' : 'lax',
+      maxAge: 15 * 60 * 1000,
+    });
 
     return res.json({ token: newToken });
   } catch (error) {

@@ -1,9 +1,21 @@
 import { Router, Request, Response } from 'express';
 import { portfolioService } from '../services/portfolioService';
+import { treasuryService } from '../services/treasuryService';
 import { authMiddleware } from '../middleware/auth';
 import logger from '../utils/logger';
 
 const router = Router();
+
+// Get public treasury holdings
+router.get('/treasury', async (req: Request, res: Response) => {
+  try {
+    const treasury = await treasuryService.getTreasuryHoldings();
+    return res.json(treasury);
+  } catch (error) {
+    logger.error('Error fetching treasury data:', error);
+    return res.status(500).json({ error: 'Failed to fetch treasury data' });
+  }
+});
 
 // Get portfolio summary
 router.get('/', authMiddleware, async (req: Request, res: Response) => {

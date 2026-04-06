@@ -15,6 +15,7 @@ Frontend -> Next.js 14 -> High-performance SPA with real-time reward interpolati
 Security -> Dual-JWT -> Secure session rotation with wallet signature verification.
 Contracts -> 0.8.24 -> Audited OpenZeppelin patterns with emergency circuit breakers.
 Scaling -> Factory Logic -> Autonomous pool deployment for rapid market expansion.
+Tokenomics -> Real Yield (ETH) -> Protocol fees converted to ETH and distributed to $W3B3 stakers.
 
 ## Quick Start for Developers
 
@@ -31,6 +32,7 @@ W3B3 has transitioned from a conceptual scaffold into a production-ready protoco
 -> UX Transformation -> Shifted to a deep-dark glassmorphic design system.
 -> Growth Infrastructure -> Launched the Referral engine and Global Leaderboard.
 -> Governance Launch -> Deployed the $W3B3 token and StakingPoolFactory.
+-> Value Accrual -> Architected the overarching Public Treasury routing to accumulate Protocol-Owned Liquidity (POL).
 
 ---
 
@@ -38,5 +40,6 @@ Technical documentation localized in the [/docs](./docs) directory:
 
 -> API Reference -> [API.md](./docs/API.md)
 -> Technical Architecture -> [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+-> Tokenomics & Treasury -> [TREASURY_AND_TOKENOMICS.md](./docs/TREASURY_AND_TOKENOMICS.md)
 -> Installation -> [INSTALL.md](./docs/INSTALL.md)
 -> Release & Sprints -> [CHANGELOG.md](./docs/CHANGELOG.md)

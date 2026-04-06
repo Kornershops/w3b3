@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import axiosRetry from 'axios-retry';
 import { ApiResponse, StakingPool, UserStake, Portfolio, AuthResponse } from '../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -12,24 +13,28 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true, // Required for HttpOnly cookies
     });
 
-    // Add token to requests
-    this.client.interceptors.request.use((config) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
+    // Configure Retry Logic
+    axiosRetry(this.client, {
+      retries: 3,
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: (error) => {
+        // Retry on network errors or 5xx status codes
+        return axiosRetry.isNetworkOrIdempotentRequestError(error) || error.response?.status === 503;
+      },
     });
 
-    // Handle errors
+    // Handle errors (Auth context relies on HttpOnly cookies now)
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          localStorage.removeItem('token');
-          window.location.href = '/';
+          // Only redirect if we are not already on the login/landing page
+          if (window.location.pathname !== '/') {
+            window.location.href = '/';
+          }
         }
         return Promise.reject(error);
       }

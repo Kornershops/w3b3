@@ -2,6 +2,16 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+function getRequiredEnv(name: string, fallback?: string): string {
+  const value = process.env[name] || fallback;
+  if (!value && isProduction) {
+    throw new Error(`Environment variable ${name} is required in production!`);
+  }
+  return value || '';
+}
+
 export const config = {
   // Server
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -10,7 +20,7 @@ export const config = {
 
   // Database
   database: {
-    url: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/w3b3',
+    url: getRequiredEnv('DATABASE_URL', 'postgresql://postgres:password@localhost:5432/w3b3'),
     poolMin: parseInt(process.env.DATABASE_POOL_MIN || '2', 10),
     poolMax: parseInt(process.env.DATABASE_POOL_MAX || '10', 10),
   },
@@ -22,15 +32,15 @@ export const config = {
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET || 'your_secret_key_change_in_production',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'your_refresh_secret_change_in_production',
+    secret: getRequiredEnv('JWT_SECRET', 'your_secret_key_change_in_production'),
+    refreshSecret: getRequiredEnv('JWT_REFRESH_SECRET', 'your_refresh_secret_change_in_production'),
     expiry: process.env.JWT_EXPIRY || '15m',
     refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
   },
 
   // Web3
   web3: {
-    alchemyApiKey: process.env.ALCHEMY_API_KEY || '',
+    alchemyApiKey: getRequiredEnv('ALCHEMY_API_KEY'),
     alchemyWebhookKey: process.env.ALCHEMY_WEBHOOK_SIGNING_KEY || '',
   },
 

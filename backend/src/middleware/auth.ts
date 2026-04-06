@@ -14,13 +14,20 @@ declare global {
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
-    const authHeader = req.headers.authorization;
+    // 1. Check Cookies (Primary)
+    let token = req.cookies?.accessToken;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Missing or invalid authorization header' });
+    // 2. Check Authorization Header (Fallback)
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
     }
 
-    const token = authHeader.substring(7);
+    if (!token) {
+      return res.status(401).json({ error: 'Missing authentication' });
+    }
 
     const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
     req.user = decoded;
@@ -39,10 +46,16 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
 export function optionalAuthMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
-    const authHeader = req.headers.authorization;
+    let token = req.cookies?.accessToken;
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
+
+    if (token) {
       const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
       req.user = decoded;
     }
@@ -60,6 +73,24 @@ export function authAdminMiddleware(req: Request, res: Response, next: NextFunct
     } else {
       res.status(403).json({ error: 'Requires admin privileges' });
     }
+  });
+}
+
+export function setTokenCookies(res: Response, token: string, refreshToken: string) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  res.cookie('accessToken', token, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
+    maxAge: 15 * 60 * 1000, // 15 mins
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 }
 

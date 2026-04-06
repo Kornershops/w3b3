@@ -25,9 +25,7 @@ export function useWalletConnection() {
       // Authenticate with backend
       const response = await apiService.connectWallet(walletAddress, signature, message);
 
-      // Store token and user
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('refreshToken', response.refreshToken);
+      // Store token internally in state (but safely offloaded to cookies)
       setToken(response.token);
       setUser(response.user);
 

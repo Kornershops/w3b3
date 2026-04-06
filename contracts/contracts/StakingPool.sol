@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./W3Token.sol";
 
@@ -13,6 +13,8 @@ import "./W3Token.sol";
  * @dev Enables Multi-chain stakers to yield farm while minting liquid receipt derivations (w3TOKEN)
  */
 contract StakingPool is ReentrancyGuard, Ownable, Pausable {
+    using SafeERC20 for IERC20;
+
     IERC20 public stakingToken;
     IERC20 public rewardToken;
     W3Token public w3Token;
@@ -92,11 +94,8 @@ contract StakingPool is ReentrancyGuard, Ownable, Pausable {
 
         totalStaked += _amount;
         stakerBalance[msg.sender] += _amount;
-
-        require(
-            stakingToken.transferFrom(msg.sender, address(this), _amount),
-            "Transfer failed"
-        );
+        
+        stakingToken.safeTransferFrom(msg.sender, address(this), _amount);
         
         // Protocol Moat: Issue liquid derivatives
         w3Token.mint(msg.sender, _amount);
@@ -118,7 +117,7 @@ contract StakingPool is ReentrancyGuard, Ownable, Pausable {
         // Strip receipt wrapping 
         w3Token.burn(msg.sender, _amount);
 
-        require(stakingToken.transfer(msg.sender, _amount), "Transfer failed");
+        stakingToken.safeTransfer(msg.sender, _amount);
 
         emit Withdrawn(msg.sender, _amount);
     }
@@ -136,8 +135,8 @@ contract StakingPool is ReentrancyGuard, Ownable, Pausable {
             uint256 feeCut = (reward * feePercentage) / 10000;
             uint256 userTakeHome = reward - feeCut;
 
-            require(rewardToken.transfer(treasury, feeCut), "Protocol Treasury Failed");
-            require(rewardToken.transfer(msg.sender, userTakeHome), "User Transfer Failed");
+            rewardToken.safeTransfer(treasury, feeCut);
+            rewardToken.safeTransfer(msg.sender, userTakeHome);
             
             emit RewardClaimed(msg.sender, userTakeHome, feeCut);
         }
