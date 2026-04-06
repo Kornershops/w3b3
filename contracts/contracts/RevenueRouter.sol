@@ -5,7 +5,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./W3B3Treasury.sol";
+import {W3B3Treasury} from "./W3B3Treasury.sol";
 
 // Minimal interface for AMM Router (e.g. UniswapV3 Router / SwapRouter)
 interface ISwapRouter {

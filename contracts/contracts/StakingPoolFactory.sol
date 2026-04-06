@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import "./StakingPool.sol";
+import {StakingPool} from "./StakingPool.sol";
 
 /**
  * @title StakingPoolFactory

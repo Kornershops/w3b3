@@ -45,8 +45,6 @@ contract W3B3RewardDistributor is Ownable, ReentrancyGuard, Pausable {
             return rewardPerTokenStored;
         }
         
-        // This assumes WETH is sent to this contract by the RevenueRouter periodically
-        uint256 currentBalance = rewardToken.balanceOf(address(this));
         // Simple logic for Real Yield: Current unallocated balance is rewarded over time
         // However, standard Real Yield usually pushes an 'amount' into a distribution period
         return rewardPerTokenStored;
