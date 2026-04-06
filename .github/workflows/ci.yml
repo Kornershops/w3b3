@@ -59,6 +59,7 @@ jobs:
 
       - name: Backend Tests
         run: |
+          echo "🚀 Starting Backend Tests..."
           cd backend
           npm run build
           npm run test
@@ -70,7 +71,9 @@ jobs:
 
       - name: Contract Tests
         run: |
+          echo "🚀 Starting Contract Tests..."
           cd contracts
+          npx hardhat compile
           npx hardhat telemetry --disable
           yes n | npm run test
         env:
@@ -80,6 +83,7 @@ jobs:
 
       - name: Frontend Tests
         run: |
+          echo "🚀 Starting Frontend Tests..."
           cd frontend
           npm run test
         env:
