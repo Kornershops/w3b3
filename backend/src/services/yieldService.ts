@@ -13,9 +13,11 @@ export class YieldService {
     lastHarvestAmount: string;
     nextEstimatedHarvest: string;
     updatedAt: string;
+    price: number;
   }> {
     try {
       const treasuryData = await treasuryService.getTreasuryHoldings();
+      const externalData = await this.fetchExternalYield('0x...');
       
       // Real-world yield calculation would involve:
       // (Annualized ETH rewards / Total $W3B3 Staked in USD) * 100
