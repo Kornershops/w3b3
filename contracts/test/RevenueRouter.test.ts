@@ -56,6 +56,11 @@ describe("RevenueRouter Integration", function () {
         // Pre-fill MockSwap with WETH for payout
         await weth.mint(await mockSwapRouter.getAddress(), ethers.parseEther("10"));
 
+        // Stake some tokens to ensure rewardPerToken can calculate
+        await stakingToken.mint(owner.address, ethers.parseEther("100"));
+        await stakingToken.approve(await distributor.getAddress(), ethers.parseEther("100"));
+        await distributor.stake(ethers.parseEther("100"));
+
         // Execute Harvest
         // The mock will swap the USDC for 1 ETH (hardcoded in mock)
         await router.harvest([await feeToken.getAddress()], [0]);

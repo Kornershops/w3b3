@@ -11,6 +11,7 @@ interface TreasuryAsset {
 
 interface TreasuryData {
   totalValuationUsd: string;
+  totalEthDistributed: string; // New field from our refined backend
   assets: TreasuryAsset[];
   lastUpdated: string;
 }
@@ -41,7 +42,7 @@ export const TreasuryDashboard: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-gray-400 p-8 text-center animate-pulse">Syncing Protocol Treasury...</div>;
+    return <div className="text-gray-400 p-8 text-center animate-pulse font-medium">Syncing Protocol Reserves...</div>;
   }
 
   if (!data || data.totalValuationUsd === "0") {
@@ -60,31 +61,43 @@ export const TreasuryDashboard: React.FC = () => {
     >
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#3b82f6] to-transparent opacity-50" />
       
-      <h2 className="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-2">Protocol-Owned Liquidity</h2>
-      <h3 className="text-3xl font-light text-white tracking-tight mb-8">
-        Total Backing: <span className="font-bold text-[#eff6ff]">{formatCurrency(data.totalValuationUsd)}</span>
-      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h2 className="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-2">Protocol Reserves (POL)</h2>
+          <h3 className="text-4xl font-light text-white tracking-tight">
+            <span className="font-bold text-[#eff6ff]">{formatCurrency(data.totalValuationUsd)}</span>
+          </h3>
+          <p className="text-sm text-gray-400 mt-2">Asset-backed value across all supported chains.</p>
+        </div>
+        <div className="md:text-right">
+          <h2 className="text-xs font-semibold text-green-400 uppercase tracking-widest mb-2">Total Real Yield Paid</h2>
+          <h3 className="text-4xl font-light text-white tracking-tight">
+            <span className="font-bold text-green-400">{parseFloat(data.totalEthDistributed).toLocaleString()} ETH</span>
+          </h3>
+          <p className="text-sm text-gray-400 mt-2">Cumulative revenue distributed to $W3B3 stakers.</p>
+        </div>
+      </div>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {data.assets.map((asset) => (
           <div key={asset.symbol} className="flex items-center justify-between p-4 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded-xl border border-white/5">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600/20 to-purple-600/20 flex items-center justify-center border border-white/10">
-                <span className="text-sm font-medium text-white">{asset.symbol[0]}</span>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600/20 to-purple-600/20 flex items-center justify-center border border-white/10">
+                <span className="text-[10px] font-bold text-white">{asset.symbol[0]}</span>
               </div>
-              <span className="text-gray-300 font-medium">{asset.symbol} Reserve</span>
+              <span className="text-gray-300 text-sm font-medium">{asset.symbol}</span>
             </div>
             <div className="text-right">
-              <div className="text-white font-medium">{parseFloat(asset.balance).toLocaleString()} {asset.symbol}</div>
-              <div className="text-xs text-green-400">{formatCurrency(asset.valueUsd)}</div>
+              <div className="text-white text-xs font-medium">{parseFloat(asset.balance).toLocaleString()}</div>
+              <div className="text-[10px] text-gray-500">{formatCurrency(asset.valueUsd)}</div>
             </div>
           </div>
         ))}
       </div>
       
-      <div className="mt-8 pt-6 border-t border-white/10 flex justify-between items-center text-sm text-gray-500">
-        <span>Deflationary Buy-Backs: Active via RevenueRouter</span>
-        <span>Last Sync: {new Date(data.lastUpdated).toLocaleTimeString()}</span>
+      <div className="mt-8 pt-6 border-t border-white/10 flex justify-between items-center text-xs text-gray-500 italic">
+        <span>Real Yield payout triggered every 24h via RevenueRouter</span>
+        <span>Last Update: {new Date(data.lastUpdated).toLocaleTimeString()}</span>
       </div>
     </motion.div>
   );

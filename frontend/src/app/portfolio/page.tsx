@@ -6,7 +6,9 @@ import { apiService } from '@/services/api';
 import { UserStake } from '@/types';
 import { motion } from 'framer-motion';
 import { LiveRewardTicker } from '@/components/portfolio/LiveRewardTicker';
-import { Wallet } from '@phosphor-icons/react';
+import { TreasuryDashboard } from '@/components/portfolio/TreasuryDashboard';
+import { RealYieldVault } from '@/components/staking/RealYieldVault';
+import { Wallet, ChartLineUp, Vault } from '@phosphor-icons/react';
 
 export default function PortfolioPage() {
   const { isConnected } = useAccount();
@@ -67,27 +69,50 @@ export default function PortfolioPage() {
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-8">
           Your <span className="text-gradient">Portfolio</span>
         </h1>
+        
+        <div className="mb-12">
+           <TreasuryDashboard />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {/* Main Stat Card */}
-          <div className="glass-card bg-indigo-900/10 border-indigo-500/20 md:col-span-2">
-            <span className="text-indigo-300 font-semibold mb-2 block uppercase tracking-wider text-sm">Total Value Secured</span>
+          <div className="glass-panel p-8 bg-indigo-900/10 border-indigo-500/20 md:col-span-2 rounded-3xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+               <ChartLineUp size={120} weight="duotone" />
+            </div>
+            <span className="text-indigo-300 font-semibold mb-2 block uppercase tracking-wider text-xs">Total Value Secured</span>
             <div className="text-5xl font-bold text-white mb-4">
               ${totalStaked.toLocaleString()}
-              <span className="text-2xl text-slate-500 ml-2">USD</span>
+              <span className="text-2xl text-slate-500 ml-2 font-light">USD</span>
             </div>
             <div className="w-full bg-indigo-900/30 rounded-full h-1 mt-6">
                <div className="bg-indigo-500 w-full h-full rounded-full animate-pulse" />
             </div>
           </div>
           
-          <div className="glass-card">
-            <span className="text-slate-400 mb-2 block uppercase tracking-wider text-sm">Active Positions</span>
-            <h3 className="text-4xl font-bold text-white">{stakes.length}</h3>
+          <div className="glass-panel p-8 rounded-3xl flex flex-col justify-between">
+            <div>
+              <span className="text-slate-400 mb-2 block uppercase tracking-wider text-xs">Active Positions</span>
+              <h3 className="text-4xl font-bold text-white">{stakes.length}</h3>
+            </div>
+            <div className="flex items-center gap-2 text-green-400 text-xs font-semibold mt-4">
+               <div className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
+               LIVE MONITORING
+            </div>
           </div>
         </div>
 
-        <h3 className="text-2xl font-bold text-white mb-6">Active Yield</h3>
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-8">
+             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-400">
+                <Vault size={24} weight="duotone" />
+             </div>
+             <h3 className="text-2xl font-bold text-white">Native $W3B3 Staking</h3>
+          </div>
+          <RealYieldVault />
+        </div>
+
+        <h3 className="text-2xl font-bold text-white mb-6">Market Yield Positions</h3>
 
         <div className="flex flex-col gap-4">
           {loading ? (

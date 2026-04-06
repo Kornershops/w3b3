@@ -106,5 +106,14 @@ contract RevenueRouter is Ownable, ReentrancyGuard {
                 emit HarvestExecuted(token, balanceAvailable, amountOut);
             }
         }
+
+        // Notify the distributor of the new yield pool
+        if (totalEthBought > 0) {
+            IW3B3RewardDistributor(rewardDistributor).notifyRewardAmount(totalEthBought);
+        }
     }
+}
+
+interface IW3B3RewardDistributor {
+    function notifyRewardAmount(uint256 reward) external;
 }

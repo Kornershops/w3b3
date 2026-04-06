@@ -15,7 +15,7 @@ describe("StakingPoolFactory", function () {
     [owner, addr1] = await ethers.getSigners();
 
     // Deploy mock tokens for constructor initialization
-    MockToken = await ethers.getContractFactory("ERC20Mock");
+    MockToken = await ethers.getContractFactory("MockToken");
     // Mock deployment - assuming ERC20Mock exists in OZ contracts for test or similar setup.
     // For the sake of asserting constructor logic, we can just pass randomized dummy addresses in a real environment
     // if the constructor only checks non-zero addresses statically without performing underlying calls.

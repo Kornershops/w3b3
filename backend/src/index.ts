@@ -15,6 +15,7 @@ import stakeRoutes from './routes/stakes';
 import portfolioRoutes from './routes/portfolio';
 import adminRoutes from './routes/admin';
 import userRoutes from './routes/users';
+import yieldRoutes from './routes/yield';
 
 dotenv.config();
 
@@ -74,6 +75,7 @@ app.use('/api/stakes', stakeRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/yield', yieldRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
