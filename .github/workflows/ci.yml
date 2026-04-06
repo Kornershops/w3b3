@@ -18,7 +18,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Build shared workspace
         run: npm run build --workspace=@w3b3/shared
       - name: Compile contracts
@@ -54,7 +54,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+      - name: Build shared workspace
+        run: npm run build --workspace=@w3b3/shared
       - name: Generate Prisma Client
         run: cd backend && npx prisma generate
       - name: Backend Tests
@@ -81,13 +83,14 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+      - name: Build shared workspace
+        run: npm run build --workspace=@w3b3/shared
       - name: Contract Tests
         run: |
           echo "🚀 Starting Contract Tests..."
           cd contracts
           npx hardhat compile
-          npx hardhat telemetry --disable
           REPORT_GAS=false npx hardhat test
         env:
           CI: true
@@ -107,7 +110,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+      - name: Build shared workspace
+        run: npm run build --workspace=@w3b3/shared
       - name: Frontend Tests
         run: |
           echo "🚀 Starting Frontend Tests..."
@@ -129,7 +134,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+      - name: Build shared workspace
+        run: npm run build --workspace=@w3b3/shared
       - name: Generate Prisma Client
         run: cd backend && npx prisma generate
       - name: Build All
