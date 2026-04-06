@@ -18,6 +18,8 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm install
+      - name: Compile contracts
+        run: cd contracts && npx hardhat compile
       - name: Lint
         run: npm run lint --workspaces --if-present
       - name: Type check
