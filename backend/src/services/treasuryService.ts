@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { TreasuryHoldings } from '../types';
 import logger from '../utils/logger';
 
 // Example ERC20 ABI just for `balanceOf`
@@ -30,12 +31,7 @@ export class TreasuryService {
   /**
    * Scans the treasury contract and reward distributor for Real Yield metrics.
    */
-  async getTreasuryHoldings(): Promise<{
-    totalValuationUsd: string;
-    assets: Array<{ symbol: string; balance: string; valueUsd: string }>;
-    totalEthDistributed: string;
-    lastUpdated: string;
-  }> {
+  async getTreasuryHoldings(): Promise<TreasuryHoldings> {
     try {
       if (this.treasuryAddress === '0x0000000000000000000000000000000000000000') {
         logger.warn('Treasury address is not set. Returning placeholders.');

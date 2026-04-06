@@ -1,6 +1,41 @@
 import prisma from '../config/database';
-import { UserStake, PaginatedResponse } from '../types';
+import { UserStake, PaginatedResponse, StakingPool } from '../types';
 import logger from '../utils/logger';
+
+/**
+ * Mapper to convert Prisma StakingPool to Shared DTO
+ */
+export function mapPool(pool: any): StakingPool {
+  return {
+    ...pool,
+    apyPercentage: pool.apyPercentage.toString(),
+    tvlAmount: pool.tvlAmount.toString(),
+    minimumStake: pool.minimumStake.toString(),
+    createdAt: pool.createdAt.toISOString(),
+    updatedAt: pool.updatedAt.toISOString(),
+  };
+}
+
+/**
+ * Mapper to convert Prisma UserStake to Shared DTO
+ */
+export function mapStake(stake: any): UserStake {
+  const mappedStake = {
+    ...stake,
+    amountStaked: stake.amountStaked.toString(),
+    rewardsClaimed: stake.rewardsClaimed.toString(),
+    stakedAt: stake.stakedAt.toISOString(),
+    unstakedAt: stake.unstakedAt ? stake.unstakedAt.toISOString() : null,
+    createdAt: stake.createdAt.toISOString(),
+    updatedAt: stake.updatedAt.toISOString(),
+  };
+
+  if (stake.pool) {
+    mappedStake.pool = mapPool(stake.pool);
+  }
+
+  return mappedStake;
+}
 
 export class StakeService {
   async getUserStakes(
@@ -26,7 +61,7 @@ export class StakeService {
       });
 
       return {
-        data: stakes,
+        data: stakes.map(mapStake),
         pagination: {
           page,
           limit,
@@ -42,10 +77,11 @@ export class StakeService {
 
   async getStakeById(stakeId: string): Promise<UserStake | null> {
     try {
-      return await prisma.userStake.findUnique({
+      const stake = await prisma.userStake.findUnique({
         where: { id: stakeId },
         include: { pool: true },
       });
+      return stake ? mapStake(stake) : null;
     } catch (error) {
       logger.error('Error fetching stake:', error);
       throw error;
@@ -68,26 +104,25 @@ export class StakeService {
       });
 
       logger.info(`Stake created: ${stake.id}`);
-      return stake;
+      return mapStake(stake);
     } catch (error) {
       logger.error('Error creating stake:', error);
       throw error;
     }
   }
 
-  async updateStake(
-    stakeId: string,
-    data: Partial<UserStake>
-  ): Promise<UserStake> {
+  async updateStake(stakeId: string, data: Partial<UserStake>): Promise<UserStake> {
     try {
+      // Structural Fix: Extract only valid Prisma fields from the Shared DTO
+      const { pool, user, ...prismaData } = data as any;
+      
       const stake = await prisma.userStake.update({
         where: { id: stakeId },
-        data,
-        include: { pool: true },
+        data: prismaData,
       });
 
       logger.info(`Stake updated: ${stakeId}`);
-      return stake;
+      return mapStake(stake);
     } catch (error) {
       logger.error('Error updating stake:', error);
       throw error;
@@ -109,7 +144,7 @@ export class StakeService {
       });
 
       logger.info(`Tokens unstaked: ${stakeId}`);
-      return stake;
+      return mapStake(stake);
     } catch (error) {
       logger.error('Error unstaking tokens:', error);
       throw error;
@@ -145,7 +180,7 @@ export class StakeService {
       });
 
       logger.info(`Rewards claimed: ${stakeId} - ${rewardAmount}`);
-      return stake;
+      return mapStake(stake);
     } catch (error) {
       logger.error('Error claiming rewards:', error);
       throw error;
@@ -154,7 +189,7 @@ export class StakeService {
 
   async getActiveStakes(userId: string): Promise<UserStake[]> {
     try {
-      return await prisma.userStake.findMany({
+      const stakes = await prisma.userStake.findMany({
         where: {
           userId,
           isActive: true,
@@ -162,6 +197,7 @@ export class StakeService {
         include: { pool: true },
         orderBy: { stakedAt: 'desc' },
       });
+      return stakes.map(mapStake);
     } catch (error) {
       logger.error('Error fetching active stakes:', error);
       throw error;
@@ -207,13 +243,14 @@ export class StakeService {
 
   async getStakesByPool(poolId: string): Promise<UserStake[]> {
     try {
-      return await prisma.userStake.findMany({
+      const stakes = await prisma.userStake.findMany({
         where: {
           poolId,
           isActive: true,
         },
         include: { pool: true },
       });
+      return stakes.map(mapStake);
     } catch (error) {
       logger.error('Error fetching stakes by pool:', error);
       throw error;

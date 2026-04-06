@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ZodSchema } from 'zod';
+import { ZodSchema, ZodError } from 'zod';
 import { AppError } from './errorHandler';
 
 export function validateRequest(schema: ZodSchema) {
@@ -16,11 +16,11 @@ export function validateRequest(schema: ZodSchema) {
       req.params = validated.params || req.params;
 
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       const details: Record<string, string> = {};
 
-      if (error.errors) {
-        error.errors.forEach((err: any) => {
+      if (error instanceof ZodError) {
+        error.errors.forEach((err) => {
           const path = err.path.join('.');
           details[path] = err.message;
         });
@@ -31,7 +31,7 @@ export function validateRequest(schema: ZodSchema) {
   };
 }
 
-export const asyncWrapper = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>): (req: Request, res: Response, next: NextFunction) => void => {
+export const asyncWrapper = (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>): (req: Request, res: Response, next: NextFunction) => void => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
@@ -50,11 +50,11 @@ export function validateBody(schema: ZodSchema) {
       const validated = schema.parse(req.body);
       req.body = validated;
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       const details: Record<string, string> = {};
 
-      if (error.errors) {
-        error.errors.forEach((err: any) => {
+      if (error instanceof ZodError) {
+        error.errors.forEach((err) => {
           const path = err.path.join('.');
           details[path] = err.message;
         });
@@ -71,11 +71,11 @@ export function validateQuery(schema: ZodSchema) {
       const validated = schema.parse(req.query);
       req.query = validated;
       next();
-    } catch (error: any) {
+    } catch (error: unknown) {
       const details: Record<string, string> = {};
 
-      if (error.errors) {
-        error.errors.forEach((err: any) => {
+      if (error instanceof ZodError) {
+        error.errors.forEach((err) => {
           const path = err.path.join('.');
           details[path] = err.message;
         });

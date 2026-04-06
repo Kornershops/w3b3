@@ -38,6 +38,9 @@ contract RevenueRouter is Ownable, ReentrancyGuard {
     
     uint24 public poolFee = 3000; // Default 0.3% pool tier for Uniswap V3
 
+    error InvalidAddress();
+    error MismatchedParameters();
+
     event HarvestExecuted(address indexed feeToken, uint256 amountIn, uint256 ethBought);
 
     constructor(
@@ -47,10 +50,9 @@ contract RevenueRouter is Ownable, ReentrancyGuard {
         address _wethAddress,
         address _rewardDistributor
     ) Ownable(initialOwner) {
-        require(_treasury != address(0), "Invalid Treasury");
-        require(_swapRouter != address(0), "Invalid SwapRouter");
-        require(_wethAddress != address(0), "Invalid WETH");
-        require(_rewardDistributor != address(0), "Invalid Distributor");
+        if (_treasury == address(0) || _swapRouter == address(0) || _wethAddress == address(0) || _rewardDistributor == address(0)) {
+            revert InvalidAddress();
+        }
 
         treasury = W3B3Treasury(payable(_treasury));
         swapRouter = ISwapRouter(_swapRouter);
@@ -62,7 +64,7 @@ contract RevenueRouter is Ownable, ReentrancyGuard {
      * @notice Admin function to update the RewardDistributor address.
      */
     function setRewardDistributor(address _rewardDistributor) external onlyOwner {
-        require(_rewardDistributor != address(0), "Invalid address");
+        if (_rewardDistributor == address(0)) revert InvalidAddress();
         rewardDistributor = _rewardDistributor;
     }
 
@@ -72,7 +74,7 @@ contract RevenueRouter is Ownable, ReentrancyGuard {
      * @param amountOutMinimums Slippage protection for each corresponding feeToken swap.
      */
     function harvest(address[] calldata feeTokens, uint256[] calldata amountOutMinimums) external onlyOwner nonReentrant {
-        require(feeTokens.length == amountOutMinimums.length, "Mismatched parameters");
+        if (feeTokens.length != amountOutMinimums.length) revert MismatchedParameters();
 
         uint256 totalEthBought = 0;
 

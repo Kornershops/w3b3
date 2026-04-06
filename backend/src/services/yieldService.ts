@@ -96,7 +96,9 @@ export class YieldService {
   calculateYield(stake: UserStake, pool: StakingPool, asOf: Date = new Date()): number {
     // Structural Fix: Use integer seconds to prevent millisecond drift in CI environments
     const nowSeconds = Math.floor(asOf.getTime() / 1000);
-    const stakeSeconds = Math.floor(stake.stakedAt.getTime() / 1000);
+    // Structural Fix: Handle Date as string from Shared DTO
+    const stakeDate = typeof stake.stakedAt === 'string' ? new Date(stake.stakedAt) : stake.stakedAt;
+    const stakeSeconds = Math.floor((stakeDate as Date).getTime() / 1000);
     const timeElapsedSeconds = nowSeconds - stakeSeconds;
     
     // Safety check: if time elapsed is non-existent (new stake), return 0

@@ -26,13 +26,18 @@ contract W3B3RewardDistributor is Ownable, ReentrancyGuard, Pausable {
 
     uint256 public totalStaked;
 
+    error InvalidAddress();
+    error InvalidAmount();
+    error InsufficientBalance();
+
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
     event RewardPaid(address indexed user, uint256 reward);
 
     constructor(address _stakingToken, address _rewardToken) Ownable(msg.sender) {
-        require(_stakingToken != address(0), "Invalid staking token");
-        require(_rewardToken != address(0), "Invalid reward token");
+        if (_stakingToken == address(0) || _rewardToken == address(0)) {
+            revert InvalidAddress();
+        }
         stakingToken = IERC20(_stakingToken);
         rewardToken = IERC20(_rewardToken);
     }
@@ -54,7 +59,7 @@ contract W3B3RewardDistributor is Ownable, ReentrancyGuard, Pausable {
      * @notice Allows users to earn WETH by staking their $W3B3.
      */
     function stake(uint256 amount) external nonReentrant whenNotPaused updateReward(msg.sender) {
-        require(amount > 0, "Cannot stake 0");
+        if (amount == 0) revert InvalidAmount();
         totalStaked += amount;
         stakerBalance[msg.sender] += amount;
         stakingToken.safeTransferFrom(msg.sender, address(this), amount);
@@ -65,8 +70,8 @@ contract W3B3RewardDistributor is Ownable, ReentrancyGuard, Pausable {
      * @notice Withdraw staked $W3B3.
      */
     function withdraw(uint256 amount) external nonReentrant updateReward(msg.sender) {
-        require(amount > 0, "Cannot withdraw 0");
-        require(stakerBalance[msg.sender] >= amount, "Insufficient staked balance");
+        if (amount == 0) revert InvalidAmount();
+        if (stakerBalance[msg.sender] < amount) revert InsufficientBalance();
         totalStaked -= amount;
         stakerBalance[msg.sender] -= amount;
         stakingToken.safeTransfer(msg.sender, amount);
@@ -104,7 +109,7 @@ contract W3B3RewardDistributor is Ownable, ReentrancyGuard, Pausable {
      * @dev To be called by RevenueRouter or Admin after sending WETH. 
      */
     function notifyRewardAmount(uint256 reward) external onlyOwner updateReward(address(0)) {
-        require(reward > 0, "No reward to notify");
+        if (reward == 0) revert InvalidAmount();
         
         if (totalStaked > 0) {
             rewardPerTokenStored = rewardPerTokenStored + (reward * 1e18 / totalStaked);

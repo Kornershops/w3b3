@@ -61,7 +61,7 @@ describe('StakingPool', function () {
     it('Should not allow staking zero amount', async function () {
       await expect(
         stakingPool.connect(user1).stake(0)
-      ).to.be.revertedWith('Amount must be greater than 0');
+      ).to.be.revertedWithCustomError(stakingPool, 'InvalidAmount');
     });
 
     it('Should track total staked', async function () {
@@ -98,7 +98,7 @@ describe('StakingPool', function () {
 
       await expect(
         stakingPool.connect(user1).withdraw(withdrawAmount)
-      ).to.be.revertedWith('Insufficient balance');
+      ).to.be.revertedWithCustomError(stakingPool, 'InsufficientBalance');
     });
   });
 

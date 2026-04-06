@@ -2,6 +2,21 @@ import prisma from '../config/database';
 import { getRedis } from '../config/redis';
 import { StakingPool, PoolFilter, PaginatedResponse } from '../types';
 import logger from '../utils/logger';
+import { Prisma } from '@prisma/client';
+
+/**
+ * Mapper to convert Prisma StakingPool to Shared DTO
+ */
+export function mapPool(pool: any): StakingPool {
+  return {
+    ...pool,
+    apyPercentage: pool.apyPercentage.toString(),
+    tvlAmount: pool.tvlAmount.toString(),
+    minimumStake: pool.minimumStake.toString(),
+    createdAt: pool.createdAt.toISOString(),
+    updatedAt: pool.updatedAt.toISOString(),
+  };
+}
 
 const POOL_CACHE_TTL = 60; // 1 minute
 
@@ -35,7 +50,7 @@ export class PoolService {
       });
 
       return {
-        data: pools,
+        data: pools.map(mapPool),
         pagination: {
           page,
           limit,
@@ -81,7 +96,7 @@ export class PoolService {
         }
       }
 
-      return pool;
+      return pool ? mapPool(pool) : null;
     } catch (error) {
       logger.error('Error fetching pool:', error);
       throw error;
@@ -90,13 +105,14 @@ export class PoolService {
 
   async getPoolsByChain(chainId: number): Promise<StakingPool[]> {
     try {
-      return await prisma.stakingPool.findMany({
+      const pools = await prisma.stakingPool.findMany({
         where: {
           chainId,
           isActive: true,
         },
         orderBy: { apyPercentage: 'desc' },
       });
+      return pools.map(mapPool);
     } catch (error) {
       logger.error('Error fetching pools by chain:', error);
       throw error;
@@ -127,7 +143,7 @@ export class PoolService {
       }
 
       logger.info(`Pool created: ${pool.id}`);
-      return pool;
+      return mapPool(pool);
     } catch (error) {
       logger.error('Error creating pool:', error);
       throw error;
@@ -153,7 +169,7 @@ export class PoolService {
       }
 
       logger.info(`Pool updated: ${poolId}`);
-      return pool;
+      return mapPool(pool);
     } catch (error) {
       logger.error('Error updating pool:', error);
       throw error;
@@ -176,7 +192,7 @@ export class PoolService {
       }
 
       logger.info(`Pool APY updated: ${poolId} -> ${newApy}`);
-      return pool;
+      return mapPool(pool);
     } catch (error) {
       logger.error('Error updating pool APY:', error);
       throw error;
@@ -199,7 +215,7 @@ export class PoolService {
       }
 
       logger.info(`Pool TVL updated: ${poolId} -> ${newTvl}`);
-      return pool;
+      return mapPool(pool);
     } catch (error) {
       logger.error('Error updating pool TVL:', error);
       throw error;
@@ -222,7 +238,7 @@ export class PoolService {
       }
 
       logger.info(`Pool deactivated: ${poolId}`);
-      return pool;
+      return mapPool(pool);
     } catch (error) {
       logger.error('Error deactivating pool:', error);
       throw error;
@@ -231,11 +247,12 @@ export class PoolService {
 
   async getTopPoolsByApy(limit = 10): Promise<StakingPool[]> {
     try {
-      return await prisma.stakingPool.findMany({
+      const pools = await prisma.stakingPool.findMany({
         where: { isActive: true },
         orderBy: { apyPercentage: 'desc' },
         take: limit,
       });
+      return pools.map(mapPool);
     } catch (error) {
       logger.error('Error fetching top pools:', error);
       throw error;
@@ -268,7 +285,7 @@ export class PoolService {
         totalPools: pools.length,
         totalTvl: totalTvl.toString(),
         averageApy: avgApy.toFixed(2),
-        pools,
+        pools: pools.map(mapPool),
       };
     } catch (error) {
       logger.error('Error fetching pool stats:', error);

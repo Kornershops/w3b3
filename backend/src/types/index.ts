@@ -1,55 +1,33 @@
-// Backend TypeScript Types
+import { 
+  User, 
+  StakingPool, 
+  UserStake, 
+  Reward, 
+  Portfolio, 
+  PortfolioBreakdown, 
+  AuthResponse,
+  PortfolioTransaction,
+  TreasuryHoldings
+} from '@w3b3/shared';
 
-export interface User {
-  id: string;
-  walletAddress: string;
-  chainId: number | null;
-  role: string;
-  referralCode: string;
-  referredById: string | null;
-  points: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Re-export shared types for backend use
+export { 
+  User, 
+  StakingPool, 
+  UserStake, 
+  Reward, 
+  Portfolio, 
+  PortfolioBreakdown, 
+  AuthResponse,
+  PortfolioTransaction,
+  TreasuryHoldings
+};
 
-export interface StakingPool {
-  id: string;
-  name: string;
-  chainId: number;
-  contractAddress: string;
-  tokenSymbol: string;
-  tokenDecimals: number;
-  apyPercentage: Decimal;
-  tvlAmount: Decimal;
-  minimumStake: Decimal;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UserStake {
-  id: string;
-  userId: string;
-  poolId: string;
-  amountStaked: Decimal;
-  rewardsClaimed: Decimal;
-  transactionHash: string | null;
-  stakedAt: Date;
-  unstakedAt: Date | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Reward {
-  id: string;
-  stakeId: string;
-  userId: string;
-  amount: Decimal;
-  claimedAt?: Date;
-  transactionHash?: string;
-  createdAt: Date;
-  updatedAt: Date;
+// Backend-specific application types
+export interface ApiError {
+  status: number;
+  message: string;
+  details?: Record<string, string>;
 }
 
 export interface JwtPayload {
@@ -60,29 +38,17 @@ export interface JwtPayload {
   exp: number;
 }
 
-export interface AuthRequest {
-  walletAddress: string;
-  signature: string;
-  message: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  refreshToken: string;
-  user: User;
-}
-
-export interface ApiError {
-  status: number;
-  message: string;
-  details?: Record<string, string>;
-}
-
 export interface PaginationParams {
   page: number;
   limit: number;
-  sort?: string;
-  order?: 'asc' | 'desc';
+  total?: number;
+}
+
+export interface PoolFilter {
+  chainId?: number;
+  isActive?: boolean;
+  tokenSymbol?: string;
+  minApy?: number;
 }
 
 export interface PaginatedResponse<T> {
@@ -94,80 +60,3 @@ export interface PaginatedResponse<T> {
     pages: number;
   };
 }
-
-export interface PoolFilter {
-  chainId?: number;
-  isActive?: boolean;
-  minApy?: number;
-  maxApy?: number;
-}
-
-export interface StakeFilter {
-  userId: string;
-  isActive?: boolean;
-  poolId?: string;
-}
-
-export interface WebSocketMessage {
-  type: string;
-  data: Record<string, unknown>;
-  timestamp: Date;
-}
-
-export interface PoolUpdateEvent {
-  poolId: string;
-  apy: string;
-  tvl: string;
-  timestamp: Date;
-}
-
-export interface RewardAccrualEvent {
-  stakeId: string;
-  amount: string;
-  totalRewards: string;
-  timestamp: Date;
-}
-
-export interface TransactionConfirmationEvent {
-  transactionHash: string;
-  type: 'stake' | 'unstake' | 'claim';
-  status: 'confirmed' | 'failed';
-  timestamp: Date;
-}
-
-export interface Portfolio {
-  userId?: string;
-  totalStaked: string;
-  totalRewards: string;
-  netGain: string;
-  estimatedAnnual: string;
-  activeStakes: number;
-  totalStakes: number;
-  lastUpdated: string;
-  breakdown?: PortfolioBreakdown[];
-}
-
-export interface PortfolioBreakdown {
-  poolId?: string;
-  poolName?: string;
-  amountStaked?: string;
-  rewardsClaimed?: string;
-  apy?: string;
-  isActive?: boolean;
-  byChain?: Array<{
-    chainId: number;
-    chainName: string;
-    totalStaked: string;
-    totalRewards: string;
-    percentage: number;
-  }>;
-  byAsset?: Array<{
-    symbol: string;
-    totalStaked: string;
-    totalRewards: string;
-    percentage: number;
-  }>;
-}
-
-// Decimal type from Prisma
-export type Decimal = any;

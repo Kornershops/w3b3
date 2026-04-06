@@ -1,13 +1,26 @@
 import prisma from '../config/database';
-import { User } from '../types';
+import { User, UserStake, StakingPool } from '../types';
 import logger from '../utils/logger';
+import { mapStake } from './stakeService';
+
+/**
+ * Mapper to convert Prisma User to Shared DTO
+ */
+export function mapUser(user: any): User {
+  return {
+    ...user,
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
+  };
+}
 
 export class UserService {
   async getUserByWallet(walletAddress: string): Promise<User | null> {
     try {
-      return await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { walletAddress },
       });
+      return user ? mapUser(user) : null;
     } catch (error) {
       logger.error('Error fetching user by wallet:', error);
       throw error;
@@ -17,9 +30,10 @@ export class UserService {
 
   async getUserById(userId: string): Promise<User | null> {
     try {
-      return await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id: userId },
       });
+      return user ? mapUser(user) : null;
     } catch (error) {
       logger.error('Error fetching user by ID:', error);
       throw error;
@@ -40,22 +54,43 @@ export class UserService {
       });
 
       logger.info(`User created: ${user.id}`);
-      return user;
+      return mapUser(user);
     } catch (error) {
       logger.error('Error creating user:', error);
       throw error;
     }
   }
 
+  async updateStake(stakeId: string, data: Partial<UserStake>): Promise<UserStake> {
+    try {
+      // Structural Fix: Extract only valid Prisma fields from the Shared DTO
+      const { pool, user, ...prismaData } = data as any;
+      
+      const stake = await prisma.userStake.update({
+        where: { id: stakeId },
+        data: prismaData,
+      });
+
+      logger.info(`Stake updated: ${stakeId}`);
+      return mapStake(stake);
+    } catch (error) {
+      logger.error('Error updating user:', error);
+      throw error;
+    }
+  }
+
   async updateUser(userId: string, data: Partial<User>): Promise<User> {
     try {
+      // Structural Fix: Extract only valid Prisma fields from the Shared DTO
+      const { ...prismaData } = data as any;
+
       const user = await prisma.user.update({
         where: { id: userId },
-        data,
+        data: prismaData,
       });
 
       logger.info(`User updated: ${userId}`);
-      return user;
+      return mapUser(user);
     } catch (error) {
       logger.error('Error updating user:', error);
       throw error;
@@ -126,12 +161,12 @@ export class UserService {
       const activeStakes = stakes.filter((s) => s.isActive).length;
 
       return {
-        user,
+        user: mapUser(user),
         totalStaked: totalStaked.toString(),
         totalRewards: totalRewards.toString(),
         activeStakes,
         totalStakes: stakes.length,
-        stakes,
+        stakes: stakes.map(mapStake),
       };
     } catch (error) {
       logger.error('Error fetching user stats:', error);
@@ -160,7 +195,7 @@ export class UserService {
       });
 
       return {
-        data: users,
+        data: users.map(mapUser),
         pagination: {
           page,
           limit,

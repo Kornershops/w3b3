@@ -1,81 +1,12 @@
-// Frontend TypeScript Types
+import * as Shared from '@w3b3/shared';
 
-export interface User {
-  id: string;
-  walletAddress: string;
-  chainId?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface StakingPool {
-  id: string;
-  name: string;
-  chainId: number;
-  contractAddress: string;
-  tokenSymbol: string;
-  tokenDecimals: number;
-  apyPercentage: string;
-  tvlAmount: string;
-  minimumStake: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface UserStake {
-  id: string;
-  userId: string;
-  poolId: string;
-  amountStaked: string;
-  rewardsClaimed: string;
-  currentRewards?: string;
-  transactionHash?: string;
-  stakedAt: string;
-  unstakedAt?: string;
-  isActive: boolean;
-  pool?: StakingPool;
-}
-
-export interface Reward {
-  id: string;
-  stakeId: string;
-  userId: string;
-  amount: string;
-  claimedAt?: string;
-  transactionHash?: string;
-  createdAt: string;
-}
-
-export interface Portfolio {
-  totalStaked: string;
-  totalRewards: string;
-  netGain: string;
-  estimatedAnnual: string;
-  activeStakes: number;
-  totalStakes: number;
-  lastUpdated: string;
-}
-
-export interface PortfolioBreakdown {
-  byChain: ChainBreakdown[];
-  byAsset: AssetBreakdown[];
-}
-
-export interface ChainBreakdown {
-  chainId: number;
-  chainName: string;
-  totalStaked: string;
-  totalRewards: string;
-  percentage: number;
-}
-
-export interface AssetBreakdown {
-  symbol: string;
-  totalStaked: string;
-  totalRewards: string;
-  percentage: number;
-}
+// Re-export shared models for application use
+export type User = Shared.User;
+export type StakingPool = Shared.StakingPool;
+export type UserStake = Shared.UserStake;
+export type Reward = Shared.Reward;
+export type Portfolio = Shared.Portfolio;
+export type PortfolioBreakdown = Shared.PortfolioBreakdown;
 
 export interface Transaction {
   id: string;

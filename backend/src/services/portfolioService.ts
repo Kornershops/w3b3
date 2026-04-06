@@ -1,5 +1,6 @@
 import prisma from '../config/database';
-import { Portfolio, PortfolioBreakdown } from '../types';
+import { ethers } from 'ethers';
+import { Portfolio, PortfolioBreakdown, PortfolioTransaction, TreasuryHoldings } from '../types';
 import logger from '../utils/logger';
 
 export class PortfolioService {
@@ -111,7 +112,7 @@ export class PortfolioService {
   }
 
   async getPortfolioHistory(userId: string, page = 1, limit = 20): Promise<{
-    data: any[];
+    data: PortfolioTransaction[];
     pagination: {
       page: number;
       limit: number;

@@ -32,6 +32,11 @@ contract StakingPool is ReentrancyGuard, Ownable, Pausable {
     mapping(address => uint256) public rewards;
 
     uint256 public totalStaked;
+    
+    error InvalidAddress();
+    error InvalidAmount();
+    error InsufficientBalance();
+    error FeeExceedsLimit();
 
     // Events
     event Staked(address indexed user, uint256 amount);
@@ -51,10 +56,9 @@ contract StakingPool is ReentrancyGuard, Ownable, Pausable {
         address _treasuryAddress,
         uint256 _rewardRate
     ) Ownable(msg.sender) {
-        require(_stakingToken != address(0), "Invalid staking token");
-        require(_rewardToken != address(0), "Invalid reward token");
-        require(_w3TokenAddress != address(0), "Invalid wrapper");
-        require(_treasuryAddress != address(0), "Invalid protocol collector");
+        if (_stakingToken == address(0) || _rewardToken == address(0) || _w3TokenAddress == address(0) || _treasuryAddress == address(0)) {
+            revert InvalidAddress();
+        }
 
         stakingToken = IERC20(_stakingToken);
         rewardToken = IERC20(_rewardToken);
@@ -75,13 +79,13 @@ contract StakingPool is ReentrancyGuard, Ownable, Pausable {
     }
 
     function setTreasury(address _treasury) external onlyOwner {
-        require(_treasury != address(0), "Empty Treasury Rejected");
+        if (_treasury == address(0)) revert InvalidAddress();
         treasury = _treasury;
         emit TreasuryUpdated(_treasury);
     }
 
     function setFeePercentage(uint256 _feePercentage) external onlyOwner {
-        require(_feePercentage <= 1000, "Maximum fee allowed is 10% Protocol Cut");
+        if (_feePercentage > 1000) revert FeeExceedsLimit();
         feePercentage = _feePercentage;
         emit FeeUpdated(_feePercentage);
     }
@@ -91,7 +95,7 @@ contract StakingPool is ReentrancyGuard, Ownable, Pausable {
      * @dev Automatically Mints W3Tokens to act as liquid derivatives
      */
     function stake(uint256 _amount) external nonReentrant whenNotPaused updateReward(msg.sender) {
-        require(_amount > 0, "Amount must be greater than 0");
+        if (_amount == 0) revert InvalidAmount();
 
         totalStaked += _amount;
         stakerBalance[msg.sender] += _amount;
@@ -109,8 +113,8 @@ contract StakingPool is ReentrancyGuard, Ownable, Pausable {
      * @dev Automatically burns previously wrapped derivatives unlocking TVL
      */
     function withdraw(uint256 _amount) external nonReentrant whenNotPaused updateReward(msg.sender) {
-        require(_amount > 0, "Amount must be greater than 0");
-        require(stakerBalance[msg.sender] >= _amount, "Insufficient balance");
+        if (_amount == 0) revert InvalidAmount();
+        if (stakerBalance[msg.sender] < _amount) revert InsufficientBalance();
 
         totalStaked -= _amount;
         stakerBalance[msg.sender] -= _amount;

@@ -49,8 +49,9 @@ class Web3Service {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${chainId.toString(16)}` }],
       });
-    } catch (error: any) {
-      if (error.code === 4902) {
+    } catch (error: unknown) {
+      const ethError = error as { code: number };
+      if (ethError.code === 4902) {
         throw new Error('Chain not added to MetaMask');
       }
       throw error;
@@ -93,7 +94,7 @@ class Web3Service {
   async stakeTokens(
     stakingPoolAddress: string,
     amount: string,
-    abi: any[]
+    abi: ethers.InterfaceAbi
   ) {
     if (!this.signer) {
       throw new Error('Wallet not connected');
@@ -107,7 +108,7 @@ class Web3Service {
   async unstakeTokens(
     stakingPoolAddress: string,
     amount: string,
-    abi: any[]
+    abi: ethers.InterfaceAbi
   ) {
     if (!this.signer) {
       throw new Error('Wallet not connected');
@@ -120,7 +121,7 @@ class Web3Service {
 
   async claimRewards(
     stakingPoolAddress: string,
-    abi: any[]
+    abi: ethers.InterfaceAbi
   ) {
     if (!this.signer) {
       throw new Error('Wallet not connected');
