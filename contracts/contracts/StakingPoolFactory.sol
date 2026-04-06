@@ -55,11 +55,13 @@ contract StakingPoolFactory is Ownable {
         return pools.length;
     }
 
+    error IndexOutOfBounds();
+
     /**
      * @notice Retrieve a specific pool index
      */
     function getPoolAddress(uint256 _index) external view returns (address) {
-        require(_index < pools.length, "Index out of bounds");
+        if (_index >= pools.length) revert IndexOutOfBounds();
         return pools[_index];
     }
 }
