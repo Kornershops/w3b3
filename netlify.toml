@@ -1,5 +1,5 @@
 [build]
-command = "npm run build:frontend"
+command = "npm run build --workspace=@w3b3/shared && npm run build:frontend"
 publish = "frontend/out"
 base = "/"
 
