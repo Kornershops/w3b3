@@ -22,9 +22,10 @@ export default function ExplorePage() {
     setLoading(true);
     try {
       const data = await apiService.getPools();
+      console.log('API RESPONSE: Pools Loaded', data);
       setPools(data);
     } catch (error) {
-      console.error('Failed to load pools:', error);
+      console.error('CRITICAL: Failed to load pools from server:', error);
     } finally {
       setLoading(false);
     }
