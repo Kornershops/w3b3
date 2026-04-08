@@ -12,8 +12,7 @@ import {
   coinbaseWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-// @ts-ignore - resolve export map conflict
-import { MagicConnectConnector } from '@magic-ext/connect';
+import { MagicConnector } from 'wagmi-magic-connector';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, base, sepolia } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
@@ -26,7 +25,7 @@ const { chains, publicClient } = configureChains(
 );
 
 // Magic Connector Configuration for Frictionless UX
-const magicConnector = new MagicConnectConnector({
+const magicConnector = new MagicConnector({
   chains,
   options: {
     apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
@@ -37,7 +36,7 @@ const magicConnector = new MagicConnectConnector({
   },
 });
 
-const magicWallet = ({ chains }: any) => ({
+const magicWallet = ({ _chains }: any) => ({
   id: 'magic',
   name: 'Email/Social',
   iconUrl: 'https://dashboard.magic.link/favicon.ico',
