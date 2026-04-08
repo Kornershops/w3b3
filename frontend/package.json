@@ -15,8 +15,8 @@
     "clean": "rm -rf .next out dist"
   },
   "dependencies": {
-    "@alchemy/aa-alchemy": "^3.0.0",
-    "@alchemy/aa-core": "^3.0.0",
+    "@alchemy/aa-alchemy": "^3.19.0",
+    "@alchemy/aa-core": "^3.19.0",
     "@magic-ext/connect": "^9.1.0",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-alert-dialog": "^1.0.0",
@@ -35,8 +35,9 @@
     "ethers": "^6.11.0",
     "framer-motion": "^10.16.0",
     "lodash-es": "^4.17.0",
-    "magic-sdk": "^21.0.0",
+    "magic-sdk": "^33.6.2",
     "next": "^14.0.0",
+    "next-pwa": "^5.6.0",
     "postcss": "^8.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -46,7 +47,7 @@
     "tailwindcss": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.3.0",
-    "viem": "~1.21.4",
+    "viem": "^2.47.10",
     "wagmi": "^1.4.13",
     "zod": "^3.22.0",
     "zustand": "^4.4.0"
