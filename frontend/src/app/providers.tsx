@@ -12,6 +12,7 @@ import {
   coinbaseWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
+// @ts-ignore - resolve export map conflict
 import { MagicConnectConnector } from '@magic-ext/connect';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, base, sepolia } from 'wagmi/chains';
