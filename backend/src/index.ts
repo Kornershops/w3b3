@@ -38,7 +38,14 @@ app.use(limiter);
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    const allowed = ['http://localhost:3000', 'https://w33b3.netlify.app'];
+    if (!origin || allowed.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
   credentials: true,
 }));
 app.use(cookieParser());
