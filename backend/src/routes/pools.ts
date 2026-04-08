@@ -10,9 +10,12 @@ router.get('/', optionalAuthMiddleware, async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
-    const chainId = req.query.chain ? parseInt(req.query.chain as string) : undefined;
+    
+    // Safety check: only parse chainId if it exists and is a valid number string
+    const chainParam = req.query.chain as string;
+    const chainId = (chainParam && !isNaN(parseInt(chainParam))) ? parseInt(chainParam) : undefined;
 
-    const result = await poolService.getPools({ chainId }, page, limit);
+    const result = await poolService.getPools({ chainId, isActive: true }, page, limit);
 
     return res.json(result);
   } catch (error) {

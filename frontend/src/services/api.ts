@@ -63,8 +63,13 @@ class ApiService {
 
   // Pools
   async getPools(chainId?: number, page = 1, limit = 20) {
+    const params: { page: number; limit: number; chain?: number } = { page, limit };
+    if (chainId !== undefined) {
+      params.chain = chainId;
+    }
+    
     const response = await this.client.get<ApiResponse<StakingPool[]>>('/pools', {
-      params: { chain: chainId, page, limit },
+      params,
     });
     return response.data.data || [];
   }
