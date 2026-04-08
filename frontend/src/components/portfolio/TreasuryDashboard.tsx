@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { motion } from 'framer-motion';
+import { apiService } from '@/services/api';
 
 // Using basic type structures matching our backend
 interface TreasuryAsset {
@@ -27,10 +27,8 @@ export const TreasuryDashboard: React.FC = () => {
   useEffect(() => {
     const fetchTreasury = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/portfolio/treasury', {
-          withCredentials: true
-        });
-        setData(response.data);
+        const treasury = await apiService.getTreasury();
+        setData(treasury);
       } catch (error) {
         console.error('Failed to load treasury data', error);
       } finally {

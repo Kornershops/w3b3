@@ -2,20 +2,22 @@
 
 W3B3 is a premium DeFi aggregator designed to bring institutional-grade staking and yield opportunities to everyone. By removing the technical barriers of multi-chain interaction, W3B3 provides a unified, secure gateway to compound capital across Ethereum, Polygon, Base, and Solana.
 
-## Project Vision
+## The "Stable-to-ETH Bridge" Vision
 
--> Frictionless Entry -> Deposit tokens and earn yield in under 4 clicks.
--> Multi-Chain Synthesis -> Manage your entire portfolio across ecosystems from a single dashboard.
--> Non-Expert Friendly -> Complex staking mechanics translated into clear, actionable metrics.
--> Community Controlled -> Growth fueled by a relational referral engine and $W3B3 governance.
+W3B3 is the premier gateway for users to "Bring Stables, Earn ETH Yield." We bridge the gap between simple stablecoin liquidity and the gold standard of DeFi rewards (Ethereum protocol revenue).
 
-## Platform Integrity
+-> **Frictionless Entry** -> Deposit stablecoins and earn ETH-based "Real Yield" in under 4 clicks.
+-> **Account Abstraction (ERC-4337)** -> Pay gas in USDC or USDT—no native tokens required for onboarding.
+-> **Multi-Chain Synthesis** -> Unified access to yield across Ethereum, Polygon, Base, and Arbitrum.
+-> **Community Real Yield** -> Protocol fees are converted to ETH and distributed directly to $W3B3 stakers.
 
-Frontend -> Next.js 14 -> High-performance SPA with real-time reward interpolation.
-Security -> Dual-JWT -> Secure session rotation with wallet signature verification.
-Contracts -> 0.8.24 -> Audited OpenZeppelin patterns with emergency circuit breakers.
-Scaling -> Factory Logic -> Autonomous pool deployment for rapid market expansion.
-Tokenomics -> Real Yield (ETH) -> Protocol fees converted to ETH and distributed to $W3B3 stakers.
+## Platform Integrity & Future Roadmap
+
+- **Security** -> Real-time **Proof of Reserves (PoR)** feeds and dual-JWT session rotation.
+- **UX** -> Transaction simulations powered by **Tenderly** (know success before you pay gas).
+- **Optimization** -> **Gas-Agnostic Yield Routing** to calculate true "Net APY" after fees.
+- **Tokenomics** -> Transitioning to a **veW3B3 (Vote-Escrowed)** model for sustainable growth.
+- **Governance** -> Community-driven pool parameters and dynamic emissions logic.
 
 ## Quick Start for Developers
 

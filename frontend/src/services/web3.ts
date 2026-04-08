@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { aaService } from './aaService';
 
 class Web3Service {
   private provider: ethers.BrowserProvider | null = null;
@@ -16,10 +17,32 @@ class Web3Service {
       this.provider = provider;
       this.signer = await provider.getSigner();
 
+      // Hook for Account Abstraction: If we have a signer, try to initialize a Smart Account
+      if (this.signer) {
+        try {
+          // Wrapped in try/catch to ensure standard wallet still works if AA fails
+          await aaService.initializeAccount(this.signer);
+          console.log('Smart Account initialized:', aaService.getAddress());
+        } catch (aaError) {
+          console.error('AA Initialization failed, falling back to EOA:', aaError);
+        }
+      }
+
       return accounts[0];
     } catch (error) {
       throw new Error('Failed to connect wallet');
     }
+  }
+
+  // Helper to determine if we should use AA or standard EOA
+  private async executeContractAction(target: string, data: string, fallback: () => Promise<any>) {
+    if (aaService.isInitialized()) {
+      return await aaService.sendTransaction(
+        target as `0x${string}`,
+        data as `0x${string}`
+      );
+    }
+    return await fallback();
   }
 
   async signMessage(message: string): Promise<string> {
@@ -68,6 +91,8 @@ class Web3Service {
   }
 
   async getTokenBalance(tokenAddress: string, userAddress: string): Promise<string> {
+    const queryAddress = aaService.isInitialized() ? aaService.getAddress() : userAddress;
+    
     if (!this.provider) {
       throw new Error('Provider not initialized');
     }
@@ -75,61 +100,61 @@ class Web3Service {
     const abi = ['function balanceOf(address) view returns (uint256)'];
     const contract = new ethers.Contract(tokenAddress, abi, this.provider);
 
-    const balance = await contract.balanceOf(userAddress);
+    const balance = await contract.balanceOf(queryAddress);
     return balance.toString();
   }
 
   async approveToken(tokenAddress: string, spenderAddress: string, amount: string) {
-    if (!this.signer) {
-      throw new Error('Wallet not connected');
-    }
+    if (!this.signer) throw new Error('Wallet not connected');
 
     const abi = ['function approve(address spender, uint256 amount) returns (bool)'];
-    const contract = new ethers.Contract(tokenAddress, abi, this.signer);
+    const iface = new ethers.Interface(abi);
+    const data = iface.encodeFunctionData('approve', [spenderAddress, ethers.parseEther(amount)]);
 
-    const tx = await contract.approve(spenderAddress, ethers.parseEther(amount));
-    return await tx.wait();
+    return await this.executeContractAction(tokenAddress, data, async () => {
+      const contract = new ethers.Contract(tokenAddress, abi, this.signer);
+      const tx = await contract.approve(spenderAddress, ethers.parseEther(amount));
+      return await tx.wait();
+    });
   }
 
-  async stakeTokens(
-    stakingPoolAddress: string,
-    amount: string,
-    abi: ethers.InterfaceAbi
-  ) {
-    if (!this.signer) {
-      throw new Error('Wallet not connected');
-    }
+  async stakeTokens(stakingPoolAddress: string, amount: string, abi: ethers.InterfaceAbi) {
+    if (!this.signer) throw new Error('Wallet not connected');
 
-    const contract = new ethers.Contract(stakingPoolAddress, abi, this.signer);
-    const tx = await contract.stake(ethers.parseEther(amount));
-    return await tx.wait();
+    const iface = new ethers.Interface(abi);
+    const data = iface.encodeFunctionData('stake', [ethers.parseEther(amount)]);
+
+    return await this.executeContractAction(stakingPoolAddress, data, async () => {
+      const contract = new ethers.Contract(stakingPoolAddress, abi, this.signer);
+      const tx = await contract.stake(ethers.parseEther(amount));
+      return await tx.wait();
+    });
   }
 
-  async unstakeTokens(
-    stakingPoolAddress: string,
-    amount: string,
-    abi: ethers.InterfaceAbi
-  ) {
-    if (!this.signer) {
-      throw new Error('Wallet not connected');
-    }
+  async unstakeTokens(stakingPoolAddress: string, amount: string, abi: ethers.InterfaceAbi) {
+    if (!this.signer) throw new Error('Wallet not connected');
 
-    const contract = new ethers.Contract(stakingPoolAddress, abi, this.signer);
-    const tx = await contract.withdraw(ethers.parseEther(amount));
-    return await tx.wait();
+    const iface = new ethers.Interface(abi);
+    const data = iface.encodeFunctionData('withdraw', [ethers.parseEther(amount)]);
+
+    return await this.executeContractAction(stakingPoolAddress, data, async () => {
+      const contract = new ethers.Contract(stakingPoolAddress, abi, this.signer);
+      const tx = await contract.withdraw(ethers.parseEther(amount));
+      return await tx.wait();
+    });
   }
 
-  async claimRewards(
-    stakingPoolAddress: string,
-    abi: ethers.InterfaceAbi
-  ) {
-    if (!this.signer) {
-      throw new Error('Wallet not connected');
-    }
+  async claimRewards(stakingPoolAddress: string, abi: ethers.InterfaceAbi) {
+    if (!this.signer) throw new Error('Wallet not connected');
 
-    const contract = new ethers.Contract(stakingPoolAddress, abi, this.signer);
-    const tx = await contract.claimReward();
-    return await tx.wait();
+    const iface = new ethers.Interface(abi);
+    const data = iface.encodeFunctionData('claimReward', []);
+
+    return await this.executeContractAction(stakingPoolAddress, data, async () => {
+      const contract = new ethers.Contract(stakingPoolAddress, abi, this.signer);
+      const tx = await contract.claimReward();
+      return await tx.wait();
+    });
   }
 
   isConnected(): boolean {

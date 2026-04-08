@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import { apiService } from '@/services/api';
 import { BuyW3B3Widget } from './BuyW3B3Widget';
 
 interface YieldStats {
@@ -18,8 +18,8 @@ export const RealYieldVault: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/yield/stats');
-        setStats(response.data);
+        const data = await apiService.getYieldStats();
+        setStats(data);
       } catch (error) {
         console.error('Error fetching yield stats', error);
       }

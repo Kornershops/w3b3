@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Warning, CheckCircle, CircleNotch } from '@phosphor-icons/react';
-import { useAccount, useChainId, useSwitchNetwork } from 'wagmi';
+import { useAccount, useChainId, useSwitchNetwork, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 import { apiService } from '@/services/api';
 import { StakingPool } from '@/types';
+import { CONTRACT_ADDRESSES, REWARD_DISTRIBUTOR_ABI, ERC20_ABI } from '@/config/contracts';
+import { parseUnits } from 'viem';
 
 interface StakeModalProps {
   pool: StakingPool;
@@ -15,13 +17,61 @@ interface StakeModalProps {
 }
 
 export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps) {
-  useAccount();
+  const { address } = useAccount();
   const chainId = useChainId();
   const { switchNetwork } = useSwitchNetwork();
   
   const [amount, setAmount] = useState('');
   const [step, setStep] = useState<'input' | 'approving' | 'staking' | 'success'>('input');
   const [error, setError] = useState<string | null>(null);
+
+  // 1. Prepare ERC-20 Approval (If needed)
+  // Note: For production, we'd check allowance first. For Alpha, we trigger as part of the flow.
+  const { config: approveConfig } = usePrepareContractWrite({
+    address: pool.contractAddress as `0x${string}`, // Pool's token address
+    abi: ERC20_ABI,
+    functionName: 'approve',
+    args: [CONTRACT_ADDRESSES.REWARD_DISTRIBUTOR as `0x${string}`, amount ? parseUnits(amount, pool.tokenDecimals) : BigInt(0)],
+    enabled: step === 'approving' && !!amount,
+  });
+
+  const { write: approveWrite, data: approveData } = useContractWrite(approveConfig);
+
+  const { isLoading: isApproving } = useWaitForTransaction({
+    hash: approveData?.hash,
+    onSuccess: () => setStep('staking'),
+    onError: (err) => {
+      setError('Approval failed');
+      setStep('input');
+    }
+  });
+
+  // 2. Prepare Staking Transaction
+  const { config: stakeConfig } = usePrepareContractWrite({
+    address: CONTRACT_ADDRESSES.REWARD_DISTRIBUTOR as `0x${string}`,
+    abi: REWARD_DISTRIBUTOR_ABI,
+    functionName: 'stake',
+    args: [amount ? parseUnits(amount, pool.tokenDecimals) : BigInt(0)],
+    enabled: step === 'staking' && !!amount,
+  });
+
+  const { write: stakeWrite, data: stakeData } = useContractWrite(stakeConfig);
+
+  const { isLoading: isStaking } = useWaitForTransaction({
+    hash: stakeData?.hash,
+    onSuccess: async (txData) => {
+      try {
+        await apiService.stake(pool.id, parseFloat(amount), txData.transactionHash);
+        setStep('success');
+      } catch (e) {
+        setError('Failed to record stake on backend');
+      }
+    },
+    onError: () => {
+      setError('Staking transaction failed');
+      setStep('input');
+    }
+  });
 
   if (!isOpen) return null;
 
@@ -40,25 +90,11 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
         return;
       }
       
-      try {
-        setError(null);
-        setStep('approving');
-        // Mock 1.5s approving delay indicating wallet provider signature
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        setStep('staking');
-        // Mock 2s staking delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Finalize API with mocked hash mimicking w3TOKEN receipts
-        let transactionHash = '0x' + Math.random().toString(16).slice(2, 12).padEnd(64, '0');
-        await apiService.stake(pool.id, parsed, transactionHash);
-        
-        setStep('success');
-      } catch (e: any) {
-        setError(e.message || 'Transaction failed');
-        setStep('input');
-      }
+      setError(null);
+      setStep('approving');
+      approveWrite?.();
+    } else if (step === 'staking') {
+      stakeWrite?.();
     } else if (step === 'success') {
       onSuccess();
       onClose();

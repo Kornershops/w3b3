@@ -15,6 +15,9 @@
     "clean": "rm -rf .next out dist"
   },
   "dependencies": {
+    "@alchemy/aa-alchemy": "^3.0.0",
+    "@alchemy/aa-core": "^3.0.0",
+    "@magic-ext/connect": "^9.1.0",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-alert-dialog": "^1.0.0",
     "@radix-ui/react-dialog": "^1.1.0",
@@ -32,6 +35,7 @@
     "ethers": "^6.11.0",
     "framer-motion": "^10.16.0",
     "lodash-es": "^4.17.0",
+    "magic-sdk": "^21.0.0",
     "next": "^14.0.0",
     "postcss": "^8.4.0",
     "react": "^18.2.0",
