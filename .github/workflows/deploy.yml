@@ -38,7 +38,12 @@ jobs:
         run: npm run build --workspace=@w3b3/shared
       - name: Deploy Contracts
         continue-on-error: true
-        run: npm run deploy:sepolia
+        run: |
+          if [ -z "${{ secrets.PRIVATE_KEY }}" ] || [ -z "${{ secrets.ALCHEMY_API_KEY }}" ]; then
+            echo "⚠️  WARNING: PRIVATE_KEY or ALCHEMY_API_KEY is missing. Skipping contract deployment."
+            exit 0
+          fi
+          npm run deploy:sepolia
         env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}

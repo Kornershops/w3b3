@@ -1,10 +1,11 @@
 import { io, Socket } from 'socket.io-client';
+import { SOCKET_BASE_URL } from '../utils/network';
 
 class SocketService {
   private socket: Socket | null = null;
   private url: string;
 
-  constructor(url: string = 'http://localhost:3001') {
+  constructor(url: string = SOCKET_BASE_URL) {
     this.url = url;
   }
 

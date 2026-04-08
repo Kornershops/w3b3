@@ -17,6 +17,7 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3001', 10),
   logLevel: process.env.LOG_LEVEL || 'info',
+  adminSecret: getRequiredEnv('ADMIN_SECRET', 'w3b3_alpha_secure_bootstrap_77x'),
 
   // Database
   database: {
@@ -40,7 +41,6 @@ export const config = {
 
   // Web3
   web3: {
-    // Priority: Alchemy > Infura > Fallback
     apiKey: process.env.ALCHEMY_API_KEY || process.env.INFURA_API_KEY || '',
     alchemyApiKey: process.env.ALCHEMY_API_KEY || '',
     infuraApiKey: process.env.INFURA_API_KEY || '',
@@ -49,16 +49,8 @@ export const config = {
 
   // CORS
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: getRequiredEnv('CORS_ORIGIN', 'http://localhost:3000'),
     credentials: process.env.CORS_CREDENTIALS === 'true',
-  },
-
-  // Email (Optional)
-  email: {
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
-    user: process.env.SMTP_USER || '',
-    pass: process.env.SMTP_PASS || '',
   },
 
   // Feature Flags

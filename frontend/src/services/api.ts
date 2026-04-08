@@ -1,14 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
 import { ApiResponse, StakingPool, UserStake, Portfolio, AuthResponse } from '../types';
-
-const getBaseUrl = () => {
-  const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-  // Ensure we always end with /api for backend route matching
-  return url.endsWith('/api') ? url : `${url}/api`;
-};
-
-const API_BASE_URL = getBaseUrl();
+import { API_BASE_URL } from '../utils/network';
 
 class ApiService {
   private client: AxiosInstance;
