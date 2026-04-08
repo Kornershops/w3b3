@@ -2,7 +2,13 @@ import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
 import { ApiResponse, StakingPool, UserStake, Portfolio, AuthResponse } from '../types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const getBaseUrl = () => {
+  const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  // Ensure we always end with /api for backend route matching
+  return url.endsWith('/api') ? url : `${url}/api`;
+};
+
+const API_BASE_URL = getBaseUrl();
 
 class ApiService {
   private client: AxiosInstance;
@@ -111,6 +117,17 @@ class ApiService {
     const response = await this.client.get('/portfolio/history', {
       params: { page, limit },
     });
+    return response.data;
+  }
+
+  // Global Protocol Stats
+  async getTreasury() {
+    const response = await this.client.get('/portfolio/treasury');
+    return response.data;
+  }
+
+  async getYieldStats() {
+    const response = await this.client.get('/yield/stats');
     return response.data;
   }
 }
