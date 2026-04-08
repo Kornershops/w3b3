@@ -33,14 +33,17 @@ export const config = {
 
   jwt: {
     secret: getRequiredEnv('JWT_SECRET', 'your_secret_key_change_in_production'),
-    refreshSecret: getRequiredEnv('JWT_REFRESH_SECRET', 'your_refresh_secret_change_in_production'),
+    refreshSecret: process.env.JWT_REFRESH_SECRET || 'w3b3_alpha_refresh_secret_default_77x',
     expiry: process.env.JWT_EXPIRY || '15m',
     refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
   },
 
   // Web3
   web3: {
-    alchemyApiKey: getRequiredEnv('ALCHEMY_API_KEY'),
+    // Priority: Alchemy > Infura > Fallback
+    apiKey: process.env.ALCHEMY_API_KEY || process.env.INFURA_API_KEY || '',
+    alchemyApiKey: process.env.ALCHEMY_API_KEY || '',
+    infuraApiKey: process.env.INFURA_API_KEY || '',
     alchemyWebhookKey: process.env.ALCHEMY_WEBHOOK_SIGNING_KEY || '',
   },
 

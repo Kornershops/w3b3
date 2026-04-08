@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { TreasuryHoldings } from '../types';
 import logger from '../utils/logger';
 import { priceService } from './priceService';
+import config from '../config/env';
 
 // Example ERC20 ABI just for `balanceOf`
 const ERC20_ABI = [
@@ -21,11 +22,13 @@ export class TreasuryService {
   ];
 
   constructor() {
-    // Inject the deployed treasury address from the environment
     this.treasuryAddress = process.env.TREASURY_ADDRESS || '0x0000000000000000000000000000000000000000';
     
-    // Provide a fallback RPC for indexing on Ethereum Mainnet
-    const rpcUrl = process.env.ALCHEMY_API_URL || 'https://eth-mainnet.g.alchemy.com/v2/demo';
+    // Multi-provider fallback strategy:
+    const alchemyUrl = `https://eth-mainnet.g.alchemy.com/v2/${config.web3.alchemyApiKey}`;
+    const infuraUrl = `https://mainnet.infura.io/v3/${config.web3.infuraApiKey}`;
+    const rpcUrl = config.web3.alchemyApiKey ? alchemyUrl : (config.web3.infuraApiKey ? infuraUrl : 'https://eth.llamarpc.com');
+
     this.provider = new ethers.JsonRpcProvider(rpcUrl);
   }
 
