@@ -1,11 +1,44 @@
 import { Router, Request, Response } from 'express';
 import { poolService } from '../services/poolService';
 import { authAdminMiddleware } from '../middleware/auth';
+import { seed } from '../utils/bootstrap';
+import prisma from '../config/database';
 import logger from '../utils/logger';
 
 const router = Router();
 
-// Apply admin role validation across the entire sub-router
+/**
+ * @route   POST /api/admin/bootstrap-data
+ * @desc    Internally triggers the database seeding logic.
+ * @access  Private (Admin Secret required)
+ */
+router.post('/bootstrap-data', async (req: Request, res: Response) => {
+  const adminSecret = req.headers['x-admin-secret'];
+
+  if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+    logger.warn(`Unauthorized bootstrap attempt from IP: ${req.ip}`);
+    return res.status(401).json({ error: 'Unauthorized. Invalid Admin Secret.' });
+  }
+
+  try {
+    logger.info('Admin triggered database bootstrap...');
+    await seed(prisma);
+    
+    return res.status(200).json({ 
+      status: 'success', 
+      message: 'Database seeded successfully with initial staking pools.' 
+    });
+  } catch (error) {
+    logger.error('Bootstrap failed:', error);
+    return res.status(500).json({ 
+      status: 'error', 
+      message: 'Failed to seed database.',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Apply admin role validation for standard CRUD operations
 router.use(authAdminMiddleware);
 
 // Create a new Staking Pool

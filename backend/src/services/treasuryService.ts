@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { TreasuryHoldings } from '../types';
 import logger from '../utils/logger';
+import { priceService } from './priceService';
 
 // Example ERC20 ABI just for `balanceOf`
 const ERC20_ABI = [
@@ -14,9 +15,9 @@ export class TreasuryService {
   // In production, these would be indexed in Prisma/Redis.
   // For this architecture phase, we query the node dynamically.
   private trackedAssets = [
-    { symbol: 'USDC', address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', decimals: 6, mockPrice: 1.0 },
-    { symbol: 'USDT', address: '0xdac17f958d2ee523a2206206994597c13d831ec7', decimals: 6, mockPrice: 1.0 },
-    { symbol: 'stETH', address: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84', decimals: 18, mockPrice: 3500.0 }
+    { symbol: 'USDC', address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', decimals: 6, coinId: 'usd-coin' },
+    { symbol: 'USDT', address: '0xdac17f958d2ee523a2206206994597c13d831ec7', decimals: 6, coinId: 'tether' },
+    { symbol: 'stETH', address: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84', decimals: 18, coinId: 'staked-ether' }
   ];
 
   constructor() {
@@ -43,7 +44,7 @@ export class TreasuryService {
 
       // 1. Query Treasury Native ETH balance
       const nativeBalance = await this.provider.getBalance(this.treasuryAddress);
-      const ethPrice = 3500; // Mock ETH price for current valuation
+      const ethPrice = await priceService.getPrice('ethereum');
 
       if (nativeBalance > 0n) {
         const formatted = parseFloat(ethers.formatEther(nativeBalance));
@@ -62,8 +63,9 @@ export class TreasuryService {
         const balance = await contract.balanceOf(this.treasuryAddress);
 
         if (balance > 0n) {
+          const assetPrice = await priceService.getPrice(asset.coinId);
           const formatted = parseFloat(ethers.formatUnits(balance, asset.decimals));
-          const valueUsd = formatted * asset.mockPrice;
+          const valueUsd = formatted * assetPrice;
           totalValuation += valueUsd;
 
           holdings.push({

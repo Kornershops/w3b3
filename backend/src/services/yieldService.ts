@@ -2,6 +2,7 @@ import prisma from '../config/database';
 import { treasuryService } from './treasuryService';
 import logger from '../utils/logger';
 import { StakingPool, UserStake } from '@/types';
+import { priceService } from './priceService';
 
 export class YieldService {
   /**
@@ -18,30 +19,38 @@ export class YieldService {
   }> {
     try {
       const treasuryData = await treasuryService.getTreasuryHoldings();
-      const externalData = await this.fetchExternalYield('0x...');
       
-      // Real-world yield calculation would involve:
-      // (Annualized ETH rewards / Total $W3B3 Staked in USD) * 100
+      // Calculate real total staked $W3B3 value
+      const stakes = await prisma.userStake.findMany();
+      const totalW3B3Staked = stakes.reduce((acc, s) => acc + Number(s.amountStaked), 0);
       
-      // Mock metrics for current iteration
-      const ethPrice = 3500;
-      const weeklyEthDistributed = 2.5; // ETH
+      // Fetch Live Prices
+      const ethPrice = await priceService.getPrice('ethereum');
+      const w3b3Price = await priceService.getPrice('w3b3'); // Uses fallback if not on list
+      
+      const totalW3B3StakingValueUsd = totalW3B3Staked * w3b3Price;
+      
+      // In a real scenario, weeklyEthDistributed would come from indexing Treasury harvest events
+      // For this alpha, we estimate based on the current treasury native balance if it's > 0
+      const currentNativeEth = parseFloat(treasuryData.assets.find(a => a.symbol === 'ETH')?.balance || '0');
+      const weeklyEthDistributed = currentNativeEth > 0 ? currentNativeEth / 4 : 2.5; // Baseline if empty
+      
       const annualEthDistributed = weeklyEthDistributed * 52;
       const annualRevenueUsd = annualEthDistributed * ethPrice;
       
-      // Mock Total $W3B3 staked value
-      const totalW3B3StakingValueUsd = 2500000; // $2.5M
-      
-      const aprPercentage = (annualRevenueUsd / totalW3B3StakingValueUsd) * 100;
+      // Prevent division by zero
+      const aprPercentage = totalW3B3StakingValueUsd > 0 
+        ? (annualRevenueUsd / totalW3B3StakingValueUsd) * 100 
+        : 0;
 
       return {
         apr: aprPercentage.toFixed(2),
         baseToken: 'ETH',
         totalDistributedEth: treasuryData.totalEthDistributed,
-        lastHarvestAmount: '0.85', // ETH
-        nextEstimatedHarvest: new Date(Date.now() + 86400000 * 3).toISOString(), // 3 days from now
+        lastHarvestAmount: '0.85', // TODO: Fetch from actual contract event log
+        nextEstimatedHarvest: new Date(Date.now() + 86400000 * 3).toISOString(),
         updatedAt: new Date().toISOString(),
-        price: externalData.price // This price is from external data, not stored in pool
+        price: w3b3Price
       };
     } catch (error) {
       logger.error('Error calculating yield stats:', error);
