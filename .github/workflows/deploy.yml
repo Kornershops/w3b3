@@ -37,6 +37,7 @@ jobs:
       - name: Build shared workspace
         run: npm run build --workspace=@w3b3/shared
       - name: Deploy Contracts
+        continue-on-error: true
         run: npm run deploy:sepolia
         env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}

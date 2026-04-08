@@ -10,7 +10,11 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY || '0x000000000000000000000000000000
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || '';
 const BASESCAN_API_KEY = process.env.BASESCAN_API_KEY || '';
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || '';
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+
+if (!ALCHEMY_API_KEY && process.env.NODE_ENV !== 'test') {
+  console.warn('⚠️  WARNING: ALCHEMY_API_KEY is not set. Network deployments may fail.');
+}
 
 const config: HardhatUserConfig = {
   solidity: {
