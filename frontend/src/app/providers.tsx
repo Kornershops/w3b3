@@ -12,7 +12,7 @@ import {
   coinbaseWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-import { MagicConnector } from 'wagmi-magic-connector';
+import { MagicConnectConnector } from '@everipedia/wagmi-magic-connector';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, base, sepolia } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
@@ -25,13 +25,15 @@ const { chains, publicClient } = configureChains(
 );
 
 // Magic Connector Configuration for Frictionless UX
-const magicConnector = new MagicConnector({
+const magicConnector = new MagicConnectConnector({
   chains,
   options: {
     apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
-    networkOptions: {
-      rpcUrl: 'https://rpc.sepolia.org',
-      chainId: 11155111,
+    magicSdkConfiguration: {
+      network: {
+        rpcUrl: 'https://rpc.sepolia.org',
+        chainId: 11155111,
+      },
     },
   },
 });
