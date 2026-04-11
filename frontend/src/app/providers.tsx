@@ -38,7 +38,7 @@ const magicConnector = new MagicConnectConnector({
   },
 });
 
-const magicWallet = ({ _chains }: any) => ({
+const magicWallet = () => ({
   id: 'magic',
   name: 'Email/Social',
   iconUrl: 'https://dashboard.magic.link/favicon.ico',
@@ -53,7 +53,7 @@ const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
     wallets: [
-      magicWallet({ chains }),
+      magicWallet(),
       injectedWallet({ chains }),
       metaMaskWallet({ chains, projectId: '9a9b69123fe5cf9bd4eaf7ec87b4043b' }),
       coinbaseWallet({ chains, appName: 'W3B3 Staking Portal' }),
@@ -64,7 +64,7 @@ const connectors = connectorsForWallets([
 
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors,
+  connectors: connectors as any,
   publicClient,
 });
 

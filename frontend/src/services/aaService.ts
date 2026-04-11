@@ -1,6 +1,5 @@
-import { createLightAccount, LightSmartContractAccount } from "@alchemy/aa-accounts";
-import { createAlchemySmartAccountClient } from "@alchemy/aa-alchemy";
-import { Chain, HttpTransport } from "viem";
+import { LightAccount } from "@alchemy/aa-accounts";
+import { createLightAccountAlchemyClient } from "@alchemy/aa-alchemy";
 import { sepolia } from "viem/chains";
 
 /**
@@ -9,7 +8,7 @@ import { sepolia } from "viem/chains";
  */
 class AAService {
   private client: any = null;
-  private account: LightSmartContractAccount | null = null;
+  private account: LightAccount | null = null;
 
   /**
    * Initialize a Smart Account from an existing EOA Signer (e.g., Magic or MetaMask)
@@ -18,10 +17,10 @@ class AAService {
     const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'your-alchemy-api-key';
     const policyId = process.env.NEXT_PUBLIC_ALCHEMY_POLICY_ID;
 
-    // Create the Alchemy Smart Account Client (v3 Pattern)
-    this.client = await createAlchemySmartAccountClient({
+    // Create the Alchemy Light Account Client (v3 Pattern)
+    this.client = await createLightAccountAlchemyClient({
       apiKey,
-      chain: sepolia as Chain,
+      chain: sepolia as any,
       signer,
       gasManagerConfig: policyId ? { policyId } : undefined,
     });

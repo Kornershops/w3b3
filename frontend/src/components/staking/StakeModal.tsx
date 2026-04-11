@@ -17,7 +17,7 @@ interface StakeModalProps {
 }
 
 export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps) {
-  const { address } = useAccount();
+  useAccount();
   const chainId = useChainId();
   const { switchNetwork } = useSwitchNetwork();
   
@@ -37,10 +37,10 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
 
   const { write: approveWrite, data: approveData } = useContractWrite(approveConfig);
 
-  const { isLoading: isApproving } = useWaitForTransaction({
+  useWaitForTransaction({
     hash: approveData?.hash,
     onSuccess: () => setStep('staking'),
-    onError: (err) => {
+    onError: () => {
       setError('Approval failed');
       setStep('input');
     }
@@ -57,7 +57,7 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
 
   const { write: stakeWrite, data: stakeData } = useContractWrite(stakeConfig);
 
-  const { isLoading: isStaking } = useWaitForTransaction({
+  useWaitForTransaction({
     hash: stakeData?.hash,
     onSuccess: async (txData) => {
       try {
