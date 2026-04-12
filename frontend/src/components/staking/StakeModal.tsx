@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Warning, CheckCircle, CircleNotch } from '@phosphor-icons/react';
-import { useAccount, useChainId, useSwitchNetwork, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useAccount, useChainId, useSwitchChain, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { apiService } from '@/services/api';
 import { StakingPool } from '@/types';
 import { CONTRACT_ADDRESSES, REWARD_DISTRIBUTOR_ABI, ERC20_ABI } from '@/config/contracts';
@@ -17,69 +17,54 @@ interface StakeModalProps {
 }
 
 export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps) {
-  useAccount();
+  const { address } = useAccount();
   const chainId = useChainId();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
   
   const [amount, setAmount] = useState('');
   const [step, setStep] = useState<'input' | 'approving' | 'staking' | 'success'>('input');
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Prepare ERC-20 Approval (If needed)
-  // Note: For production, we'd check allowance first. For Alpha, we trigger as part of the flow.
-  const { config: approveConfig } = usePrepareContractWrite({
-    address: pool.contractAddress as `0x${string}`, // Pool's token address
-    abi: ERC20_ABI,
-    functionName: 'approve',
-    args: [CONTRACT_ADDRESSES.REWARD_DISTRIBUTOR as `0x${string}`, amount ? parseUnits(amount, pool.tokenDecimals) : BigInt(0)],
-    enabled: step === 'approving' && !!amount,
+  // Wagmi 2.0: useWriteContract replaces Prepare + Write combo
+  const { writeContract, data: hash, error: writeError } = useWriteContract();
+
+  const { isLoading: isWaiting, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
   });
 
-  const { write: approveWrite, data: approveData } = useContractWrite(approveConfig);
-
-  useWaitForTransaction({
-    hash: approveData?.hash,
-    onSuccess: () => setStep('staking'),
-    onError: () => {
-      setError('Approval failed');
-      setStep('input');
-    }
-  });
-
-  // 2. Prepare Staking Transaction
-  const { config: stakeConfig } = usePrepareContractWrite({
-    address: CONTRACT_ADDRESSES.REWARD_DISTRIBUTOR as `0x${string}`,
-    abi: REWARD_DISTRIBUTOR_ABI,
-    functionName: 'stake',
-    args: [amount ? parseUnits(amount, pool.tokenDecimals) : BigInt(0)],
-    enabled: step === 'staking' && !!amount,
-  });
-
-  const { write: stakeWrite, data: stakeData } = useContractWrite(stakeConfig);
-
-  useWaitForTransaction({
-    hash: stakeData?.hash,
-    onSuccess: async (txData) => {
-      try {
-        await apiService.stake(pool.id, parseFloat(amount), txData.transactionHash);
-        setStep('success');
-      } catch (e) {
-        setError('Failed to record stake on backend');
+  // Handle transaction states via useEffect or conditional logic
+  React.useEffect(() => {
+    if (isConfirmed) {
+      if (step === 'approving') {
+        setStep('staking');
+      } else if (step === 'staking') {
+        const recordStake = async () => {
+          try {
+            await apiService.stake(pool.id, parseFloat(amount), hash as string);
+            setStep('success');
+          } catch (e) {
+            setError('Failed to record stake on backend');
+          }
+        };
+        recordStake();
       }
-    },
-    onError: () => {
-      setError('Staking transaction failed');
+    }
+  }, [isConfirmed, step, pool.id, amount, hash]);
+
+  React.useEffect(() => {
+    if (writeError) {
+      setError(writeError.message);
       setStep('input');
     }
-  });
+  }, [writeError]);
 
   if (!isOpen) return null;
 
   const isWrongNetwork = chainId !== pool.chainId;
 
   const handleAction = async () => {
-    if (isWrongNetwork && switchNetwork) {
-      switchNetwork(pool.chainId);
+    if (isWrongNetwork && switchChain) {
+      switchChain({ chainId: pool.chainId });
       return;
     }
 
@@ -92,9 +77,20 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
       
       setError(null);
       setStep('approving');
-      approveWrite?.();
+      
+      writeContract({
+        address: pool.contractAddress as `0x${string}`,
+        abi: ERC20_ABI,
+        functionName: 'approve',
+        args: [CONTRACT_ADDRESSES.REWARD_DISTRIBUTOR as `0x${string}`, parseUnits(amount, pool.tokenDecimals)],
+      });
     } else if (step === 'staking') {
-      stakeWrite?.();
+      writeContract({
+        address: CONTRACT_ADDRESSES.REWARD_DISTRIBUTOR as `0x${string}`,
+        abi: REWARD_DISTRIBUTOR_ABI,
+        functionName: 'stake',
+        args: [parseUnits(amount, pool.tokenDecimals)],
+      });
     } else if (step === 'success') {
       onSuccess();
       onClose();

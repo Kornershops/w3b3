@@ -3,79 +3,55 @@
 import * as React from 'react';
 import {
   RainbowKitProvider,
-  connectorsForWallets,
+  getDefaultConfig,
   darkTheme,
 } from '@rainbow-me/rainbowkit';
 import {
-  injectedWallet,
-  metaMaskWallet,
-  coinbaseWallet,
-  walletConnectWallet,
-} from '@rainbow-me/rainbowkit/wallets';
-import { MagicConnectConnector } from '@everipedia/wagmi-magic-connector';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-import { mainnet, polygon, optimism, arbitrum, base, sepolia } from 'wagmi/chains';
-import { publicProvider } from 'wagmi/providers/public';
+  mainnet,
+  polygon,
+  optimism,
+  arbitrum,
+  base,
+  sepolia,
+} from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { WagmiProvider, http } from 'wagmi';
+import { magicConnector } from '@magiclabs/wagmi-connector';
 import '@rainbow-me/rainbowkit/styles.css';
-
-const { chains, publicClient } = configureChains(
-  [mainnet, polygon, optimism, arbitrum, base, sepolia],
-  [publicProvider()]
-);
-
-// Magic Connector Configuration for Frictionless UX
-const magicConnector = new MagicConnectConnector({
-  chains,
-  options: {
-    apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
-    magicSdkConfiguration: {
-      network: {
-        rpcUrl: 'https://rpc.sepolia.org',
-        chainId: 11155111,
-      },
-    },
-  },
-});
-
-const magicWallet = () => ({
-  id: 'magic',
-  name: 'Email/Social',
-  iconUrl: 'https://dashboard.magic.link/favicon.ico',
-  iconBackground: '#fff',
-  description: 'Log in with your email or social account',
-  createConnector: () => ({
-    connector: magicConnector as any,
-  }),
-});
-
-const connectors = connectorsForWallets([
-  {
-    groupName: 'Recommended',
-    wallets: [
-      magicWallet(),
-      injectedWallet({ chains }),
-      metaMaskWallet({ chains, projectId: '9a9b69123fe5cf9bd4eaf7ec87b4043b' }),
-      coinbaseWallet({ chains, appName: 'W3B3 Staking Portal' }),
-      walletConnectWallet({ chains, projectId: '9a9b69123fe5cf9bd4eaf7ec87b4043b' }),
-    ],
-  },
-]);
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: connectors as any,
-  publicClient,
-});
 
 const queryClient = new QueryClient();
 
+const config = getDefaultConfig({
+  appName: 'W3B3 Staking Portal',
+  projectId: '9a9b69123fe5cf9bd4eaf7ec87b4043b',
+  chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
+  transports: {
+    [mainnet.id]: http(),
+    [polygon.id]: http(),
+    [optimism.id]: http(),
+    [arbitrum.id]: http(),
+    [base.id]: http(),
+    [sepolia.id]: http(),
+  },
+  ssr: true,
+  connectors: [
+    magicConnector({
+      apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
+      magicSdkConfiguration: {
+        network: {
+          rpcUrl: 'https://rpc.sepolia.org',
+          chainId: 11155111,
+        },
+      },
+    }),
+  ],
+});
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiConfig config={wagmiConfig}>
+    <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
-          chains={chains}
           theme={darkTheme({
             accentColor: '#6366f1',
             accentColorForeground: 'white',
@@ -86,7 +62,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           {children}
         </RainbowKitProvider>
       </QueryClientProvider>
-    </WagmiConfig>
+    </WagmiProvider>
   );
 }
 // build stabilization ping

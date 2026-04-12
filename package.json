@@ -1,7 +1,6 @@
 {
   "name": "w3b3",
   "version": "1.0.0",
-  "description": "Multi-Chain Staking & Yield Portal",
   "private": true,
   "workspaces": [
     "frontend",
@@ -11,26 +10,10 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspaces",
-    "dev:frontend": "npm run dev --workspace=frontend",
-    "dev:backend": "npm run dev --workspace=backend",
-    "dev:contracts": "npm run dev --workspace=contracts",
     "build": "npm run build --workspaces --if-present",
-    "build:frontend": "npm run build --workspace=frontend",
-    "build:backend": "npm run build --workspace=backend",
-    "build:contracts": "npm run build --workspace=contracts",
     "test": "npm run test --workspaces --if-present",
-    "test:frontend": "npm run test --workspace=frontend",
-    "test:backend": "npm run test --workspace=backend",
-    "test:contracts": "npm run test --workspace=contracts",
     "lint": "npm run lint --workspaces --if-present",
-    "type-check": "npm run type-check --workspaces --if-present",
-    "format": "npm run format --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
-    "deploy:sepolia": "npm run deploy:sepolia --workspace=contracts",
-    "deploy:mumbai": "npm run deploy:mumbai --workspace=contracts",
-    "deploy:base-sepolia": "npm run deploy:base-sepolia --workspace=contracts",
-    "deploy:mainnet": "npm run deploy:mainnet --workspace=contracts",
-    "install-all": "npm install && npm install --workspaces"
+    "type-check": "npm run type-check --workspaces --if-present"
   },
   "devDependencies": {
     "husky": "^8.0.0",
@@ -39,13 +22,5 @@
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
-  },
-  "overrides": {
-    "viem": "2.47.12"
-  },
-  "dependencies": {
-    "@alchemy/aa-accounts": "^3.19.0",
-    "@alchemy/aa-alchemy": "^3.19.0",
-    "@alchemy/aa-core": "^3.19.0"
   }
 }
