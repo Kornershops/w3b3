@@ -34,7 +34,8 @@ W3B3 has transitioned from a conceptual scaffold into a production-ready protoco
 -> UX Transformation -> Shifted to a deep-dark glassmorphic design system.
 -> Growth Infrastructure -> Launched the Referral engine and Global Leaderboard.
 -> Governance Launch -> Deployed the $W3B3 token and StakingPoolFactory.
--> Value Accrual -> Architected the overarching Public Treasury routing to accumulate Protocol-Owned Liquidity (POL).
+-> Value Accrual -> Architected the overarching Public Treasury routing.
+-> DeFi Stack Modernization (April 2026) -> Migrated to **Wagmi 2.x**, **RainbowKit 2.x**, and **Viem 2.x** for industrial-grade stability.
 
 ---
 
