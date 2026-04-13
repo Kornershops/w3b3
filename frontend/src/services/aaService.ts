@@ -1,7 +1,7 @@
-import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
+import { createLightAccount } from "@alchemy/aa-accounts";
 import { createAlchemySmartAccountClient, AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
 import { sepolia } from "viem/chains";
-import { http, SmartAccount } from "viem";
+import { http, Account } from "viem";
 
 /**
  * Account Abstraction Service
@@ -10,7 +10,7 @@ import { http, SmartAccount } from "viem";
  */
 class AAService {
   private client: AlchemySmartAccountClient | null = null;
-  private account: SmartAccount | null = null;
+  private account: Account | null = null;
 
   /**
    * Initialize a Smart Account from an existing EOA Signer (e.g., Magic or MetaMask)
@@ -20,27 +20,30 @@ class AAService {
     const policyId = process.env.NEXT_PUBLIC_ALCHEMY_POLICY_ID;
 
     // 1. Create the Light Account Factory
-    this.account = await createLightAccount({
+    const lightAccount = await createLightAccount({
       transport: http(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`),
       chain: sepolia,
       signer: signer as any,
     });
 
+    this.account = lightAccount;
+
     // 2. Create the Alchemy Smart Account Client
     this.client = createAlchemySmartAccountClient({
       apiKey,
-      account: this.account,
+      chain: sepolia, // Mandatory in SDK v3
+      account: lightAccount,
       gasManagerConfig: policyId ? { policyId } : undefined,
     });
 
-    return this.account?.address || '0x0';
+    return lightAccount.address;
   }
 
   /**
    * Send a sponsored (or user-paid) transaction via the Bundler
    */
   async sendTransaction(target: `0x${string}`, data: `0x${string}`, value: bigint = BigInt(0)) {
-    if (!this.client) throw new Error("AA Client not initialized");
+    if (!this.client || !this.account) throw new Error("AA Client not initialized");
 
     const result = await this.client.sendUserOperation({
       uo: {
@@ -48,6 +51,7 @@ class AAService {
         data,
         value,
       },
+      account: this.client.account, // Explicitly pass the account for strict v3 typing
     });
 
     // In Alchemy v3, result contains the userOpHash

@@ -18,7 +18,7 @@ interface StakeModalProps {
 }
 
 export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps) {
-  const { address } = useAccount();
+  useAccount(); // Call hook without destructuring unused address
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
   
