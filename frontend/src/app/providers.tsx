@@ -15,7 +15,7 @@ import {
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { WagmiProvider, http, createConfig } from 'wagmi';
-import { magicConnector } from '@magiclabs/wagmi-connector';
+import { MagicConnector } from '@magiclabs/wagmi-connector';
 import '@rainbow-me/rainbowkit/styles.css';
 
 const queryClient = new QueryClient();
@@ -32,7 +32,7 @@ const config = createConfig({
     [sepolia.id]: http(),
   },
   connectors: [
-    magicConnector({
+    new MagicConnector({
       apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
       magicSdkConfiguration: {
         network: {
