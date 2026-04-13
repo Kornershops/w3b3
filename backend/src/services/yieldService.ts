@@ -1,7 +1,7 @@
 import prisma from '../config/database';
 import { treasuryService } from './treasuryService';
 import logger from '../utils/logger';
-import { StakingPool, UserStake } from '@/types';
+import { StakingPool, UserStake } from '../types';
 import { priceService } from './priceService';
 
 export class YieldService {
