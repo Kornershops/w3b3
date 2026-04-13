@@ -7,21 +7,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {W3B3Treasury} from "./W3B3Treasury.sol";
 
-// Minimal interface for AMM Router (e.g. UniswapV3 Router / SwapRouter)
-interface ISwapRouter {
-    struct ExactInputSingleParams {
-        address tokenIn;
-        address tokenOut;
-        uint24 fee;
-        address recipient;
-        uint256 deadline;
-        uint256 amountIn;
-        uint256 amountOutMinimum;
-        uint160 sqrtPriceLimitX96;
-    }
-    
-    function exactInputSingle(ExactInputSingleParams calldata params) external payable returns (uint256 amountOut);
-}
+import {ISwapRouter} from "./interfaces/ISwapRouter.sol";
+
 
 /**
  * @title RevenueRouter

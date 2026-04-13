@@ -56,7 +56,7 @@ contract W3B3Treasury is Ownable, ReentrancyGuard {
         if (amount == 0) revert ZeroAmount();
         if (address(this).balance < amount) revert InsufficientBalance();
 
-        (bool success, ) = to.call{value: amount}("");
+        (bool success, ) = payable(to).call{value: amount}("");
         if (!success) revert NativeTransferFailed();
 
         emit NativeFundsWithdrawn(to, amount);
