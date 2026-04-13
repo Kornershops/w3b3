@@ -4,6 +4,7 @@ import { Outfit } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { Navbar } from '@/components/layout/Navbar';
+import { MobileTabBar } from '@/components/layout/MobileTabBar';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
 
@@ -23,9 +24,10 @@ export default function RootLayout({
         <Providers>
           <div className="flex min-h-screen flex-col">
             <Navbar />
-            <main className="flex-1 w-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#0A0B0F] to-[#0A0B0F]">
+            <main className="flex-1 w-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#0A0B0F] to-[#0A0B0F] pb-32 md:pb-0">
               {children}
             </main>
+            <MobileTabBar />
           </div>
         </Providers>
       </body>

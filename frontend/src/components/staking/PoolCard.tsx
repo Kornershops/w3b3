@@ -36,26 +36,23 @@ export function PoolCard({ pool, onStake }: PoolCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       whileHover={{ y: -5 }}
-      className="glass-card relative overflow-hidden group"
+      className="glass-card relative overflow-hidden group p-4 sm:p-6"
     >
       {/* Decorative Glow */}
-      <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 rounded-full bg-indigo-500/20 blur-3xl group-hover:bg-indigo-500/30 transition-all duration-500 pointer-events-none" />
+      <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 rounded-full bg-indigo-500/10 blur-3xl group-hover:bg-indigo-500/20 transition-all duration-500 pointer-events-none" />
 
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center p-2 shadow-inner">
-             <div className="font-bold text-lg text-white">{pool.tokenSymbol.charAt(0)}</div>
+      <div className="flex justify-between items-start mb-4 gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center p-2 shadow-inner">
+             <div className="font-black text-base sm:text-lg text-white">{pool.tokenSymbol.charAt(0)}</div>
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-lg font-black text-white group-hover:text-indigo-300 transition-colors truncate tracking-tighter">
               {pool.name}
             </h3>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/5 text-slate-400 border border-white/5">
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-400 border border-white/5 uppercase tracking-wider">
                 {pool.tokenSymbol}
-              </span>
-              <span className="text-[10px] text-slate-500 uppercase tracking-tighter">
-                ID: {pool.id.substring(0, 8)}
               </span>
             </div>
           </div>
@@ -63,20 +60,20 @@ export function PoolCard({ pool, onStake }: PoolCardProps) {
 
         {/* Trend Indicator Badge */}
         {analytics && (
-          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border ${
+          <div className={`shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] sm:text-[10px] font-black border uppercase tracking-widest ${
             isBullish ? 'bg-green-500/10 text-green-400 border-green-500/20' :
             isBearish ? 'bg-red-500/10 text-red-400 border-red-500/20' :
             'bg-slate-500/10 text-slate-400 border-slate-500/20'
           }`}>
             {isBullish ? <TrendUp size={12} weight="bold" /> : 
              isBearish ? <TrendDown size={12} weight="bold" /> : null}
-            {analytics.trend}
+            <span className="hidden xs:inline">{analytics.trend}</span>
           </div>
         )}
       </div>
 
       {/* Analytics Visualization (Sparkline) */}
-      <div className="h-16 w-full mb-4 bg-black/10 rounded-lg overflow-hidden relative border border-white/5">
+      <div className="h-12 sm:h-16 w-full mb-4 bg-black/30 rounded-xl overflow-hidden relative border border-white/5">
         {analytics?.historicalTvl ? (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={analytics.historicalTvl}>
@@ -93,19 +90,19 @@ export function PoolCard({ pool, onStake }: PoolCardProps) {
           </ResponsiveContainer>
         ) : (
           <div className="h-full w-full flex items-center justify-center">
-            <Pulse size={20} className="text-slate-600 animate-pulse" />
+            <Pulse size={16} className="text-slate-700 animate-pulse" />
           </div>
         )}
-        <div className="absolute bottom-1 right-2 text-[8px] text-slate-500 font-mono">7D TVL MOMENTUM</div>
+        <div className="absolute top-1 right-2 text-[7px] text-slate-500 font-black uppercase tracking-widest bg-black/40 px-1 rounded">7D TVL</div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-5 relative z-10">
-        <div className="bg-black/20 rounded-xl p-3 border border-white/5 relative group/info">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-5 relative z-10">
+        <div className="bg-white/5 rounded-xl p-3 border border-white/5 relative group/info">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Est. APY</span>
+            <span className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-widest font-black">APY</span>
             {analytics && (
-              <div className="text-slate-500">
-                <Info size={12} />
+              <div className="text-slate-600">
+                <Info size={12} weight="bold" />
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-32 p-2 bg-slate-900 border border-white/10 rounded-lg text-[9px] text-slate-300 opacity-0 group-hover/info:opacity-100 transition-opacity pointer-events-none z-50 shadow-2xl">
                   Confidence: {Math.round(analytics.confidenceScore * 100)}%<br/>
                   Projected: {analytics.projected7DayApy}%
@@ -114,22 +111,22 @@ export function PoolCard({ pool, onStake }: PoolCardProps) {
             )}
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-xl font-bold text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.3)]">
+            <span className="text-lg sm:text-xl font-black text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.2)]">
               {pool.apyPercentage}%
             </span>
             {analytics && (
-              <span className={`text-[10px] font-bold flex items-center ${
-                isBullish ? 'text-green-400' : isBearish ? 'text-red-400' : 'text-slate-500'
+              <span className={`text-[9px] font-black flex items-center ${
+                isBullish ? 'text-green-500' : isBearish ? 'text-red-500' : 'text-slate-500'
               }`}>
-                {isBullish ? <CaretUp /> : isBearish ? <CaretDown /> : null}
+                {isBullish ? <CaretUp weight="bold" /> : isBearish ? <CaretDown weight="bold" /> : null}
                 {Math.abs(analytics.projected7DayApy - parsedApy).toFixed(1)}%
               </span>
             )}
           </div>
         </div>
-        <div className="bg-black/20 rounded-xl p-3 border border-white/5">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider block mb-1 font-bold">TVL</span>
-          <span className="text-xl font-bold text-white tracking-tight">
+        <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+          <span className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-widest block mb-1 font-black">TVL</span>
+          <span className="text-lg sm:text-xl font-black text-white tracking-tighter">
             ${(Number(pool.tvlAmount) / 1000000).toFixed(1)}M
           </span>
         </div>
@@ -138,14 +135,14 @@ export function PoolCard({ pool, onStake }: PoolCardProps) {
       <div className="flex items-center justify-between gap-2 relative z-10">
         <button
           onClick={() => onStake(pool.id)}
-          className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg py-2.5 flex items-center justify-center gap-2 text-xs font-bold transition-all shadow-lg active:scale-95"
+          className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl py-2.5 sm:py-3 flex items-center justify-center gap-2 text-[11px] sm:text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/10 active:scale-95"
         >
-          <span>Stake Now</span>
+          <span>Stake</span>
           <ArrowUpRight size={14} weight="bold" />
         </button>
         <Link 
           href={`/pool/${pool.id}`} 
-          className="bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg py-2.5 px-3 flex items-center justify-center border border-white/5 transition-all"
+          className="bg-slate-800/50 hover:bg-slate-700 text-slate-300 rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 flex items-center justify-center border border-white/5 transition-all"
         >
           <Pulse size={16} weight="bold" />
         </Link>
