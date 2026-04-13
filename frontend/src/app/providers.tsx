@@ -15,7 +15,8 @@ import {
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { WagmiProvider, http, createConfig } from 'wagmi';
-import * as MagicNamespace from '@magiclabs/wagmi-connector';
+// @ts-ignore - The library uses a non-standard export structure for its types in v2
+import { magicConnector } from '@magiclabs/wagmi-connector';
 import '@rainbow-me/rainbowkit/styles.css';
 
 const queryClient = new QueryClient();
@@ -32,7 +33,7 @@ const config = createConfig({
     [sepolia.id]: http(),
   },
   connectors: [
-    (MagicNamespace as any).magicConnector({
+    magicConnector({
       apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
       magicSdkConfiguration: {
         network: {
