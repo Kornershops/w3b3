@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   House, 
-  Compass, 
+  RocketLaunch, 
   SquaresFour, 
   Lightning, 
   Wallet,
@@ -15,7 +15,7 @@ import {
 
 const mobileLinks = [
   { href: '/', label: 'Home', icon: House },
-  { href: '/explore', label: 'Market', icon: Compass },
+  { href: '/factory', label: 'Build', icon: RocketLaunch },
   { href: '/portfolio', label: 'Wallet', icon: Wallet },
   { href: '/recursive', label: 'Alpha', icon: Lightning },
   { href: '/institutional', label: 'Safe', icon: ShieldCheck }
