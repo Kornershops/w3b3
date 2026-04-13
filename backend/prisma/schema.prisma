@@ -23,9 +23,11 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  stakes  UserStake[]
-  rewards Reward[]
+  stakes          UserStake[]
+  rewards         Reward[]
   creditPositions CreditPosition[]
+  institutionalVaults InstitutionalVault[]
+  proposals       CustodyProposal[]
 
   @@map("users")
 }
@@ -109,4 +111,52 @@ model CreditPosition {
   @@index([userId])
   @@index([collateralAsset])
   @@map("credit_positions")
+}
+
+model InstitutionalVault {
+  id              String   @id @default(cuid())
+  ownerId         String
+  name            String
+  address         String   @unique
+  threshold       Int      @default(1)
+  payoutAddress   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  owner           User              @relation(fields: [ownerId], references: [id])
+  signers         VaultSigner[]
+  proposals       CustodyProposal[]
+
+  @@map("institutional_vaults")
+}
+
+model VaultSigner {
+  id              String   @id @default(cuid())
+  vaultId         String
+  address         String
+  name            String?
+  createdAt       DateTime @default(now())
+
+  vault           InstitutionalVault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+
+  @@unique([vaultId, address])
+  @@map("vault_signers")
+}
+
+model CustodyProposal {
+  id                    String   @id @default(cuid())
+  vaultId               String
+  userId                String
+  transactionData       String   @db.Text
+  metadata              String?  @db.Text
+  status                String   @default("PENDING") // PENDING, EXECUTED, REJECTED
+  requiredConfirmations Int
+  currentConfirmations  Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  vault                 InstitutionalVault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  initiator             User               @relation(fields: [userId], references: [id])
+
+  @@map("custody_proposals")
 }

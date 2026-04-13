@@ -9,13 +9,15 @@ import {
   Compass, 
   SquaresFour, 
   Trophy, 
-  Wallet 
+  Wallet,
+  ShieldCheck
 } from '@phosphor-icons/react';
 
 const mobileLinks = [
   { href: '/', label: 'Home', icon: House },
   { href: '/explore', label: 'Market', icon: Compass },
   { href: '/portfolio', label: 'Wallet', icon: Wallet },
+  { href: '/institutional', label: 'Safe', icon: ShieldCheck },
   { href: '/leaderboard', label: 'Ranks', icon: Trophy }
 ];
 
