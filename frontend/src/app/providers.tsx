@@ -15,9 +15,32 @@ import {
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { WagmiProvider, http, createConfig } from 'wagmi';
-// @ts-ignore - The library uses a non-standard export structure for its types in v2
-import { magicConnector } from '@magiclabs/wagmi-connector';
+import * as MagicLinkModule from '@magiclabs/wagmi-connector';
 import '@rainbow-me/rainbowkit/styles.css';
+
+// Robust resolver for the Magic Link connector (Handles multiple v2 deployment variants)
+const getMagicConnector = (config: any) => {
+  const lib = MagicLinkModule as any;
+  const Connector = lib.magicConnector || lib.MagicConnector || lib.dedicatedWalletConnector || lib.default;
+  
+  if (typeof Connector !== 'function') {
+    console.warn('⚠️ Magic Link connector could not be resolved. Falling back to null.');
+    return null;
+  }
+
+  try {
+    // Try as a factory function first (standard Wagmi v2 pattern)
+    return Connector(config);
+  } catch (e) {
+    try {
+      // Fallback to class constructor if factory fails
+      return new (Connector as any)(config);
+    } catch (err) {
+      console.error('❌ Failed to instantiate Magic Link connector:', err);
+      return null;
+    }
+  }
+};
 
 const queryClient = new QueryClient();
 
@@ -33,7 +56,7 @@ const config = createConfig({
     [sepolia.id]: http(),
   },
   connectors: [
-    magicConnector({
+    getMagicConnector({
       apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
       magicSdkConfiguration: {
         network: {
@@ -42,7 +65,7 @@ const config = createConfig({
         },
       },
     }),
-  ],
+  ].filter(Boolean) as any[],
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
