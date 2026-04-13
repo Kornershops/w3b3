@@ -110,3 +110,35 @@ export interface AuthResponse {
   refreshToken: string;
   user: User;
 }
+
+/**
+ * Phase 13: Recursive Yield & Capital Efficiency
+ */
+export interface RecursiveStrategy {
+  id: string;
+  name: string;
+  baseAsset: string;
+  targetAsset: string;
+  maxLeverage: number;
+  currentLeverage: number;
+  estimatedNetApy: number;
+  totalLiquidity: string;
+  riskScore: 'LOW' | 'MEDIUM' | 'HIGH';
+  isActive: boolean;
+  metadata?: {
+    liquidationThreshold: number;
+    healthFactor: number;
+    rebalanceFrequency: string;
+  };
+}
+
+export interface StrategyAction {
+  id: string;
+  strategyId: string;
+  userId: string;
+  type: 'LOOP' | 'DELOOP' | 'REBALANCE';
+  amount: string;
+  leverageFactor: number;
+  transactionHash: string;
+  timestamp: string;
+}

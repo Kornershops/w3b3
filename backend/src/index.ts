@@ -16,6 +16,7 @@ import portfolioRoutes from './routes/portfolio';
 import adminRoutes from './routes/admin';
 import userRoutes from './routes/users';
 import yieldRoutes from './routes/yield';
+import recursiveRoutes from './routes/recursive';
 
 dotenv.config();
 
@@ -83,6 +84,7 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/yield', yieldRoutes);
+app.use('/api/recursive', recursiveRoutes);
 
 // Error handling middleware
 app.use((err: Error & { status?: number }, req: express.Request, res: express.Response, _next: express.NextFunction): void => {
