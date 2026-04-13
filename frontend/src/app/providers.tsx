@@ -15,7 +15,7 @@ import {
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { WagmiProvider, http, createConfig } from 'wagmi';
-import MagicConnector from '@magiclabs/wagmi-connector';
+import * as MagicNamespace from '@magiclabs/wagmi-connector';
 import '@rainbow-me/rainbowkit/styles.css';
 
 const queryClient = new QueryClient();
@@ -32,7 +32,7 @@ const config = createConfig({
     [sepolia.id]: http(),
   },
   connectors: [
-    new MagicConnector({
+    (MagicNamespace as any).magicConnector({
       apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
       magicSdkConfiguration: {
         network: {
@@ -40,7 +40,7 @@ const config = createConfig({
           chainId: 11155111,
         },
       },
-    }) as any, // Cast to any to bypass the version-mismatch type error for now
+    }),
   ],
 });
 

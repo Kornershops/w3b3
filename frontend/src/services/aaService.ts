@@ -9,8 +9,8 @@ import { http, Account } from "viem";
  * Upgraded to Alchemy AA SDK v3 (Compatible with Viem 2.x / Wagmi 2.x)
  */
 class AAService {
-  private client: AlchemySmartAccountClient | null = null;
-  private account: Account | null = null;
+  private client: any = null;
+  private account: any = null;
 
   /**
    * Initialize a Smart Account from an existing EOA Signer (e.g., Magic or MetaMask)
