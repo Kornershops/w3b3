@@ -1,4 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Mock dependencies before importing the service to avoid viem/actions export errors
+vi.mock('@alchemy/aa-alchemy', () => ({
+  createAlchemySmartAccountClient: vi.fn(),
+}));
+vi.mock('@alchemy/aa-accounts', () => ({
+  createLightAccount: vi.fn(),
+}));
+
 import { aaService } from './aaService';
 
 describe('Account Abstraction Identity Guardrails', () => {
