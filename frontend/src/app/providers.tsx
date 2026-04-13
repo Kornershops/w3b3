@@ -15,7 +15,7 @@ import {
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { WagmiProvider, http, createConfig } from 'wagmi';
-import { MagicConnector } from '@magiclabs/wagmi-connector';
+import MagicConnector from '@magiclabs/wagmi-connector';
 import '@rainbow-me/rainbowkit/styles.css';
 
 const queryClient = new QueryClient();

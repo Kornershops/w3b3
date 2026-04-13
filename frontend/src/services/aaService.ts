@@ -21,8 +21,8 @@ class AAService {
 
     // 1. Create the Light Account Factory
     const lightAccount = await createLightAccount({
-      transport: http(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`),
-      chain: sepolia,
+      transport: http(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`) as any,
+      chain: sepolia as any,
       signer: signer as any,
     });
 
@@ -31,8 +31,8 @@ class AAService {
     // 2. Create the Alchemy Smart Account Client
     this.client = createAlchemySmartAccountClient({
       apiKey,
-      chain: sepolia, // Mandatory in SDK v3
-      account: lightAccount,
+      chain: sepolia as any, // Mandatory in SDK v3
+      account: lightAccount as any,
       gasManagerConfig: policyId ? { policyId } : undefined,
     });
 

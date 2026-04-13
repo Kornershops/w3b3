@@ -29,7 +29,7 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
   // Wagmi 2.0: useWriteContract replaces Prepare + Write combo
   const { writeContract, data: hash, error: writeError } = useWriteContract();
 
-  const { isLoading: isWaiting, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+  const { isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
   });
 
