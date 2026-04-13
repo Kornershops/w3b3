@@ -1,7 +1,7 @@
 import { createLightAccount } from "@alchemy/aa-accounts";
-import { createAlchemySmartAccountClient, AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
+import { createAlchemySmartAccountClient } from "@alchemy/aa-alchemy";
 import { sepolia } from "viem/chains";
-import { http, Account } from "viem";
+import { http } from "viem";
 
 /**
  * Account Abstraction Service
