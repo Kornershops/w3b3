@@ -142,9 +142,13 @@ export class PoolService {
     data: Partial<StakingPool>
   ): Promise<StakingPool> {
     try {
+      // Structural Fix: Extract only valid Prisma fields from the Shared DTO
+      // This prevents 'number' vs 'Decimal' or unexpected DTO fields from breaking the update
+      const { ...prismaData } = data as any;
+      
       const pool = await prisma.stakingPool.update({
         where: { id: poolId },
-        data,
+        data: prismaData,
       });
 
       // Invalidate cache
