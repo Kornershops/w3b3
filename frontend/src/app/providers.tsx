@@ -24,7 +24,7 @@ const queryClient = new QueryClient();
 const config = getDefaultConfig({
   appName: 'W3B3 Staking Portal',
   projectId: '9a9b69123fe5cf9bd4eaf7ec87b4043b',
-  chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
+  chains: [mainnet, polygon, optimism, arbitrum, base, sepolia] as const,
   transports: {
     [mainnet.id]: http(),
     [polygon.id]: http(),

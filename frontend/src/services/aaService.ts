@@ -1,14 +1,16 @@
-import { LightAccount } from "@alchemy/aa-accounts";
-import { createLightAccountAlchemyClient } from "@alchemy/aa-alchemy";
+import { createLightAccount } from "@alchemy/aa-accounts";
+import { createAlchemySmartAccountClient } from "@alchemy/aa-alchemy";
 import { sepolia } from "viem/chains";
+import { http } from "viem";
 
 /**
  * Account Abstraction Service
  * Manages the lifecycle of ERC-4337 Smart Accounts.
+ * Upgraded to Alchemy AA SDK v3 (Compatible with Viem 2.x / Wagmi 2.x)
  */
 class AAService {
   private client: any = null;
-  private account: LightAccount | null = null;
+  private account: any = null;
 
   /**
    * Initialize a Smart Account from an existing EOA Signer (e.g., Magic or MetaMask)
@@ -17,15 +19,20 @@ class AAService {
     const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'your-alchemy-api-key';
     const policyId = process.env.NEXT_PUBLIC_ALCHEMY_POLICY_ID;
 
-    // Create the Alchemy Light Account Client (v3 Pattern)
-    this.client = await createLightAccountAlchemyClient({
+    // 1. Create the Light Account Factory
+    this.account = await createLightAccount({
+      transport: http(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`),
+      chain: sepolia,
+      signer: signer as any,
+    });
+
+    // 2. Create the Alchemy Smart Account Client
+    this.client = createAlchemySmartAccountClient({
       apiKey,
-      chain: sepolia as any,
-      signer,
+      account: this.account,
       gasManagerConfig: policyId ? { policyId } : undefined,
     });
 
-    this.account = this.client.account;
     return this.account?.address || '0x0';
   }
 
@@ -43,7 +50,10 @@ class AAService {
       },
     });
 
-    return await this.client.waitForUserOperationTransaction(result);
+    // In Alchemy v3, result contains the userOpHash
+    return await this.client.waitForUserOperationTransaction({
+      hash: result.hash,
+    });
   }
 
   getAddress(): string {
@@ -56,4 +66,4 @@ class AAService {
 }
 
 export const aaService = new AAService();
-// Deployment Sync Marker: 1775690626
+// Version Alignment Sync: Alchemy SDK v3.x | Viem 2.x

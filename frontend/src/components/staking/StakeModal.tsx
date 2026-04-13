@@ -38,10 +38,10 @@ export function StakeModal({ pool, isOpen, onClose, onSuccess }: StakeModalProps
     if (isConfirmed) {
       if (step === 'approving') {
         setStep('staking');
-      } else if (step === 'staking') {
+      } else if (step === 'staking' && hash) {
         const recordStake = async () => {
           try {
-            await apiService.stake(pool.id, parseFloat(amount), hash as string);
+            await apiService.stake(pool.id, parseFloat(amount), hash);
             setStep('success');
           } catch (e) {
             setError('Failed to record stake on backend');
