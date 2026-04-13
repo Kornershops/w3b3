@@ -1,7 +1,7 @@
-import { createLightAccount } from "@alchemy/aa-accounts";
-import { createAlchemySmartAccountClient } from "@alchemy/aa-alchemy";
+import { createLightAccount, LightAccount } from "@alchemy/aa-accounts";
+import { createAlchemySmartAccountClient, AlchemySmartAccountClient } from "@alchemy/aa-alchemy";
 import { sepolia } from "viem/chains";
-import { http } from "viem";
+import { http, SmartAccount } from "viem";
 
 /**
  * Account Abstraction Service
@@ -9,8 +9,8 @@ import { http } from "viem";
  * Upgraded to Alchemy AA SDK v3 (Compatible with Viem 2.x / Wagmi 2.x)
  */
 class AAService {
-  private client: any = null;
-  private account: any = null;
+  private client: AlchemySmartAccountClient | null = null;
+  private account: SmartAccount | null = null;
 
   /**
    * Initialize a Smart Account from an existing EOA Signer (e.g., Magic or MetaMask)

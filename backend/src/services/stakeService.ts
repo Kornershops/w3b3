@@ -8,7 +8,7 @@ import logger from '../utils/logger';
 export function mapPool(pool: any): StakingPool {
   return {
     ...pool,
-    apyPercentage: pool.apyPercentage.toString(),
+    apyPercentage: Number(pool.apyPercentage), // Corrected to Number for Shared DTO alignment
     tvlAmount: pool.tvlAmount.toString(),
     minimumStake: pool.minimumStake.toString(),
     createdAt: pool.createdAt.toISOString(),
