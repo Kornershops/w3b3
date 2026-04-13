@@ -1,18 +1,7 @@
 import prisma from '../config/database';
 import { User, UserStake, StakingPool } from '../types';
 import logger from '../utils/logger';
-import { mapStake } from './stakeService';
-
-/**
- * Mapper to convert Prisma User to Shared DTO
- */
-export function mapUser(user: any): User {
-  return {
-    ...user,
-    createdAt: user.createdAt.toISOString(),
-    updatedAt: user.updatedAt.toISOString(),
-  };
-}
+import { mapUser, mapStake } from '../utils/mappers';
 
 export class UserService {
   async getUserByWallet(walletAddress: string): Promise<User | null> {

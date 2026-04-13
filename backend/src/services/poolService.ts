@@ -3,20 +3,7 @@ import { getRedis } from '../config/redis';
 import { StakingPool, PoolFilter, PaginatedResponse } from '../types';
 import logger from '../utils/logger';
 import { Prisma } from '@prisma/client';
-
-/**
- * Mapper to convert Prisma StakingPool to Shared DTO
- */
-export function mapPool(pool: any): StakingPool {
-  return {
-    ...pool,
-    apyPercentage: pool.apyPercentage.toString(),
-    tvlAmount: pool.tvlAmount.toString(),
-    minimumStake: pool.minimumStake.toString(),
-    createdAt: pool.createdAt.toISOString(),
-    updatedAt: pool.updatedAt.toISOString(),
-  };
-}
+import { mapPool } from '../utils/mappers';
 
 const POOL_CACHE_TTL = 60; // 1 minute
 
