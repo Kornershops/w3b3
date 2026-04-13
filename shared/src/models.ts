@@ -26,6 +26,12 @@ export interface StakingPool {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  analytics?: {
+    trend: 'BULLISH' | 'BEARISH' | 'STAGNANT';
+    projected7DayApy: number;
+    confidenceScore: number;
+    historicalTvl: { date: string; tvl: number }[]; // For the sparkline chart
+  };
 }
 
 export interface UserStake {

@@ -14,7 +14,7 @@ export function mapUser(user: any): User {
 /**
  * Mapper to convert Prisma StakingPool to Shared DTO
  */
-export function mapPool(pool: any): StakingPool {
+export function mapPool(pool: any, analytics?: any): StakingPool {
   return {
     ...pool,
     apyPercentage: Number(pool.apyPercentage), // Ensure number for Shared DTO alignment
@@ -22,6 +22,7 @@ export function mapPool(pool: any): StakingPool {
     minimumStake: pool.minimumStake.toString(),
     createdAt: pool.createdAt.toISOString(),
     updatedAt: pool.updatedAt.toISOString(),
+    analytics: analytics || undefined,
   };
 }
 

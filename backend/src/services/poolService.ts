@@ -4,6 +4,7 @@ import { StakingPool, PoolFilter, PaginatedResponse } from '../types';
 import logger from '../utils/logger';
 import { Prisma } from '@prisma/client';
 import { mapPool } from '../utils/mappers';
+import { predictiveAnalyticsService } from './predictiveAnalytics';
 
 const POOL_CACHE_TTL = 60; // 1 minute
 
@@ -36,8 +37,16 @@ export class PoolService {
         orderBy: { createdAt: 'desc' },
       });
 
+      // Map pools and enrich with analytics
+      const mappedPools = await Promise.all(
+        pools.map(async (pool) => {
+          const analytics = await predictiveAnalyticsService.forecastPoolYield(pool.id);
+          return mapPool(pool, analytics);
+        })
+      );
+
       return {
-        data: pools.map(mapPool),
+        data: mappedPools,
         pagination: {
           page,
           limit,
@@ -73,17 +82,22 @@ export class PoolService {
         where: { id: poolId },
       });
 
+      let analytics = null;
       if (pool) {
+        analytics = await predictiveAnalyticsService.forecastPoolYield(pool.id);
+
         // Cache the result
         try {
           const redis = getRedis();
-          await redis.setEx(cacheKey, POOL_CACHE_TTL, JSON.stringify(pool));
+          const enrichedPool = mapPool(pool, analytics);
+          await redis.setEx(cacheKey, POOL_CACHE_TTL, JSON.stringify(enrichedPool));
+          return enrichedPool;
         } catch (redisErr) {
           logger.error('Redis set error:', redisErr);
         }
       }
 
-      return pool ? mapPool(pool) : null;
+      return pool ? mapPool(pool, analytics) : null;
     } catch (error) {
       logger.error('Error fetching pool:', error);
       throw error;

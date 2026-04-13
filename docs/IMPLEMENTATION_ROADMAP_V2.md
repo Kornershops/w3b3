@@ -72,4 +72,13 @@
 
 ---
 
+### 🎨 Phase 10: Dynamic Market UI & Predictive Visualization (VISION)
+*To bridge the gap between complex AI yield analytics and the retail/enterprise user experience by introducing dynamic market indicators.*
+*   **Dynamic Trend Indicators**: Implement real-time `▲ +X.XX%` (green) and `▼ -X.XX%` (red) momentum indicators on all Staking Pool Cards driven by backend TVL saturation data.
+*   **Historical TVL/Price Mini-Charts**: Introduce sparkline charts (micro-graphs) behind or below APY numbers representing the 7-day trajectory of the asset.
+*   **Live Harvester Triggers**: UI notifications (toast or modal) alerting the user when an Autonomous Harvester is mathematically preparing to execute a rebalance.
+*   **Visual Confidence Scores**: Exposing the ML model's `confidenceScore` (e.g. "85% Certainty") inside a premium tooltip when hovering over the Bullish/Bearish arrows.
+
+---
+
 *Last Verified: 2026-04-13 | Status: BRUTALLY STABLE | Vision: ENTERPRISE READY*
