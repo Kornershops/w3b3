@@ -20,6 +20,9 @@ import '@rainbow-me/rainbowkit/styles.css';
 
 // Robust resolver for the Magic Link connector (Handles multiple v2 deployment variants)
 const getMagicConnector = (config: any) => {
+  // Prerendering Fix: Magic SDK requires localStorage which is missing on the server
+  if (typeof window === 'undefined') return null;
+
   const lib = MagicLinkModule as any;
   const Connector = lib.magicConnector || lib.MagicConnector || lib.dedicatedWalletConnector || lib.default;
   
