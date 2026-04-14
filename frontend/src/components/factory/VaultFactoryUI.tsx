@@ -108,15 +108,15 @@ export function VaultFactoryUI() {
                 <h2 className="text-sm font-black text-white uppercase tracking-widest">SDK Preview</h2>
              </div>
              <div className="bg-black/60 rounded-xl p-4 font-mono text-[11px] text-indigo-300 leading-relaxed border border-indigo-500/10">
-                <span className="text-indigo-500 font-bold">// Initialize SDK</span><br/>
+                <span className="text-indigo-500 font-bold">{"// Initialize SDK"}</span><br/>
                 const sdk = new W3B3SDK({'{'}<br/>
-                &nbsp;&nbsp;apiKey: '..._alpha_v1',<br/>
-                &nbsp;&nbsp;rpcUrl: 'https://rpc.w3b3.io'<br/>
+                &nbsp;&nbsp;apiKey: &apos;..._alpha_v1&apos;,<br/>
+                &nbsp;&nbsp;rpcUrl: &apos;https://rpc.w3b3.io&apos;<br/>
                 {'}'});<br/><br/>
-                <span className="text-indigo-500 font-bold">// Provision Market</span><br/>
+                <span className="text-indigo-500 font-bold">{"// Provision Market"}</span><br/>
                 const vault = await sdk.deployVault({'{'}<br/>
-                &nbsp;&nbsp;name: '{config.name || "..."}',<br/>
-                &nbsp;&nbsp;asset: 'stETH'<br/>
+                &nbsp;&nbsp;name: &apos;{config.name || "..."}&apos;,<br/>
+                &nbsp;&nbsp;asset: &apos;stETH&apos;<br/>
                 {'}'});
              </div>
              
