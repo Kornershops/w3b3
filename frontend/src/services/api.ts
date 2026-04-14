@@ -155,6 +155,33 @@ class ApiService {
     const response = await this.client.post('/zaps/alpha', zapData);
     return response.data;
   }
+
+  // Institutional Vaults & Governance
+  async getMyVaults() {
+    const response = await this.client.get('/vaults/my');
+    return response.data;
+  }
+
+  async createVault(vaultData: { name: string; address: string; threshold: number; signers: any[] }) {
+    const response = await this.client.post('/vaults/create', vaultData);
+    return response.data;
+  }
+
+  async approveProposal(proposalId: string, signerAddress: string) {
+    const response = await this.client.post('/vaults/approve', { proposalId, signerAddress });
+    return response.data;
+  }
+
+  // Governance & Protocol Mandate
+  async getGovernancePower() {
+    const response = await this.client.get('/governance/power');
+    return response.data;
+  }
+
+  async castGovernanceVote(poolId: string, weight: number) {
+    const response = await this.client.post('/governance/vote', { poolId, weight });
+    return response.data;
+  }
 }
 
 export const apiService = new ApiService();

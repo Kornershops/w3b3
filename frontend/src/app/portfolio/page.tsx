@@ -10,21 +10,29 @@ import { TreasuryDashboard } from '@/components/portfolio/TreasuryDashboard';
 import { RealYieldVault } from '@/components/staking/RealYieldVault';
 import { Wallet, ChartLineUp, Vault } from '@phosphor-icons/react';
 
+import { PortfolioPerformanceChart } from '@/components/portfolio/PortfolioPerformanceChart';
+import { Portfolio } from '@/types';
+
 export default function PortfolioPage() {
   const { isConnected } = useAccount();
   const [stakes, setStakes] = useState<UserStake[]>([]);
+  const [summary, setSummary] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (isConnected) loadStakes();
+    if (isConnected) loadPortfolioData();
     else setLoading(false);
   }, [isConnected]);
 
-  const loadStakes = async () => {
+  const loadPortfolioData = async () => {
     try {
-      const data = await apiService.getUserStakes();
-      // data may be paginated Api response depending on API 
-      setStakes(data.data || []); 
+      const [stakesData, summaryData] = await Promise.all([
+        apiService.getUserStakes(),
+        apiService.getPortfolio()
+      ]);
+      
+      setStakes(stakesData.data || []); 
+      setSummary(summaryData);
     } catch (error) {
       console.error('Failed to load portfolio:', error);
     } finally {
@@ -36,7 +44,7 @@ export default function PortfolioPage() {
     try {
       await apiService.claimRewards(stakeId);
       alert('Rewards claimed successfully');
-      loadStakes();
+      loadPortfolioData();
     } catch (e: any) {
       alert(e.message || 'Failed to claim');
     }
@@ -56,9 +64,6 @@ export default function PortfolioPage() {
     );
   }
 
-  // Aggregate stats
-  const totalStaked = stakes.reduce((acc, s) => acc + parseFloat(s.amountStaked.toString()), 0);
-
   return (
     <div className="container-max py-12">
       <motion.div 
@@ -66,40 +71,62 @@ export default function PortfolioPage() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-12"
       >
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-8">
-          Your <span className="text-gradient">Portfolio</span>
+        <h1 className="text-3xl md:text-5xl font-black text-white mb-8 italic tracking-tighter uppercase uppercase">
+          Institutional <span className="text-indigo-400 text-shadow-glow">Portfolio</span>
         </h1>
         
-        <div className="mb-12">
-           <TreasuryDashboard />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {/* Main Stat Card */}
-          <div className="glass-panel p-8 bg-indigo-900/10 border-indigo-500/20 md:col-span-2 rounded-3xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 opacity-5">
-               <ChartLineUp size={120} weight="duotone" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+          {/* Global Net Worth Stat Card */}
+          <div className="glass-panel p-8 bg-indigo-950/20 border-indigo-500/20 lg:col-span-2 rounded-3xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+               <ChartLineUp size={160} weight="duotone" />
             </div>
-            <span className="text-indigo-300 font-semibold mb-2 block uppercase tracking-wider text-xs">Total Value Secured</span>
-            <div className="text-5xl font-bold text-white mb-4">
-              ${totalStaked.toLocaleString()}
-              <span className="text-2xl text-slate-500 ml-2 font-light">USD</span>
+            <div className="flex items-center gap-2 mb-2">
+               <span className="text-indigo-300 font-black uppercase tracking-widest text-[10px]">Net Value (Global Aggregate)</span>
+               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
             </div>
-            <div className="w-full bg-indigo-900/30 rounded-full h-1 mt-6">
-               <div className="bg-indigo-500 w-full h-full rounded-full animate-pulse" />
+            <div className="text-5xl md:text-7xl font-black text-white mb-4 tracking-tighter italic">
+              ${Number(summary?.totalStaked || 0).toLocaleString()}
+              <span className="text-2xl text-slate-500 ml-3 font-light non-italic font-mono">USD</span>
+            </div>
+            <div className="flex items-center gap-6 mt-8">
+               <div>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-none mb-1">Projected Annual</p>
+                  <p className="text-lg font-black text-white italic tracking-tighter">${Number(summary?.estimatedAnnual || 0).toLocaleString()}</p>
+               </div>
+               <div className="h-8 w-px bg-white/5" />
+               <div>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-none mb-1">Total Rewards</p>
+                  <p className="text-lg font-black text-green-400 italic tracking-tighter">${Number(summary?.totalRewards || 0).toLocaleString()}</p>
+               </div>
             </div>
           </div>
           
-          <div className="glass-panel p-8 rounded-3xl flex flex-col justify-between">
-            <div>
-              <span className="text-slate-400 mb-2 block uppercase tracking-wider text-xs">Active Positions</span>
-              <h3 className="text-4xl font-bold text-white">{stakes.length}</h3>
-            </div>
-            <div className="flex items-center gap-2 text-green-400 text-xs font-semibold mt-4">
-               <div className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
-               LIVE MONITORING
-            </div>
+          <div className="space-y-6">
+             <div className="glass-panel p-8 rounded-3xl bg-slate-900/40 border-white/5 flex flex-col justify-between">
+                <div>
+                  <span className="text-slate-400 mb-2 block uppercase tracking-wider text-[10px] font-black">Active Vaults</span>
+                  <h3 className="text-5xl font-black text-white italic tracking-tighter">{summary?.activeStakes || 0}</h3>
+                </div>
+                <div className="flex items-center gap-2 text-indigo-400 text-[10px] font-black uppercase tracking-widest mt-6">
+                   <Vault size={16} weight="duotone" />
+                   SECURED & VERIFIED
+                </div>
+             </div>
+             
+             <div className="glass-panel p-8 rounded-3xl bg-slate-900/40 border-white/5">
+                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1 leading-none">Net Alpha Gain</p>
+                <div className="flex items-baseline gap-2">
+                  <h3 className="text-3xl font-black text-green-400 italic tracking-tighter">+{summary?.netGain || '0'}%</h3>
+                  <p className="text-[10px] text-slate-600 font-bold">VS MARKET AVG</p>
+                </div>
+             </div>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
+            <PortfolioPerformanceChart />
+            <TreasuryDashboard />
         </div>
 
         <div className="mb-16">

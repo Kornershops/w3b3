@@ -6,43 +6,69 @@ import logger from '../utils/logger';
 export class PortfolioService {
   async getPortfolioSummary(userId: string): Promise<Portfolio> {
     try {
-      const stakes = await prisma.userStake.findMany({
+      // 1. Fetch Personal Stakes
+      const personalStakes = await prisma.userStake.findMany({
         where: { userId },
         include: { pool: true },
       });
 
-      // Calculate totals
-      const totalStaked = stakes.reduce((sum, stake) => {
-        return sum + parseFloat(stake.amountStaked.toString());
-      }, 0);
+      // 2. Fetch User Context for Institutional Scan
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      const walletAddress = user?.walletAddress;
 
-      const totalRewards = stakes.reduce((sum, stake) => {
-        return sum + parseFloat(stake.rewardsClaimed.toString());
-      }, 0);
+      // 3. Fetch Institutional Vaults (Where user is owner or signer)
+      const institutionalVaults = await prisma.institutionalVault.findMany({
+        where: {
+          OR: [
+            { ownerId: userId },
+            walletAddress ? { signers: { some: { address: walletAddress } } } : {}
+          ]
+        },
+        include: {
+          proposals: {
+            where: { status: 'EXECUTED' } // Only count deployed capital
+          }
+        }
+      });
 
-      const netGain = totalStaked > 0 ? ((totalRewards / totalStaked) * 100).toFixed(2) : '0';
-
-      // Calculate estimated annual earnings
-      const estimatedAnnual = stakes.reduce((sum, stake) => {
+      // --- AGGREGATION LOGIC ---
+      
+      // Personal Totals
+      let totalStaked = personalStakes.reduce((sum, stake) => sum + parseFloat(stake.amountStaked.toString()), 0);
+      let totalRewards = personalStakes.reduce((sum, stake) => sum + parseFloat(stake.rewardsClaimed.toString()), 0);
+      let estimatedAnnual = personalStakes.reduce((sum, stake) => {
         if (!stake.pool) return sum;
         const apy = parseFloat(stake.pool.apyPercentage.toString());
-        const stakeAmount = parseFloat(stake.amountStaked.toString());
-        return sum + (stakeAmount * apy) / 100;
+        return sum + (parseFloat(stake.amountStaked.toString()) * apy) / 100;
       }, 0);
 
-      const activeStakes = stakes.filter((s) => s.isActive).length;
+      // Institutional Totals
+      institutionalVaults.forEach(vault => {
+        // Here we'd ideally fetch real balance from on-chain, 
+        // but for simulation, we aggregate 'Executed' proposal values (deployed capital)
+        const vaultValue = vault.proposals.reduce((sum, prop) => {
+           // Basic metadata parsing for simulation value
+           return sum + 15000; // Mock increment per executed custody action for demo
+        }, 0);
+        
+        totalStaked += vaultValue;
+        estimatedAnnual += (vaultValue * 0.12); // Average 12% institutional yield
+      });
+
+      const netGain = totalStaked > 0 ? ((totalRewards / totalStaked) * 100).toFixed(2) : '0';
+      const activeStakes = personalStakes.filter((s) => s.isActive).length;
 
       return {
-        totalStaked: totalStaked.toString(),
-        totalRewards: totalRewards.toString(),
+        totalStaked: totalStaked.toFixed(2),
+        totalRewards: totalRewards.toFixed(2),
         netGain,
-        estimatedAnnual: estimatedAnnual.toString(),
-        activeStakes,
-        totalStakes: stakes.length,
+        estimatedAnnual: estimatedAnnual.toFixed(2),
+        activeStakes: activeStakes + institutionalVaults.length,
+        totalStakes: personalStakes.length + institutionalVaults.length,
         lastUpdated: new Date().toISOString(),
       };
     } catch (error) {
-      logger.error('Error calculating portfolio summary:', error);
+      logger.error('Error calculating global portfolio summary:', error);
       throw error;
     }
   }

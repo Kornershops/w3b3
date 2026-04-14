@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ShieldCheck, 
   Users, 
@@ -7,25 +7,51 @@ import {
   Gear, 
   CheckCircle, 
   XCircle,
-  Link as LinkIcon 
+  Link as LinkIcon,
+  Pulse
 } from '@phosphor-icons/react';
+import { apiService } from '@/services/api';
+import { useAccount } from 'wagmi';
 
-/**
- * CustodyDashboard
- * A premium institutional interface for managing Multi-Sig vaults (Gnosis Safe / Fireblocks).
- * Part of Phase 12: Institutional Custody & Compliance.
- */
 export function CustodyDashboard() {
+  const { address } = useAccount();
+  const [vaults, setVaults] = useState<any[]>([]);
+  const [proposals, setProposals] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [, setIsLinking] = useState(false);
 
-  // Mock data for initial UI presentation
-  const vaults = [
-    { id: '1', name: 'Treasury Alpha', address: '0x88...f2a4', threshold: 2, totalSigners: 3, status: 'ACTIVE' }
-  ];
+  const loadData = useCallback(async () => {
+    try {
+      const userVaults = await apiService.getMyVaults();
+      setVaults(userVaults);
+      
+      // Flatten proposals from all vaults
+      const allProposals = userVaults.flatMap((v: any) => 
+        v.proposals.map((p: any) => ({ ...p, vaultName: v.name }))
+      );
+      setProposals(allProposals.filter((p: any) => p.status === 'PENDING'));
+    } catch (err) {
+      console.error('Failed to load institutional data', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const pendingProposals = [
-    { id: 'p1', type: 'Unstake', vault: 'Treasury Alpha', amount: '25.5 ETH', confirmations: 1, totalRequired: 2 }
-  ];
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleApprove = async (proposalId: string) => {
+    if (!address) return alert('Please connect signer wallet');
+    try {
+      await apiService.approveProposal(proposalId, address);
+      loadData(); // Refresh
+    } catch (err) {
+      console.error('Approval failed', err);
+    }
+  };
+
+  if (loading) return <div className="h-64 flex items-center justify-center"><Pulse size={32} className="text-indigo-400 animate-pulse" /></div>;
 
   return (
     <div className="space-y-8 pb-20">
@@ -59,19 +85,20 @@ export function CustodyDashboard() {
                     <Gear size={24} className="animate-spin-slow" />
                   </div>
                   <h3 className="font-black text-white text-lg tracking-tighter mb-1">{vault.name}</h3>
-                  <code className="text-[10px] text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded font-mono">{vault.address}</code>
+                  <code className="text-[10px] text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded font-mono break-all">{vault.address}</code>
                   
                   <div className="mt-6 flex items-center justify-between">
                      <div className="flex items-center gap-1.5">
                         <Users size={14} className="text-slate-500" />
-                        <span className="text-xs text-slate-400 font-bold">{vault.threshold}/{vault.totalSigners} REQUIRED</span>
-                     </div>
-                     <span className="text-[10px] font-black text-green-400 uppercase bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 tracking-tighter">
-                       {vault.status}
-                     </span>
+                        <span className="text-xs text-slate-400 font-bold">{vault.threshold}/{vault.signers.length} REQUIRED</span>
+                      </div>
+                      <span className="text-[10px] font-black text-green-400 uppercase bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 tracking-tighter">
+                        ACTIVE
+                      </span>
                   </div>
                 </div>
               ))}
+              {vaults.length === 0 && <p className="text-xs text-slate-500 italic p-4">No institutional vaults detected. Create one to begin.</p>}
             </div>
           </div>
         </div>
@@ -88,22 +115,25 @@ export function CustodyDashboard() {
             </div>
 
             <div className="space-y-3">
-              {pendingProposals.map(prop => (
+              {proposals.map(prop => (
                 <div key={prop.id} className="bg-black/40 border border-white/5 rounded-2xl p-4 flex items-center justify-between gap-4">
                    <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-black text-white uppercase tracking-tighter">{prop.type} REQUEST</span>
-                        <span className="text-slate-500 text-[10px]">VAULT: {prop.vault}</span>
+                        <span className="text-xs font-black text-white uppercase tracking-tighter">PROPOSAL #{prop.id.slice(0,4)}</span>
+                        <span className="text-slate-500 text-[10px]">VAULT: {prop.vaultName}</span>
                       </div>
-                      <p className="text-lg font-black text-indigo-400 tracking-tighter">{prop.amount}</p>
+                      <p className="text-sm font-medium text-slate-400 truncate max-w-[200px]">{prop.metadata || 'Asset Rebalance Action'}</p>
                    </div>
                    
                    <div className="flex items-center gap-3">
                       <div className="text-right mr-2 hidden sm:block">
                         <p className="text-[10px] text-slate-500 font-black">APPROVALS</p>
-                        <p className="text-xs font-black text-white">{prop.confirmations}/{prop.totalRequired}</p>
+                        <p className="text-xs font-black text-white">{prop.currentConfirmations}/{prop.requiredConfirmations}</p>
                       </div>
-                      <button className="p-3 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl hover:bg-green-500/20 transition-all">
+                      <button 
+                        onClick={() => handleApprove(prop.id)}
+                        className="p-3 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl hover:bg-green-500/20 transition-all pointer-events-auto z-10"
+                      >
                         <CheckCircle size={20} weight="fill" />
                       </button>
                       <button className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl hover:bg-red-500/20 transition-all">
@@ -112,6 +142,7 @@ export function CustodyDashboard() {
                    </div>
                 </div>
               ))}
+              {proposals.length === 0 && <p className="text-xs text-slate-500 italic p-4">All proposals cleared. No pending actions.</p>}
             </div>
           </div>
         </div>
