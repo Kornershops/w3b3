@@ -48,10 +48,25 @@ model StakingPool {
   updatedAt       DateTime @updatedAt
 
   userStakes UserStake[]
+  analytics  PoolAnalytics?
 
   @@unique([chainId, contractAddress])
   @@index([chainId])
   @@map("staking_pools")
+}
+
+model PoolAnalytics {
+  id              String   @id @default(cuid())
+  poolId          String   @unique
+  historicalTvl   Json?    // Array of { tvl: number, timestamp: number }
+  historicalPrice Json?    // Array of { price: number, timestamp: number }
+  confidenceScore Decimal  @default(0.95) @db.Decimal(5, 4)
+  trend           String   @default("STABLE") // BULLISH, BEARISH, STABLE
+  updatedAt       DateTime @updatedAt
+  
+  pool            StakingPool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  
+  @@map("pool_analytics")
 }
 
 model UserStake {
