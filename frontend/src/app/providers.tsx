@@ -18,60 +18,70 @@ import { WagmiProvider, http, createConfig } from 'wagmi';
 import * as MagicLinkModule from '@magiclabs/wagmi-connector';
 import '@rainbow-me/rainbowkit/styles.css';
 
-// Robust resolver for the Magic Link connector (Handles multiple v2 deployment variants)
-const getMagicConnector = (config: any) => {
-  // Prerendering Fix: Magic SDK requires localStorage which is missing on the server
-  if (typeof window === 'undefined') return null;
-
-  const lib = MagicLinkModule as any;
-  const Connector = lib.magicConnector || lib.MagicConnector || lib.dedicatedWalletConnector || lib.default;
-  
-  if (typeof Connector !== 'function') {
-    console.warn('⚠️ Magic Link connector could not be resolved. Falling back to null.');
-    return null;
-  }
-
-  try {
-    // Try as a factory function first (standard Wagmi v2 pattern)
-    return Connector(config);
-  } catch (e) {
-    try {
-      // Fallback to class constructor if factory fails
-      return new (Connector as any)(config);
-    } catch (err) {
-      console.error('❌ Failed to instantiate Magic Link connector:', err);
-      return null;
-    }
-  }
-};
-
 const queryClient = new QueryClient();
 
-// Wagmi v2 Config Structure
-const config = createConfig({
-  chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
-  transports: {
-    [mainnet.id]: http(),
-    [polygon.id]: http(),
-    [optimism.id]: http(),
-    [arbitrum.id]: http(),
-    [base.id]: http(),
-    [sepolia.id]: http(),
-  },
-  connectors: [
-    getMagicConnector({
-      apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
-      magicSdkConfiguration: {
-        network: {
-          rpcUrl: 'https://rpc.sepolia.org',
-          chainId: 11155111,
-        },
-      },
-    }),
-  ].filter(Boolean) as any[],
-});
-
 export function Providers({ children }: { children: React.ReactNode }) {
+  // Prerendering Guard: We MUST defer Wagmi config creation to the client side
+  // otherwise Magic SDK or other connectors might attempt to access localStorage during build.
+  const [mount, setMount] = React.useState(false);
+
+  React.useEffect(() => {
+    setMount(true);
+  }, []);
+
+  const config = React.useMemo(() => {
+    if (!mount) return null;
+
+    const getMagicConnector = (config: any) => {
+      const lib = MagicLinkModule as any;
+      const Connector = lib.magicConnector || lib.MagicConnector || lib.dedicatedWalletConnector || lib.default;
+      
+      if (typeof Connector !== 'function') return null;
+
+      try {
+        return Connector(config);
+      } catch (e) {
+        try {
+          return new (Connector as any)(config);
+        } catch (err) {
+          return null;
+        }
+      }
+    };
+
+    return createConfig({
+      chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
+      transports: {
+        [mainnet.id]: http(),
+        [polygon.id]: http(),
+        [optimism.id]: http(),
+        [arbitrum.id]: http(),
+        [base.id]: http(),
+        [sepolia.id]: http(),
+      },
+      connectors: [
+        getMagicConnector({
+          apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
+          magicSdkConfiguration: {
+            network: {
+              rpcUrl: 'https://rpc.sepolia.org',
+              chainId: 11155111,
+            },
+          },
+        }),
+      ].filter(Boolean) as any[],
+    });
+  }, [mount]);
+
+  // During SSR / Prerendering, we render a simplified version or nothing to avoid storage crashes
+  if (!mount || !config) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
@@ -89,4 +99,3 @@ export function Providers({ children }: { children: React.ReactNode }) {
     </WagmiProvider>
   );
 }
-// build stabilization ping
