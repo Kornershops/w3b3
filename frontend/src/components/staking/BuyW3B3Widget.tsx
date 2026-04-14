@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowSquareOut, Swap } from '@phosphor-icons/react';
+import { ArrowSquareOut } from '@phosphor-icons/react';
 
 export const BuyW3B3Widget: React.FC = () => {
   return (

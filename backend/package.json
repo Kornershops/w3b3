@@ -14,7 +14,8 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "ts-node prisma/seed.ts",
+    "db:generate": "prisma generate",
+    "db:seed": "ts-node -r dotenv/config prisma/seed.ts",
     "db:reset": "prisma migrate reset"
   },
   "dependencies": {

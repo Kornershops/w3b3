@@ -157,6 +157,32 @@ model CustodyProposal {
 
   vault                 InstitutionalVault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
   initiator             User               @relation(fields: [userId], references: [id])
+  approvals             ProposalApproval[]
 
   @@map("custody_proposals")
+}
+
+model ProposalApproval {
+  id            String   @id @default(cuid())
+  proposalId    String
+  signerAddress String
+  createdAt     DateTime @default(now())
+
+  proposal      CustodyProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, signerAddress])
+  @@map("proposal_approvals")
+}
+
+model TreasuryAsset {
+  id              String   @id @default(cuid())
+  symbol          String
+  address         String   @unique
+  decimals        Int
+  oracleId        String?  // CoinGecko or Chainlink identifier
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("treasury_assets")
 }

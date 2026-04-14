@@ -21,6 +21,7 @@ export class InstitutionalCustodyService {
     const proposal = await prisma.custodyProposal.create({
       data: {
         vaultId,
+        userId: metadata.initiator,
         transactionData: JSON.stringify(transactionData),
         metadata: JSON.stringify(metadata),
         status: 'PENDING',
@@ -38,19 +39,37 @@ export class InstitutionalCustodyService {
   async approveProposal(proposalId: string, signerAddress: string) {
     const proposal = await prisma.custodyProposal.findUnique({
       where: { id: proposalId },
-      include: { vault: { include: { signers: true } } }
+      include: { 
+        vault: { include: { signers: true } },
+        approvals: true 
+      }
     });
 
     if (!proposal) throw new Error('Proposal not found');
 
+    // 1. Verify the signer is authorized for this vault
     const isAuthorized = proposal.vault.signers.some(s => s.address.toLowerCase() === signerAddress.toLowerCase());
     if (!isAuthorized) throw new Error('Unauthorized signer');
 
-    const updatedProposal = await prisma.custodyProposal.update({
-      where: { id: proposalId },
-      data: {
-        currentConfirmations: { increment: 1 },
-      }
+    // 2. CHECK: Prevent double-approval (Brutal Stability Fix)
+    const alreadyApproved = proposal.approvals.some(a => a.signerAddress.toLowerCase() === signerAddress.toLowerCase());
+    if (alreadyApproved) throw new Error('Signer has already approved this proposal');
+
+    // 3. Record the approval and increment counter in a transaction
+    const updatedProposal = await prisma.$transaction(async (tx) => {
+      await tx.proposalApproval.create({
+        data: {
+          proposalId,
+          signerAddress,
+        }
+      });
+
+      return tx.custodyProposal.update({
+        where: { id: proposalId },
+        data: {
+          currentConfirmations: { increment: 1 },
+        }
+      });
     });
 
     if (updatedProposal.currentConfirmations >= updatedProposal.requiredConfirmations) {

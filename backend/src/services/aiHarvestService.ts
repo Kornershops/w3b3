@@ -21,7 +21,7 @@ export class AIHarvestService {
         orderBy: { apyPercentage: 'desc' }
       });
 
-      const recommendations = [];
+      const recommendations: any[] = [];
 
       // 3. AI/Algorithmic Evaluation Logic
       for (const stake of userStakes) {

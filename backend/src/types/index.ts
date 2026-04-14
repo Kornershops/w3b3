@@ -32,6 +32,7 @@ export interface ApiError {
 
 export interface JwtPayload {
   userId: string;
+  id: string; // Alias for userId to maintain compatibility with Prisma-style logic
   walletAddress: string;
   role: string;
   iat: number;
@@ -59,4 +60,15 @@ export interface PaginatedResponse<T> {
     total: number;
     pages: number;
   };
+}
+
+/**
+ * Global extension for Express Request object
+ */
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JwtPayload;
+    }
+  }
 }

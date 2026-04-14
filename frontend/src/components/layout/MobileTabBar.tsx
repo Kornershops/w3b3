@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import { 
   House, 
   RocketLaunch, 
-  SquaresFour, 
   Lightning, 
   Wallet,
   ShieldCheck

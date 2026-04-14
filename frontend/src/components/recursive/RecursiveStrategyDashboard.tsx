@@ -5,9 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowsClockwise, 
   Lightning, 
-  TrendUp, 
   ShieldCheck, 
-  Info,
   CaretRight,
   ChartLineUp
 } from '@phosphor-icons/react';

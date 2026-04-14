@@ -40,7 +40,7 @@ export class PoolService {
       // Map pools and enrich with analytics
       const mappedPools = await Promise.all(
         pools.map(async (pool) => {
-          const analytics = await predictiveAnalyticsService.forecastPoolYield(pool.id);
+          const analytics: any = await predictiveAnalyticsService.forecastPoolYield(pool.id);
           return mapPool(pool, analytics);
         })
       );
@@ -82,7 +82,7 @@ export class PoolService {
         where: { id: poolId },
       });
 
-      let analytics = null;
+      let analytics: any = null;
       if (pool) {
         analytics = await predictiveAnalyticsService.forecastPoolYield(pool.id);
 

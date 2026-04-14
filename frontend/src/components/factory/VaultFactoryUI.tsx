@@ -109,15 +109,15 @@ export function VaultFactoryUI() {
              </div>
              <div className="bg-black/60 rounded-xl p-4 font-mono text-[11px] text-indigo-300 leading-relaxed border border-indigo-500/10">
                 <span className="text-indigo-500 font-bold">// Initialize SDK</span><br/>
-                const sdk = new W3B3SDK({<br/>
+                const sdk = new W3B3SDK({'{'}<br/>
                 &nbsp;&nbsp;apiKey: '..._alpha_v1',<br/>
                 &nbsp;&nbsp;rpcUrl: 'https://rpc.w3b3.io'<br/>
-                });<br/><br/>
+                {'}'});<br/><br/>
                 <span className="text-indigo-500 font-bold">// Provision Market</span><br/>
-                const vault = await sdk.deployVault({<br/>
+                const vault = await sdk.deployVault({'{'}<br/>
                 &nbsp;&nbsp;name: '{config.name || "..."}',<br/>
                 &nbsp;&nbsp;asset: 'stETH'<br/>
-                });
+                {'}'});
              </div>
              
              <div className="mt-8 space-y-4">

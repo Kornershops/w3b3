@@ -128,6 +128,17 @@ class ApiService {
     const response = await this.client.get('/yield/stats');
     return response.data;
   }
+
+  // Treasury & Harvesting
+  async getTreasuryStatus() {
+    const response = await this.client.get('/treasury/status');
+    return response.data;
+  }
+
+  async triggerHarvest() {
+    const response = await this.client.post('/treasury/harvest');
+    return response.data;
+  }
 }
 
 export const apiService = new ApiService();

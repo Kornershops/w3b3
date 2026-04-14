@@ -7,8 +7,6 @@ import Link from 'next/link';
 import { 
   ArrowUpRight, 
   Pulse, 
-  ShieldWarning, 
-  ShieldCheck, 
   CaretUp, 
   CaretDown, 
   TrendUp, 
@@ -24,7 +22,6 @@ interface PoolCardProps {
 
 export function PoolCard({ pool, onStake }: PoolCardProps) {
   const parsedApy = parseFloat(pool.apyPercentage.toString());
-  const isHighRisk = parsedApy > 20.0;
   
   const analytics = pool.analytics;
   const isBullish = analytics?.trend === 'BULLISH';

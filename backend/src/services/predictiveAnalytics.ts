@@ -1,7 +1,30 @@
 import prisma from '../config/database';
 import logger from '../utils/logger';
+import { notificationService } from './notificationService';
 
 export class PredictiveAnalyticsService {
+  /**
+   * Scans all active pools and triggers real-time alpha broadcasts for bullish opportunities.
+   */
+  async runAlphaAnalysis() {
+    try {
+      const pools = await prisma.stakingPool.findMany({ where: { isActive: true } });
+      for (const pool of pools) {
+        const forecast = await this.forecastPoolYield(pool.id);
+        if (forecast && forecast.trend === 'BULLISH' && forecast.confidenceScore >= 0.70) {
+          notificationService.broadcastAlphaOpportunity({
+            poolId: pool.id,
+            poolName: pool.name,
+            apy: forecast.projected7DayApy,
+            trend: forecast.trend,
+            confidence: forecast.confidenceScore
+          });
+        }
+      }
+    } catch (error) {
+      logger.error('PredictiveAnalyticsService runAlphaAnalysis Error:', error);
+    }
+  }
   /**
    * Forecasts the 7-day APY trajectory of a given staking pool using historical decay 
    * and Total Value Locked (TVL) momentum indicators.
@@ -40,7 +63,7 @@ export class PredictiveAnalyticsService {
       }
 
       // Generate 7 days of historical TVL data (Mocked for Phase 10)
-      const historicalTvl = [];
+      const historicalTvl: { date: string; tvl: number }[] = [];
       for (let i = 6; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);

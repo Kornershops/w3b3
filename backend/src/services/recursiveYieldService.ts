@@ -21,20 +21,27 @@ export class RecursiveYieldService {
    * Simulates a "Loop" action to verify health factors before on-chain execution.
    */
   async simulateLoop(userId: string, strategyId: string, amount: string, targetLeverage: number) {
-    // 1. Fetch current asset prices and borrow rates from integrated oracles
+    // 1. Fetch current asset prices and borrow rates from integrated oracles (Real-world: priceService)
     const ethPrice = 3500;
     const stEthYield = 0.038; // 3.8%
     const usdtBorrowRate = 0.025; // 2.5%
 
-    // 2. Calculate projected metrics
+    // 2. Calculate projected metrics (Deterministic calculation + safety margin)
     const projectedApy = this.calculateNetApy(stEthYield, usdtBorrowRate, targetLeverage);
-    const healthFactor = 1.45; // Simulated safe health factor
+    
+    // Safety Factor Calculation: Based on leverage ratio
+    // Health factor = 1 / (LTV * Leverage)
+    const ltv = 0.8; // Example collateral factor for stETH
+    const healthFactor = 1 / (ltv * targetLeverage / (targetLeverage - 1 + ltv));
+    
+    // Mocked variation for simulation realism
+    const simulateVariance = 1 + (Math.random() * 0.02 - 0.01);
 
     return {
-      canExecute: healthFactor > 1.1,
-      projectedApy,
-      healthFactor,
-      liquidationPrice: ethPrice * 0.82,
+      canExecute: healthFactor > 1.15,
+      projectedApy: Number((projectedApy * 100).toFixed(2)),
+      healthFactor: Number((healthFactor * simulateVariance).toFixed(2)),
+      liquidationPrice: ethPrice * (ltv * 1.05), // Liquidation buffer
     };
   }
 

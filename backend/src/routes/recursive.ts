@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { recursiveController } from '../controllers/recursiveController';
-import { authenticate } from '../middleware/auth';
+import { authMiddleware } from '../middleware/auth';
 
 const router = Router();
 
@@ -8,6 +8,6 @@ const router = Router();
  * Phase 13: Recursive Yield & Capital Efficiency Routes
  */
 router.get('/', recursiveController.getStrategies);
-router.post('/simulate', authenticate, recursiveController.simulateAction);
+router.post('/simulate', authMiddleware, recursiveController.simulateAction);
 
 export default router;

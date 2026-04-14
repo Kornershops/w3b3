@@ -103,8 +103,35 @@ class SocketService {
   isConnected(): boolean {
     return !!this.socket?.connected;
   }
+
+  /**
+   * Module 2: V3 Mobile Dominance (Alpha Channel)
+   */
+  onAlphaOpportunity(callback: (data: any) => void) {
+    if (this.socket) {
+      this.socket.on('ALPHA_OPPORTUNITY', callback);
+    }
+  }
+
+  offAlphaOpportunity(callback: (data: any) => void) {
+    if (this.socket) {
+      this.socket.off('ALPHA_OPPORTUNITY', callback);
+    }
+  }
+
+  onRebalanceAlert(callback: (data: any) => void) {
+    if (this.socket) {
+      this.socket.on('REBALANCE_ALERT', callback);
+    }
+  }
+
+  offRebalanceAlert(callback: (data: any) => void) {
+    if (this.socket) {
+      this.socket.off('REBALANCE_ALERT', callback);
+    }
+  }
 }
 
 export const socketService = new SocketService(
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+  process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001'
 );

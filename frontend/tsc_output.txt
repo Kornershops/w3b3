@@ -1,0 +1,12 @@
+src/components/dashboard/TreasuryDashboard.tsx(3,32): error TS2307: Cannot find module '../../utils/format' or its corresponding type declarations.
+src/components/institutional/CustodyDashboard.tsx(4,1): error TS6192: All imports in import declaration are unused.
+src/components/institutional/CustodyDashboard.tsx(22,10): error TS6133: 'isLinking' is declared but its value is never read.
+src/components/layout/MobileTabBar.tsx(10,3): error TS6133: 'SquaresFour' is declared but its value is never read.
+src/components/recursive/RecursiveStrategyDashboard.tsx(8,3): error TS6133: 'TrendUp' is declared but its value is never read.
+src/components/recursive/RecursiveStrategyDashboard.tsx(10,3): error TS6133: 'Info' is declared but its value is never read.
+src/components/staking/BuyW3B3Widget.tsx(3,26): error TS6133: 'Swap' is declared but its value is never read.
+src/components/staking/PoolCard.tsx(10,3): error TS6133: 'ShieldWarning' is declared but its value is never read.
+src/components/staking/PoolCard.tsx(11,3): error TS6133: 'ShieldCheck' is declared but its value is never read.
+src/components/staking/PoolCard.tsx(27,9): error TS6133: 'isHighRisk' is declared but its value is never read.
+src/services/magicService.ts(2,34): error TS7016: Could not find a declaration file for module '@magic-ext/connect'. '/Users/machine/My Drive/Github Projects/w3b3/node_modules/@magic-ext/connect/dist/es/index.mjs' implicitly has an 'any' type.
+  There are types at '/Users/machine/My Drive/Github Projects/w3b3/node_modules/@magic-ext/connect/dist/types/index.d.ts', but this result could not be resolved when respecting package.json "exports". The '@magic-ext/connect' library may need to update its package.json or typings.

@@ -142,3 +142,21 @@ export interface StrategyAction {
   transactionHash: string;
   timestamp: string;
 }
+
+/**
+ * Phase 12: Institutional Custody Types
+ */
+export type ProposalStatus = 'PENDING' | 'EXECUTED' | 'REJECTED';
+
+export interface MultiSigProposal {
+  id: string;
+  vaultId: string;
+  userId: string;
+  transactionData: string;
+  metadata: string | null;
+  status: ProposalStatus;
+  requiredConfirmations: number;
+  currentConfirmations: number;
+  createdAt: string;
+  updatedAt: string;
+}

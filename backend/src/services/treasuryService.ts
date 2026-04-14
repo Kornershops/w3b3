@@ -3,6 +3,7 @@ import { TreasuryHoldings } from '../types';
 import logger from '../utils/logger';
 import { priceService } from './priceService';
 import config from '../config/env';
+import prisma from '../config/database';
 
 // Example ERC20 ABI just for `balanceOf`
 const ERC20_ABI = [
@@ -12,14 +13,6 @@ const ERC20_ABI = [
 export class TreasuryService {
   private treasuryAddress: string;
   private provider: ethers.JsonRpcProvider;
-
-  // In production, these would be indexed in Prisma/Redis.
-  // For this architecture phase, we query the node dynamically.
-  private trackedAssets = [
-    { symbol: 'USDC', address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', decimals: 6, coinId: 'usd-coin' },
-    { symbol: 'USDT', address: '0xdac17f958d2ee523a2206206994597c13d831ec7', decimals: 6, coinId: 'tether' },
-    { symbol: 'stETH', address: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84', decimals: 18, coinId: 'staked-ether' }
-  ];
 
   constructor() {
     this.treasuryAddress = process.env.TREASURY_ADDRESS || '0x0000000000000000000000000000000000000000';
@@ -61,12 +54,17 @@ export class TreasuryService {
       }
 
       // 2. Query Treasury ERC20s (Accumulating Protocol Fees)
-      for (const asset of this.trackedAssets) {
+      const trackedAssets = await prisma.treasuryAsset.findMany({
+        where: { isActive: true }
+      });
+
+      for (const asset of trackedAssets) {
         const contract = new ethers.Contract(asset.address, ERC20_ABI, this.provider);
         const balance = await contract.balanceOf(this.treasuryAddress);
 
         if (balance > 0n) {
-          const assetPrice = await priceService.getPrice(asset.coinId);
+          const coinId = asset.oracleId || asset.symbol.toLowerCase();
+          const assetPrice = await priceService.getPrice(coinId);
           const formatted = parseFloat(ethers.formatUnits(balance, asset.decimals));
           const valueUsd = formatted * assetPrice;
           totalValuation += valueUsd;
@@ -79,9 +77,11 @@ export class TreasuryService {
         }
       }
 
-      // 3. Query Total Yield Distributed (from RewardDistributor)
-      // For this phase, we mock the cumulative distribution tracker or read events.
-      const totalEthDistributed = "125.4"; // Mock value for current implementation phase
+      // 3. Query Total Yield Distributed (Aggregated from Reward table)
+      const rewardAggregation = await prisma.reward.aggregate({
+        _sum: { amount: true }
+      });
+      const totalEthDistributed = rewardAggregation._sum.amount?.toString() || "0";
 
       return {
         totalValuationUsd: totalValuation.toString(),

@@ -28,10 +28,10 @@ export const requireKYC = async (req: Request, res: Response, next: NextFunction
       });
     }
 
-    next();
+    return next();
   } catch (error) {
     logger.error('KYC Middleware Error:', error);
-    res.status(500).json({ error: 'Internal Server Error during compliance verification.' });
+    return res.status(500).json({ error: 'Internal Server Error during compliance verification.' });
   }
 };
 
@@ -56,9 +56,9 @@ export const requireInstitutional = async (req: Request, res: Response, next: Ne
       });
     }
 
-    next();
+    return next();
   } catch (error) {
     logger.error('Institutional Middleware Error:', error);
-    res.status(500).json({ error: 'Internal Server Error during institutional verification.' });
+    return res.status(500).json({ error: 'Internal Server Error during institutional verification.' });
   }
 };

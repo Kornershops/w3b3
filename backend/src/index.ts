@@ -17,6 +17,8 @@ import adminRoutes from './routes/admin';
 import userRoutes from './routes/users';
 import yieldRoutes from './routes/yield';
 import recursiveRoutes from './routes/recursive';
+import treasuryRoutes from './routes/treasury';
+import zapRoutes from './routes/zaps';
 
 dotenv.config();
 
@@ -85,6 +87,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/yield', yieldRoutes);
 app.use('/api/recursive', recursiveRoutes);
+app.use('/api/treasury', treasuryRoutes);
+app.use('/api/zaps', zapRoutes);
 
 // Error handling middleware
 app.use((err: Error & { status?: number }, req: express.Request, res: express.Response, _next: express.NextFunction): void => {

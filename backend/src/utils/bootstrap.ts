@@ -47,4 +47,25 @@ export async function seed(client: PrismaClient) {
   ]);
 
   console.log(`Successfully bootstrapped ${pools.length} staking pools`);
+
+  // Bootstrapping Treasury Assets (Module 1: Institutional Alpha)
+  const treasuryAssets = await Promise.all([
+    client.treasuryAsset.upsert({
+      where: { address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' },
+      update: { symbol: 'USDC', decimals: 6, oracleId: 'usd-coin' },
+      create: { symbol: 'USDC', address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', decimals: 6, oracleId: 'usd-coin' },
+    }),
+    client.treasuryAsset.upsert({
+      where: { address: '0xdac17f958d2ee523a2206206994597c13d831ec7' },
+      update: { symbol: 'USDT', decimals: 6, oracleId: 'tether' },
+      create: { symbol: 'USDT', address: '0xdac17f958d2ee523a2206206994597c13d831ec7', decimals: 6, oracleId: 'tether' },
+    }),
+    client.treasuryAsset.upsert({
+      where: { address: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84' },
+      update: { symbol: 'stETH', decimals: 18, oracleId: 'staked-ether' },
+      create: { symbol: 'stETH', address: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84', decimals: 18, oracleId: 'staked-ether' },
+    }),
+  ]);
+
+  console.log(`Successfully bootstrapped ${treasuryAssets.length} treasury assets`);
 }

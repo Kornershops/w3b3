@@ -3,14 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/env';
 import { JwtPayload } from '../types';
 
-declare global {
-  /* eslint-disable-next-line @typescript-eslint/no-namespace */
-  namespace Express {
-    interface Request {
-      user?: JwtPayload;
-    }
-  }
-}
+
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction): void | Response {
   try {
@@ -29,8 +22,12 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
       return res.status(401).json({ error: 'Missing authentication' });
     }
 
-    const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
-    req.user = decoded;
+    const decoded = jwt.verify(token, config.jwt.secret) as any;
+    req.user = {
+      ...decoded,
+      id: decoded.userId || decoded.id,
+      userId: decoded.userId || decoded.id,
+    } as JwtPayload;
 
     return next();
   } catch (error) {
@@ -56,8 +53,12 @@ export function optionalAuthMiddleware(req: Request, res: Response, next: NextFu
     }
 
     if (token) {
-      const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
-      req.user = decoded;
+      const decoded = jwt.verify(token, config.jwt.secret) as any;
+      req.user = {
+        ...decoded,
+        id: decoded.userId || decoded.id,
+        userId: decoded.userId || decoded.id,
+      } as JwtPayload;
     }
 
     next();

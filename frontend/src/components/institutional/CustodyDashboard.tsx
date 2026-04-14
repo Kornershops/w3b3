@@ -1,7 +1,4 @@
-'use client';
-
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, 
   Users, 
@@ -19,7 +16,7 @@ import {
  * Part of Phase 12: Institutional Custody & Compliance.
  */
 export function CustodyDashboard() {
-  const [isLinking, setIsLinking] = useState(false);
+  const [, setIsLinking] = useState(false);
 
   // Mock data for initial UI presentation
   const vaults = [
