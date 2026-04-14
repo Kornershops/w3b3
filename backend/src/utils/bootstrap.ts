@@ -76,17 +76,57 @@ export async function seed(client: PrismaClient) {
 
   console.log(`Successfully bootstrapped ${pools.length} global-scale staking pools`);
 
-  // Bootstrapping Treasury Assets
+    // --- FINAL 15 INSTITUTIONAL BEDROCKS ---
+    client.stakingPool.upsert({
+      where: { chainId_contractAddress: { chainId: 1, contractAddress: '0x5f98805a463973343268781da817940fd03847aa' } },
+      update: { isActive: true },
+      create: { name: 'Liquity LUSD (Stable)', chainId: 1, contractAddress: '0x5f98805a463973343268781da817940fd03847aa', tokenSymbol: 'LUSD', tokenDecimals: 18, apyPercentage: '9.2', tvlAmount: '18000000.00', minimumStake: '100', isActive: true },
+    }),
+    client.stakingPool.upsert({
+      where: { chainId_contractAddress: { chainId: 1, contractAddress: '0x40d16fc02446e10012918ad5feaec479ec7fcf52' } },
+      update: { isActive: true },
+      create: { name: 'Aave GHO (Stable)', chainId: 1, contractAddress: '0x40d16fc02446e10012918ad5feaec479ec7fcf52', tokenSymbol: 'GHO', tokenDecimals: 18, apyPercentage: '10.5', tvlAmount: '24000000.00', minimumStake: '100', isActive: true },
+    }),
+    client.stakingPool.upsert({
+      where: { chainId_contractAddress: { chainId: 1, contractAddress: '0xf97f4df70ada79d912563504107127cae4708a0b' } },
+      update: { isActive: true },
+      create: { name: 'Chainlink Infrastructure', chainId: 1, contractAddress: '0xf97f4df70ada79d912563504107127cae4708a0b', tokenSymbol: 'LINK', tokenDecimals: 18, apyPercentage: '6.4', tvlAmount: '150000000.00', minimumStake: '10', isActive: true },
+    }),
+    client.stakingPool.upsert({
+      where: { chainId_contractAddress: { chainId: 1, contractAddress: '0x514910771af9ca656af840dff83e8264ecf986ca' } },
+      update: { isActive: true },
+      create: { name: 'Uniswap Governance', chainId: 1, contractAddress: '0x514910771af9ca656af840dff83e8264ecf986ca', tokenSymbol: 'UNI', tokenDecimals: 18, apyPercentage: '5.2', tvlAmount: '85000000.00', minimumStake: '10', isActive: true },
+    }),
+    client.stakingPool.upsert({
+      where: { chainId_contractAddress: { chainId: 42161, contractAddress: '0x912ce59144191c1204e64559fe8253a0e49e6548' } },
+      update: { isActive: true },
+      create: { name: 'Arbitrum Foundation', chainId: 42161, contractAddress: '0x912ce59144191c1204e64559fe8253a0e49e6548', tokenSymbol: 'ARB', tokenDecimals: 18, apyPercentage: '7.8', tvlAmount: '1200000000.00', minimumStake: '50', isActive: true },
+    }),
+    client.stakingPool.upsert({
+      where: { chainId_contractAddress: { chainId: 10, contractAddress: '0x4200000000000000000000000000000000000042' } },
+      update: { isActive: true },
+      create: { name: 'Optimism Mainnet', chainId: 10, contractAddress: '0x4200000000000000000000000000000000000042', tokenSymbol: 'OP', tokenDecimals: 18, apyPercentage: '11.2', tvlAmount: '950000000.00', minimumStake: '20', isActive: true },
+    }),
+    client.stakingPool.upsert({
+      where: { chainId_contractAddress: { chainId: 101, contractAddress: 'NATIVE_SOL_LOCK' } },
+      update: { isActive: true },
+      create: { name: 'Solana Native Staking', chainId: 101, contractAddress: 'NATIVE_SOL_LOCK', tokenSymbol: 'SOL', tokenDecimals: 9, apyPercentage: '7.1', tvlAmount: '450000000.00', minimumStake: '1', isActive: true },
+    }),
+  ]);
+
+  console.log(`Successfully bootstrapped ${pools.length} Platinum-scale staking pools`);
+
+  // Bootstrapping Treasury Assets (Fixed Registry)
   await Promise.all([
     client.treasuryAsset.upsert({
       where: { address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' },
-      update: { symbol: 'USDC', decimals: 6, oracleId: 'usd-coin' },
-      create: { symbol: 'USDC', address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', decimals: 6, oracleId: 'usd-coin' },
+      update: { symbol: 'USDC', decimals: 6 },
+      create: { symbol: 'USDC', address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', decimals: 6 },
     }),
     client.treasuryAsset.upsert({
       where: { address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599' },
-      update: { symbol: 'WBTC', decimals: 8, oracleId: 'wrapped-bitcoin' },
-      create: { symbol: 'WBTC', address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', decimals: 8, oracleId: 'wrapped-bitcoin' },
+      update: { symbol: 'WBTC', decimals: 8 },
+      create: { symbol: 'WBTC', address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', decimals: 8 },
     }),
   ]);
 }
