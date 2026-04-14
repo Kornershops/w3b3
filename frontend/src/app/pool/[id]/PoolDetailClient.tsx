@@ -8,6 +8,7 @@ import { ArrowLeft, CheckCircle, ShieldWarning } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import { StakeModal } from '@/components/staking/StakeModal';
+import { PoolHistoricalChart } from '@/components/staking/PoolHistoricalChart';
 
 export function PoolDetailClient({ id }: { id: string }) {
   const { isConnected } = useAccount();
@@ -69,6 +70,14 @@ export function PoolDetailClient({ id }: { id: string }) {
                   </span>
                 </div>
              </div>
+          </div>
+
+          {/* REAL-TIME MARKET ANALYTICS CHART */}
+          <div className="md:col-span-2">
+             <PoolHistoricalChart 
+               data={pool.analytics?.historicalPrice || []} 
+               trend={pool.analytics?.trend || 'STABLE'} 
+             />
           </div>
 
           <div className="glass-card">

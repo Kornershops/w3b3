@@ -109,10 +109,26 @@ app.use((err: Error & { status?: number }, req: express.Request, res: express.Re
   });
 });
 
+import cron from 'node-cron';
+import { yieldService } from './services/yieldService';
+
 // Start server
 if (process.env.NODE_ENV !== 'test') {
   httpServer.listen(PORT, () => {
     logger.info(`🚀 Server running on http://localhost:${PORT}`);
+    
+    // Initial sync on boot
+    yieldService.syncYieldData().catch(err => logger.error('Initial sync failed', err));
+
+    // Schedule sync every 15 minutes
+    cron.schedule('*/15 * * * *', async () => {
+      logger.info('⏰ Running Scheduled Analytics Sync...');
+      try {
+        await yieldService.syncYieldData();
+      } catch (err) {
+        logger.error('Scheduled sync failed', err);
+      }
+    });
   });
 }
 

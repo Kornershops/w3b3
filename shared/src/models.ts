@@ -27,10 +27,11 @@ export interface StakingPool {
   createdAt: string;
   updatedAt: string;
   analytics?: {
-    trend: 'BULLISH' | 'BEARISH' | 'STAGNANT';
-    projected7DayApy: number;
+    trend: 'BULLISH' | 'BEARISH' | 'STABLE';
     confidenceScore: number;
-    historicalTvl: { date: string; tvl: number }[]; // For the sparkline chart
+    historicalTvl: { timestamp: number; tvl: number }[];
+    historicalPrice: { timestamp: number; price: number }[];
+    updatedAt: string;
   };
 }
 
