@@ -139,6 +139,17 @@ class ApiService {
     const response = await this.client.post('/treasury/harvest');
     return response.data;
   }
+
+  // Recursive Yield & Leverage
+  async getRecursiveStrategies() {
+    const response = await this.client.get('/recursive');
+    return response.data;
+  }
+
+  async simulateRecursiveAction(strategyId: string, amount: string, leverage: number) {
+    const response = await this.client.post('/recursive/simulate', { strategyId, amount, leverage });
+    return response.data;
+  }
 }
 
 export const apiService = new ApiService();

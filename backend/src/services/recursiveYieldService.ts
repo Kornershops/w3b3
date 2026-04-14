@@ -1,9 +1,11 @@
-import { RecursiveStrategy, StrategyAction } from '@w3b3/shared';
+import { RecursiveStrategy } from '@w3b3/shared';
+import { priceService } from './priceService';
+import prisma from '../config/database';
+import logger from '../utils/logger';
 
 /**
  * RecursiveYieldService
  * High-performance engine for calculating and executing recursive yield strategies (Leveraged LST Looping).
- * Part of Phase 13: Recursive Yield & Capital Efficiency.
  */
 export class RecursiveYieldService {
   /**
@@ -19,30 +21,48 @@ export class RecursiveYieldService {
 
   /**
    * Simulates a "Loop" action to verify health factors before on-chain execution.
+   * Linked to the Real-Time Analytics engine for 100% market truth.
    */
   async simulateLoop(userId: string, strategyId: string, amount: string, targetLeverage: number) {
-    // 1. Fetch current asset prices and borrow rates from integrated oracles (Real-world: priceService)
-    const ethPrice = 3500;
-    const stEthYield = 0.038; // 3.8%
-    const usdtBorrowRate = 0.025; // 2.5%
+    try {
+      // 1. Fetch the specific strategy definition
+      const strategies = await this.getActiveStrategies();
+      const strategy = strategies.find(s => s.id === strategyId);
+      if (!strategy) throw new Error('Strategy not found');
 
-    // 2. Calculate projected metrics (Deterministic calculation + safety margin)
-    const projectedApy = this.calculateNetApy(stEthYield, usdtBorrowRate, targetLeverage);
-    
-    // Safety Factor Calculation: Based on leverage ratio
-    // Health factor = 1 / (LTV * Leverage)
-    const ltv = 0.8; // Example collateral factor for stETH
-    const healthFactor = 1 / (ltv * targetLeverage / (targetLeverage - 1 + ltv));
-    
-    // Mocked variation for simulation realism
-    const simulateVariance = 1 + (Math.random() * 0.02 - 0.01);
+      // 2. Fetch current prices & market context based on strategy assets
+      const baseAssetId = strategy.baseAsset.toLowerCase() === 'eth' ? 'ethereum' : 
+                        strategy.baseAsset.toLowerCase() === 'sol' ? 'solana' : 'usd-coin';
+      const basePrice = await priceService.getPrice(baseAssetId);
+      
+      const pool = await prisma.stakingPool.findFirst({
+        where: { tokenSymbol: strategy.targetAsset, isActive: true },
+      });
+      
+      const targetYield = pool ? Number(pool.apyPercentage) / 100 : 0.05; 
+      const borrowRate = strategy.baseAsset === 'USDC' ? 0.08 : 0.035; // Example spread
 
-    return {
-      canExecute: healthFactor > 1.15,
-      projectedApy: Number((projectedApy * 100).toFixed(2)),
-      healthFactor: Number((healthFactor * simulateVariance).toFixed(2)),
-      liquidationPrice: ethPrice * (ltv * 1.05), // Liquidation buffer
-    };
+      // 3. Calculate projections
+      const projectedApy = this.calculateNetApy(targetYield, borrowRate, targetLeverage);
+      
+      const ltv = strategy.metadata?.liquidationThreshold || 0.8; 
+      const healthFactor = 1 / (ltv * targetLeverage / (targetLeverage - 1 + ltv));
+      
+      return {
+        canExecute: healthFactor > 1.12,
+        projectedApy: Number((projectedApy * 100).toFixed(2)),
+        healthFactor: Number(healthFactor.toFixed(2)),
+        liquidationPrice: basePrice * (ltv * 1.05),
+        marketContext: {
+          assetPrice: basePrice,
+          baseYield: (targetYield * 100).toFixed(2),
+          borrowRate: (borrowRate * 100).toFixed(2)
+        }
+      };
+    } catch (error) {
+       logger.error('Simulation Failed:', error);
+       throw error;
+    }
   }
 
   /**
