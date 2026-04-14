@@ -20,19 +20,14 @@ import '@rainbow-me/rainbowkit/styles.css';
 
 const queryClient = new QueryClient();
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  // Prerendering Guard: We MUST defer Wagmi config creation to the client side
-  // otherwise Magic SDK or other connectors might attempt to access localStorage during build.
-  const [mount, setMount] = React.useState(false);
-
-  React.useEffect(() => {
-    setMount(true);
-  }, []);
-
-  const config = React.useMemo(() => {
-    if (!mount) return null;
+// 1. Build-Safe Config Factory
+const getWagmiConfig = () => {
+    // During SSR/Build, we return a minimal config to avoid triggering localStorage side effects
+    const isServer = typeof window === 'undefined';
 
     const getMagicConnector = (config: any) => {
+      if (isServer) return null; // CRITICAL: Stop Magic SDK from loading on Render build server
+      
       const lib = MagicLinkModule as any;
       const Connector = lib.magicConnector || lib.MagicConnector || lib.dedicatedWalletConnector || lib.default;
       
@@ -51,6 +46,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
     return createConfig({
       chains: [mainnet, polygon, optimism, arbitrum, base, sepolia],
+      ssr: true, // Enable Wagmi SSR mode
       transports: {
         [mainnet.id]: http(),
         [polygon.id]: http(),
@@ -71,16 +67,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
         }),
       ].filter(Boolean) as any[],
     });
-  }, [mount]);
+};
 
-  // During SSR / Prerendering, we render a simplified version or nothing to avoid storage crashes
-  if (!mount || !config) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    );
-  }
+// Singleton config to preserve state across client re-renders
+let clientConfig: any = null;
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  // Use a ref to ensure the config remains stable after first mount
+  const config = React.useMemo(() => {
+    if (typeof window === 'undefined') return getWagmiConfig();
+    if (!clientConfig) clientConfig = getWagmiConfig();
+    return clientConfig;
+  }, []);
 
   return (
     <WagmiProvider config={config}>
