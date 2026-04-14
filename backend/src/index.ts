@@ -42,10 +42,21 @@ app.use(limiter);
 app.use(helmet());
 app.use(cors({
   origin: function (origin, callback) {
-    const allowed = ['http://localhost:3000', 'https://w33b3.netlify.app'];
-    if (!origin || allowed.indexOf(origin) !== -1) {
+    const envOrigin = process.env.CORS_ORIGIN;
+    const allowed = ['http://localhost:3000', 'https://w33b3.netlify.app', 'https://w3bs3.netlify.app'];
+    
+    if (envOrigin) {
+      if (envOrigin.includes(',')) {
+        allowed.push(...envOrigin.split(',').map(o => o.trim()));
+      } else {
+        allowed.push(envOrigin);
+      }
+    }
+
+    if (!origin || allowed.includes(origin)) {
       callback(null, true);
     } else {
+      console.warn(`CORS Rejecting origin: ${origin}`);
       callback(null, false);
     }
   },
