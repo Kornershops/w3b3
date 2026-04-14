@@ -14,7 +14,7 @@ import {
   sepolia,
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { WagmiProvider, http, createConfig } from 'wagmi';
+import { WagmiProvider, http, createConfig, createStorage, noopStorage } from 'wagmi';
 import * as MagicLinkModule from '@magiclabs/wagmi-connector';
 import '@rainbow-me/rainbowkit/styles.css';
 
@@ -55,6 +55,7 @@ const getWagmiConfig = () => {
         [base.id]: http(),
         [sepolia.id]: http(),
       },
+      storage: isServer ? createStorage({ storage: noopStorage }) : undefined,
       connectors: [
         getMagicConnector({
           apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY || 'pk_live_D66F4A83675F7972',
