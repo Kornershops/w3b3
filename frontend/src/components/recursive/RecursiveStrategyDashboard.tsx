@@ -73,6 +73,35 @@ export function RecursiveStrategyDashboard() {
 
   const hfColor = simulation?.healthFactor > 1.5 ? 'bg-green-500' : simulation?.healthFactor > 1.2 ? 'bg-amber-500' : 'bg-red-500';
 
+  const handleExecute = async () => {
+    if (!selectedStrategy || !simulation?.canExecute) return;
+    
+    setIsLoading(true);
+    try {
+      // 1. Simulate Wallet Transaction Hash (In production, this comes from wagmi/viem)
+      const mockHash = `0x${Math.random().toString(16).slice(2)}${Math.random().toString(16).slice(2)}`;
+      
+      // 2. Trigger the Backend Zap Orchestration
+      await apiService.executeRecursiveZap({
+        poolId: selectedStrategy.metadata?.poolId || '',
+        strategyId: selectedStrategy.id,
+        amount: amount,
+        leverage: leverage,
+        transactionHash: mockHash
+      });
+
+      alert(`🚀 Recursive Strategy [${selectedStrategy.name}] successfully initiated at ${leverage}x leverage!`);
+      // Reset after success
+      setSelectedStrategyId(null);
+      setSimulation(null);
+    } catch (err) {
+      console.error('Execution failed', err);
+      alert('Strategy execution failed. Please check your balance and try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8 pb-32">
       <header>
@@ -219,14 +248,17 @@ export function RecursiveStrategyDashboard() {
             </div>
 
             <button 
-              disabled={!simulation?.canExecute}
+              disabled={!simulation?.canExecute || isLoading}
+              onClick={handleExecute}
               className={`w-full font-black text-sm py-5 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-[0.2em] ${
                 simulation?.canExecute 
                   ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20' 
                   : 'bg-slate-800 text-slate-600 cursor-not-allowed shadow-none'
               }`}
             >
-              {simulation?.canExecute ? (
+              {isLoading ? (
+                <Pulse size={20} className="animate-spin" />
+              ) : simulation?.canExecute ? (
                 <>
                   <Lightning size={18} weight="fill" className="text-amber-400" />
                   <span>Execute {leverage}x Recursive Loop</span>

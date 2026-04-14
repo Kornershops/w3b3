@@ -69,6 +69,9 @@ export class RecursiveYieldService {
    * Returns available recursive strategies based on current market spreads.
    */
   async getActiveStrategies(): Promise<RecursiveStrategy[]> {
+    const stEthPool = await prisma.stakingPool.findFirst({ where: { tokenSymbol: 'stETH' } });
+    const w3usdPool = await prisma.stakingPool.findFirst({ where: { tokenSymbol: 'USDC' } }); // Mocking w3USD with USDC for now
+
     return [
       {
         id: 'strat-eth-001',
@@ -82,6 +85,7 @@ export class RecursiveYieldService {
         riskScore: 'MEDIUM',
         isActive: true,
         metadata: {
+          poolId: stEthPool?.id || 'default-eth',
           liquidationThreshold: 0.85,
           healthFactor: 1.42,
           rebalanceFrequency: '24h',
@@ -91,7 +95,7 @@ export class RecursiveYieldService {
         id: 'strat-stable-001',
         name: 'Delta-Neutral Stable Yield',
         baseAsset: 'USDC',
-        targetAsset: 'w3USD',
+        targetAsset: 'USDC',
         maxLeverage: 1.0,
         currentLeverage: 1.0,
         estimatedNetApy: 12.5,
@@ -99,6 +103,7 @@ export class RecursiveYieldService {
         riskScore: 'LOW',
         isActive: true,
         metadata: {
+          poolId: w3usdPool?.id || 'default-stable',
           liquidationThreshold: 0.95,
           healthFactor: 1.95,
           rebalanceFrequency: 'Hourly',

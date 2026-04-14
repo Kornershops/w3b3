@@ -150,6 +150,11 @@ class ApiService {
     const response = await this.client.post('/recursive/simulate', { strategyId, amount, leverage });
     return response.data;
   }
+
+  async executeRecursiveZap(zapData: { poolId: string; strategyId: string; amount: string; leverage: number; transactionHash: string }) {
+    const response = await this.client.post('/zaps/alpha', zapData);
+    return response.data;
+  }
 }
 
 export const apiService = new ApiService();
