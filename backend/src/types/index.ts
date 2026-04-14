@@ -66,6 +66,7 @@ export interface PaginatedResponse<T> {
  * Global extension for Express Request object
  */
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: JwtPayload;

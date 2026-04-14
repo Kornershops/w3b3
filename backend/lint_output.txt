@@ -1,0 +1,148 @@
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/controllers/recursiveController.ts
+   9:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  13:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  20:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/controllers/treasuryController.ts
+  14:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  18:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  32:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/controllers/zapController.ts
+  13:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  15:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/index.ts
+  109:41  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/middleware/auth.ts
+   25:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   56:63  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/middleware/compliance.ts
+   8:83  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  41:93  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/middleware/validation.ts
+   6:60  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  48:60  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  69:60  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/aiHarvestService.ts
+   1:10  warning  'StakingPool' is defined but never used   @typescript-eslint/no-unused-vars
+  10:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  24:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/bridgeService.ts
+  13:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  31:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/creditService.ts
+   5:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  18:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  29:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  52:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  72:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/custodyService.ts
+   2:10  warning  'MultiSigProposal' is defined but never used  @typescript-eslint/no-unused-vars
+   2:28  warning  'ProposalStatus' is defined but never used    @typescript-eslint/no-unused-vars
+  13:3   warning  Missing return type on function               @typescript-eslint/explicit-function-return-type
+  13:62  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  39:3   warning  Missing return type on function               @typescript-eslint/explicit-function-return-type
+  82:3   warning  Missing return type on function               @typescript-eslint/explicit-function-return-type
+  88:5   warning  Unexpected console statement                  no-console
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/gasService.ts
+  20:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  20:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/notificationService.ts
+  13:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  37:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/poolService.ts
+    5:10  warning  'Prisma' is defined but never used        @typescript-eslint/no-unused-vars
+   43:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   85:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/portfolioService.ts
+  2:10  warning  'ethers' is defined but never used            @typescript-eslint/no-unused-vars
+  3:63  warning  'TreasuryHoldings' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/predictiveAnalytics.ts
+  9:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/recursiveYieldService.ts
+   1:29  warning  'StrategyAction' is defined but never used  @typescript-eslint/no-unused-vars
+  23:3   warning  Missing return type on function             @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/reportService.ts
+  21:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/revenueRouterService.ts
+   1:10  warning  'ethers' is defined but never used        @typescript-eslint/no-unused-vars
+   2:8   warning  'prisma' is defined but never used        @typescript-eslint/no-unused-vars
+  17:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  37:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:3   warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  58:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/safeService.ts
+  12:3  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/stakeService.ts
+   2:40  warning  'StakingPool' is defined but never used    @typescript-eslint/no-unused-vars
+   4:10  warning  'mapPool' is defined but never used        @typescript-eslint/no-unused-vars
+  83:15  warning  'pool' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  83:21  warning  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  83:53  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/userService.ts
+    2:27  warning  'StakingPool' is defined but never used    @typescript-eslint/no-unused-vars
+   56:15  warning  'pool' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   56:21  warning  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   56:53  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+   74:41  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+  127:13  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/yieldService.ts
+  92:63  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/services/zapOrchestratorService.ts
+   1:10  warning  'ethers' is defined but never used  @typescript-eslint/no-unused-vars
+  16:3   warning  Missing return type on function     @typescript-eslint/explicit-function-return-type
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/types/index.ts
+  69:3  error  ES2015 module syntax is preferred over namespaces  @typescript-eslint/no-namespace
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/utils/bootstrap.ts
+   3:8  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+   4:3  warning  Unexpected console statement     no-console
+  49:3  warning  Unexpected console statement     no-console
+  70:3  warning  Unexpected console statement     no-console
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/utils/mappers.ts
+   6:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/machine/My Drive/Github Projects/w3b3/backend/src/utils/socket.ts
+   5:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   5:45  warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+  14:5   warning  Unexpected console statement              no-console
+  17:7   warning  Unexpected console statement              no-console
+  24:25  warning  Missing return type on function           @typescript-eslint/explicit-function-return-type
+
+✖ 89 problems (1 error, 88 warnings)
+
