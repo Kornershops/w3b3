@@ -10,10 +10,11 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspaces",
-    "build": "npm run build:shared && npm run db:generate -w w3b3-backend && npm run build --workspaces --if-present",
+    "build": "npm run build:shared && npm run db:generate && npm run db:push && npm run build --workspaces",
     "build:frontend": "npm run build --workspace=w3b3-frontend",
     "build:shared": "npm run build --workspace=@w3b3/shared",
     "db:generate": "npm run db:generate -w w3b3-backend",
+    "db:push": "npm run db:push -w w3b3-backend",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "type-check": "npm run type-check --workspaces --if-present"
