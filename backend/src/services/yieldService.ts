@@ -7,9 +7,14 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import { getCoinGeckoId } from '../utils/coingecko';
 
+const COINGECKO_KEY = process.env.COINGECKO_API_KEY;
+const IS_PRO = !!COINGECKO_KEY;
+
 const coinGeckoClient = axios.create({
-  baseURL: 'https://api.coingecko.com/api/v3',
+  baseURL: IS_PRO ? 'https://pro-api.coingecko.com/api/v3' : 'https://api.coingecko.com/api/v3',
   timeout: 10000,
+  headers: IS_PRO ? { 'x-cg-pro-api-key': COINGECKO_KEY } : {},
+  params: IS_PRO ? {} : { x_cg_demo_api_key: '' } // Demo keys or empty for public
 });
 
 axiosRetry(coinGeckoClient, { retries: 3, retryDelay: axiosRetry.exponentialDelay });
@@ -75,9 +80,12 @@ export class YieldService {
         include: { analytics: true }
       });
 
-      const updatedPools = await Promise.all(pools.map(async (pool) => {
+      const updatedPools = [];
+      for (const pool of pools) {
+        // 1. Fetch Yield Stats
         const yieldData = await this.fetchExternalYield(pool.contractAddress);
         
+        // 2. Fetch Authentic Market History from CoinGecko
         const cgId = getCoinGeckoId(pool.tokenSymbol);
         let analyticsData: any = {
           confidenceScore: 0.95,
@@ -86,6 +94,9 @@ export class YieldService {
 
         if (cgId) {
           try {
+            // Respect Public Rate Limits if no key is present (delay 1.5s)
+            if (!IS_PRO) await new Promise(resolve => setTimeout(resolve, 1500));
+
             const history = await coinGeckoClient.get(`/coins/${cgId}/market_chart`, {
               params: { vs_currency: 'usd', days: '7', interval: 'hourly' }
             });
@@ -108,7 +119,7 @@ export class YieldService {
           }
         }
 
-        return prisma.stakingPool.update({
+        const updated = await prisma.stakingPool.update({
           where: { id: pool.id },
           data: {
             apyPercentage: yieldData.apy.toString(),
@@ -121,7 +132,8 @@ export class YieldService {
             }
           },
         });
-      }));
+        updatedPools.push(updated);
+      }
 
       logger.info(`✅ Successfully certified ${updatedPools.length} pools with Verified Market History`);
     } catch (error) {
