@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "lint": "echo \"No linting in shared\""
+    "lint": "echo \"No linting in shared\"",
+    "type-check": "echo \"No type-check in shared\""
   },
   "dependencies": {
     "ethers": "^6.11.0"

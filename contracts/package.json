@@ -15,7 +15,8 @@
     "clean": "hardhat clean",
     "node": "hardhat node",
     "lint": "solhint 'contracts/**/*.sol'",
-    "format": "prettier --write 'contracts/**/*.sol'"
+    "format": "prettier --write 'contracts/**/*.sol'",
+    "type-check": "echo \"Contracts use Hardhat compile, skipping tsc\""
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",

@@ -135,7 +135,7 @@ export function RecursiveStrategyDashboard() {
             </div>
 
             <button className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm py-5 rounded-2xl shadow-xl shadow-indigo-600/20 uppercase tracking-[0.2em] transition-all active:scale-95">
-              Confirm & Execute Recursive Loop
+              Confirm &amp; Execute Recursive Loop
             </button>
           </motion.div>
         )}
