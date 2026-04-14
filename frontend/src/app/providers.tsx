@@ -1,5 +1,29 @@
 'use client';
 
+// Global Build Polyfill: Some libraries attempt to access localStorage during static generation.
+// We force a safe 'noop' implementation if the environment is broken or on the server.
+if (typeof window === 'undefined' || typeof window.localStorage === 'undefined' || !window.localStorage.getItem) {
+  const noop = () => null;
+  const storage: any = {
+    getItem: noop,
+    setItem: noop,
+    removeItem: noop,
+    clear: noop,
+    key: noop,
+    length: 0,
+  };
+  
+  if (typeof window === 'undefined') {
+    (global as any).localStorage = storage;
+  } else {
+    try {
+      (window as any).localStorage = storage;
+    } catch (e) {
+      // Handle read-only window.localStorage if necessary
+    }
+  }
+}
+
 import * as React from 'react';
 import {
   RainbowKitProvider,
