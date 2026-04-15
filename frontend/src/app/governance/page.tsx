@@ -83,7 +83,7 @@ export default function GovernancePage() {
           <div className="lg:col-span-2">
             <YieldHeatmap data={pools.map(p => ({ 
                name: p.tokenSymbol, 
-               apy: parseFloat(p.apyPercentage || '0'), 
+               apy: p.apyPercentage || 0, 
                weight: 25, 
                address: p.id 
             }))} />

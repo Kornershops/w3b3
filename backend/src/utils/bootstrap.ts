@@ -76,7 +76,8 @@ export async function seed(client: PrismaClient) {
 
   console.log(`Successfully bootstrapped ${pools.length} global-scale staking pools`);
 
-    // --- FINAL 15 INSTITUTIONAL BEDROCKS ---
+  // --- FINAL 15 INSTITUTIONAL BEDROCKS ---
+  await Promise.all([
     client.stakingPool.upsert({
       where: { chainId_contractAddress: { chainId: 1, contractAddress: '0x5f98805a463973343268781da817940fd03847aa' } },
       update: { isActive: true },

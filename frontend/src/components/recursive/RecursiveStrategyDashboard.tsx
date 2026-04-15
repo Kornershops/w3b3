@@ -1,27 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowsClockwise, 
-  Lightning, 
-  ShieldCheck, 
-  CaretRight,
-  ChartLineUp
-} from '@phosphor-icons/react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 /**
  * RecursiveStrategyDashboard
  * A high-end capital efficiency dashboard for Phase 13: Recursive Yield.
  * Allows users to review and execute leveraged LST looping strategies.
  */
-import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowsClockwise, 
   Lightning, 
   ShieldCheck, 
-  CaretRight,
+  CaretRight, 
   ChartLineUp,
   Warning,
   CheckCircle,
@@ -187,21 +178,32 @@ export function RecursiveStrategyDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                <div className="space-y-6">
-                  <div>
-                    <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-3 block">Strategy Leverage: {leverage}x</label>
-                    <input 
-                      type="range"
-                      min="1"
-                      max={selectedStrategy?.maxLeverage || 3.5}
-                      step="0.1"
-                      value={leverage}
-                      onChange={(e) => setLeverage(parseFloat(e.target.value))}
-                      className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-                    />
-                    <div className="flex justify-between text-[8px] text-slate-600 font-black mt-2">
-                       <span>LOW RISK (1.0X)</span>
-                       <span>DYNAMIC ALPHA MAX ({selectedStrategy?.maxLeverage}X)</span>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-3 block">Loop Amount ({selectedStrategy?.baseAsset})</label>
+                      <input 
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none focus:border-indigo-500/50"
+                      />
                     </div>
+                    <div className="flex-1">
+                      <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-3 block">Strategy Leverage: {leverage}x</label>
+                      <input 
+                        type="range"
+                        min="1"
+                        max={selectedStrategy?.maxLeverage || 3.5}
+                        step="0.1"
+                        value={leverage}
+                        onChange={(e) => setLeverage(parseFloat(e.target.value))}
+                        className="w-full h-2 mt-6 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-[8px] text-slate-600 font-black mt-2">
+                     <span>CONSERVATIVE</span>
+                     <span>MAX ALPHA ({selectedStrategy?.maxLeverage}X)</span>
                   </div>
 
                   <div className="bg-black/40 rounded-2xl p-6 border border-white/5">

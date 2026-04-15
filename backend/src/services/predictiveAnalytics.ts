@@ -35,6 +35,7 @@ export class PredictiveAnalyticsService {
     confidenceScore: number;
     trend: 'BULLISH' | 'BEARISH' | 'STAGNANT';
     historicalTvl: { date: string; tvl: number }[];
+    historicalPrice: { date: string; price: number }[];
   } | null> {
     try {
       const pool = await prisma.stakingPool.findUnique({
@@ -45,10 +46,11 @@ export class PredictiveAnalyticsService {
 
       const currentApy = parseFloat(pool.apyPercentage.toString());
       const tvl = parseFloat(pool.tvlAmount.toString());
+      const mockBasePrice = 3500; // Mock base price for stETH/ETH
       
       const marketSaturationThreshold = 10000000;
       
-      let trend: 'BULLISH' | 'BEARISH' | 'STAGNANT' = 'STAGNANT';
+      let trend: 'BULLISH' | 'BEARISH' | 'STAGNANT' | 'STABLE' = 'STAGNANT';
       let projectedApy = currentApy;
       let confidence = 0.85;
 
@@ -62,15 +64,23 @@ export class PredictiveAnalyticsService {
         confidence = 0.70;
       }
 
-      // Generate 7 days of historical TVL data (Mocked for Phase 10)
+      // Generate 7 days of historical data (Mocked for Phase 10)
       const historicalTvl: { date: string; tvl: number }[] = [];
+      const historicalPrice: { date: string; price: number }[] = [];
+      
       for (let i = 6; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        
         historicalTvl.push({
-          date: date.toISOString().split('T')[0],
-          // Random fluctuation around current TVL
+          date: dateStr,
           tvl: tvl * (1 + (Math.random() * 0.1 - 0.05)) 
+        });
+
+        historicalPrice.push({
+          date: dateStr,
+          price: mockBasePrice * (1 + (Math.random() * 0.04 - 0.02))
         });
       }
 
@@ -80,6 +90,7 @@ export class PredictiveAnalyticsService {
         confidenceScore: confidence,
         trend: trend,
         historicalTvl,
+        historicalPrice,
       };
 
     } catch (error) {

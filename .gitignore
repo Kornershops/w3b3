@@ -1,86 +1,62 @@
 # ============================================
-# ENVIRONMENT VARIABLES & SECRETS
+# W3B3 Institutional Gitignore Master
 # ============================================
+
+# SECRETS & ENVIRONMENT
 .env
 .env.local
 .env.*.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.example.local
 backend/.env
-backend/.env.local
-backend/.env.*.local
 frontend/.env.local
-frontend/.env.*.local
 contracts/.env
-contracts/.env.local
-contracts/.env.*.local
 
-# ============================================
-# PRIVATE KEYS & CREDENTIALS
-# ============================================
-*.key
-*.pem
-private/
-secrets/
-.aws/
-aws-credentials
-.ssh/
-
-# ============================================
 # DEPENDENCIES
-# ============================================
 node_modules/
 /.pnp
 .pnp.js
 
+# BUILD & OUTPUT
+dist/
+build/
+.next/
+out/
+.docusaurus/
+.cache/
+.parcel-cache/
+coverage/
 
-# ============================================
-# BUILD & DIST
-# ============================================
-build
-dist
-.next
-out
+# DEPLOYMENT STUBS
+.vercel/
+.netlify/
+.render/
+.railway/
+.serverless/
+
+# CACHE & ARTIFACTS
 artifacts/
 cache/
 typechain-types/
-.next/
-.vercel/
-.netlify/
 
-# ============================================
-# TESTING & COVERAGE
-# ============================================
-/coverage
-*.lcov
-.nyc_output/
-
-# ============================================
-# DATABASE & CACHE
-# ============================================
+# DATABASE & PERSISTENCE
 *.db
 *.sqlite
 *.sqlite3
 dump.rdb
 .prisma/
 prisma/migrations/
+pids/
+*.pid
+*.seed
+*.pid.lock
 
-# ============================================
 # LOGS
-# ============================================
-logs
 logs/
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
 
-# ============================================
-# IDE & EDITOR
-# ============================================
+# OS & EDITORS
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
 *.swp
@@ -88,70 +64,15 @@ lerna-debug.log*
 *~
 .project
 .classpath
-.c9/
-*.launch
 .settings/
-*.sublime-workspace
-*.sublime-project
 
-# ============================================
-# OS SPECIFIC
-# ============================================
-.DS_Store
-Thumbs.db
-.gitkeep
-
-# ============================================
-# TEMPORARY FILES
-# ============================================
-tmp/
-temp/
-*.tmp
-*.temp
-.cache/
-.eslintcache
-.parcel-cache/
-
-# ============================================
-# DEPLOYMENT
-# ============================================
-.vercel/
-.netlify/
-.render/
-.railway/
-
-# ============================================
-# RUNTIME
-# ============================================
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# ============================================
-# MISC
-# ============================================
-.tern-port
-.vscode-test
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
-.dynamodb/
-.fusebox/
-.serverless/
-.vuepress/dist/
-
-# ============================================
-# PROJECT BLUEPRINT (internal docs — not for repo)
-# ============================================
-.project blueprint/
+# PROJECT SCRATCH (Legacy)
 project/
+.project blueprint/
 *.docx
 *.doc
-/docs
+tmp/
+temp/
 
-package-lock.json
-pnpm-lock.yaml
-yarn.lock
+# NOTE: /docs is EXPLICITLY TRACKED for Protocol Specification.
+# NOTE: package-lock.json is EXPLICITLY TRACKED for Dependency Consistency.

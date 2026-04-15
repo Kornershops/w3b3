@@ -4,6 +4,8 @@ import React, { useEffect, useRef, memo } from 'react';
 
 interface TradingViewWidgetProps {
   symbol: string;
+  data?: any[];
+  trend?: string;
 }
 
 function TradingViewWidget({ symbol }: TradingViewWidgetProps) {

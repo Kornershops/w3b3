@@ -80,7 +80,7 @@ export class YieldService {
         include: { analytics: true }
       });
 
-      const updatedPools = [];
+      const updatedPools: StakingPool[] = [];
       for (const pool of pools) {
         // 1. Fetch Yield Stats
         const yieldData = await this.fetchExternalYield(pool.contractAddress);
@@ -101,8 +101,15 @@ export class YieldService {
               params: { vs_currency: 'usd', days: '7', interval: 'hourly' }
             });
 
-            const prices = history.data.prices.map((p: [number, number]) => ({ timestamp: p[0], price: p[1] }));
-            const caps = history.data.market_caps.map((m: [number, number]) => ({ timestamp: m[0], tvl: m[1] }));
+            // Map to the shared schema { date: string, ... }
+            const prices = history.data.prices.map((p: [number, number]) => ({ 
+              date: new Date(p[0]).toISOString().split('T')[0], 
+              price: p[1] 
+            }));
+            const caps = history.data.market_caps.map((m: [number, number]) => ({ 
+              date: new Date(m[0]).toISOString().split('T')[0], 
+              tvl: m[1] 
+            }));
             
             const firstPrice = prices[0]?.price || 0;
             const lastPrice = prices[prices.length - 1]?.price || 0;

@@ -75,6 +75,7 @@ export function PoolDetailClient({ id }: { id: string }) {
           {/* REAL-TIME MARKET ANALYTICS CHART */}
           <div className="md:col-span-2">
              <PoolHistoricalChart 
+               symbol={pool.tokenSymbol}
                data={pool.analytics?.historicalPrice || []} 
                trend={pool.analytics?.trend || 'STABLE'} 
              />

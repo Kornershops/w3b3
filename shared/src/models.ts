@@ -27,11 +27,11 @@ export interface StakingPool {
   createdAt: string;
   updatedAt: string;
   analytics?: {
-    trend: 'BULLISH' | 'BEARISH' | 'STABLE';
+    trend: 'BULLISH' | 'BEARISH' | 'STAGNANT' | 'STABLE';
+    projected7DayApy: number;
     confidenceScore: number;
-    historicalTvl: { timestamp: number; tvl: number }[];
-    historicalPrice: { timestamp: number; price: number }[];
-    updatedAt: string;
+    historicalTvl: { date: string; tvl: number }[];
+    historicalPrice: { date: string; price: number }[];
   };
 }
 
@@ -127,6 +127,7 @@ export interface RecursiveStrategy {
   riskScore: 'LOW' | 'MEDIUM' | 'HIGH';
   isActive: boolean;
   metadata?: {
+    poolId: string;
     liquidationThreshold: number;
     healthFactor: number;
     rebalanceFrequency: string;
