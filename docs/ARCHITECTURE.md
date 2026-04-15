@@ -27,19 +27,18 @@ Smart Contracts -> Protocol Security -> Audit-standard 0.8.24 Solidity with Paus
 /docs -> Knowledge Base -> Deployment, API, and setup guides.
 
 ## Critical Design Principles
-
 -> Frictionless Wallet UX -> Automatic network switching and high-speed account abstraction logins.
--> Institutional Trust -> Native Gnosis Safe and Multi-Sig compatibility for all vaults.
--> AI Momentum Engine -> Predictive APY indicators and autonomous rebalancing agents.
--> Capital Efficiency -> NFT-based locked position markets and delta-neutral stablecoin minting.
+-> Institutional Trust -> Native Multi-Sig Vaults with weighted governance and approval rails.
+-> Keyless Analytics Suite -> Pro-grade TradingView charting and resilient, throttled CoinGecko integration.
+-> Capital Efficiency -> Recursive yield looping and real-time health factor simulation.
+-> Protocol Mandate -> Community-driven yield weights and tiered loyalty multipliers.
 
-## Advanced Contract Layers (V2)
-
-- **W3B3CreditLine** -> Logic for collateralizing stakes for USDC lending.
-- **W3B3PositionNFT** -> High-precision ERC721 representation of locked liquidity.
-- **W3B3Stablecoin (w3USD)** -> Delta-neutral asset minted against position NFTs.
-- **W3B3InsuranceWrapper** -> Slashing protection integration with Nexus Mutual.
-- **W3B3AutonomousHarvester** -> Relayer-safe rebalancing execution.
+## Advanced Service Layers (V3 Certified)
+- **InstitutionalVaultService** -> Multi-Sig proposal, approval, and weighted threshold logic.
+- **RecursiveYieldService** -> High-precision leverage looping and liquidation marker simulation.
+- **GovernanceService** -> Protocol-wide voting power calculation and multiplier tiers.
+- **ZapOrchestratorService** -> Zero-friction, one-click entry into advanced DeFi positions.
+- **YieldResilienceHub** -> Dual-tier anonymous data ingestion for 24/7 market uptime.
 
 ---
 

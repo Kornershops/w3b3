@@ -25,14 +25,22 @@ GET -> /portfolio -> Summary -> Total TVL, earned rewards, and performance net.
 GET -> /portfolio/breakdown -> Asset Matrix -> Breakdown by chain and token ticker.
 GET -> /users/leaderboard -> Leaderboard -> Global referral point rankings.
 
-## Enterprise & Institutional (V2)
+## Institutional & Governance (V3 Certified)
 
-GET  -> /reports/tax -> Tax Reporting -> Generates P&L CSV export (Auth Required).
-POST -> /credit/borrow -> Open Credit Position -> Borrow assets against staked NFTs.
-GET  -> /credit/positions -> My Credit -> Active loan health and collateral tracking.
-GET  -> /ai/harvest -> Recommendations -> AI-driven yield optimization suggestions.
-POST -> /safe/propose -> Multi-Sig Proposal -> Initiate Gnosis Safe institutional action.
-GET  -> /compliance/status -> Verification -> KYC/Institutional verification context.
+GET  -> /vaults/my -> My Vaults -> Fetch multi-sig vaults where user is owner/signer.
+POST -> /vaults/create -> Create Vault -> Initialize new multi-sig container with threshold.
+POST -> /vaults/propose -> Create Proposal -> Initiate a custody action (Rebalance/Stake).
+POST -> /vaults/approve -> Approve Action -> Cast multi-sig signature for a proposal.
+
+GET  -> /recursive/strategies -> Yield Loops -> List leverage-based capital efficiency strategies.
+POST -> /recursive/simulate -> Strategy Simulation -> Calculate net APY and health factor.
+
+POST -> /zaps/alpha -> Alpha Entry -> One-tap multi-step staking + recursive setup.
+
+GET  -> /governance/power -> Protocol Mandate -> Fetch user voting power and yield tier.
+POST -> /governance/vote -> Cast Mandate -> Influence protocol-wide yield weights.
+
+GET  -> /yield/stats -> Marketplace Intel -> Global real-time TVL and APY analytics.
 
 ## Error Responses
 
