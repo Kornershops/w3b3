@@ -139,7 +139,7 @@ export class YieldService {
             }
           },
         });
-        updatedPools.push(updated);
+        updatedPools.push(updated as any);
       }
 
       logger.info(`✅ Successfully certified ${updatedPools.length} pools with Verified Market History`);

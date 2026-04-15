@@ -35,7 +35,7 @@ export class PortfolioService {
       
       // Personal Totals
       let totalStaked = personalStakes.reduce((sum, stake) => sum + parseFloat(stake.amountStaked.toString()), 0);
-      let totalRewards = personalStakes.reduce((sum, stake) => sum + parseFloat(stake.rewardsClaimed.toString()), 0);
+      const totalRewards = personalStakes.reduce((sum, stake) => sum + parseFloat(stake.rewardsClaimed.toString()), 0);
       let estimatedAnnual = personalStakes.reduce((sum, stake) => {
         if (!stake.pool) return sum;
         const apy = parseFloat(stake.pool.apyPercentage.toString());
