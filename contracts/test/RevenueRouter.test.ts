@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { RevenueRouter, W3B3Treasury, MockToken, MockSwapRouter, W3B3RewardDistributor } from "../typechain-types";
+import { RevenueRouter, W3B3Treasury, MockERC20, MockSwapRouter, W3B3RewardDistributor } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
 describe("RevenueRouter Integration", function () {
@@ -8,19 +8,19 @@ describe("RevenueRouter Integration", function () {
   let treasury: W3B3Treasury;
   let distributor: W3B3RewardDistributor;
   let mockSwapRouter: MockSwapRouter;
-  let feeToken: MockToken;
-  let weth: MockToken;
-  let stakingToken: MockToken;
+  let feeToken: MockERC20;
+  let weth: MockERC20;
+  let stakingToken: MockERC20;
   let owner: SignerWithAddress;
 
   beforeEach(async function () {
     [owner] = await ethers.getSigners();
 
     // Deploy Mocks
-    const MockTokenFactory = await ethers.getContractFactory("MockToken");
-    feeToken = await MockTokenFactory.deploy("USDC", "USDC", 6);
-    weth = await MockTokenFactory.deploy("Wrapped ETH", "WETH", 18);
-    stakingToken = await MockTokenFactory.deploy("W3B3", "W3B3", 18);
+    const MockERC20Factory = await ethers.getContractFactory("MockERC20");
+    feeToken = await MockERC20Factory.deploy("USDC", "USDC", 6);
+    weth = await MockERC20Factory.deploy("Wrapped ETH", "WETH", 18);
+    stakingToken = await MockERC20Factory.deploy("W3B3", "W3B3", 18);
 
     const MockSwapRouterFactory = await ethers.getContractFactory("MockSwapRouter");
     mockSwapRouter = await MockSwapRouterFactory.deploy(await weth.getAddress());

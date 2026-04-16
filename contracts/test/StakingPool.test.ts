@@ -14,9 +14,9 @@ describe('StakingPool', function () {
     [owner, user1, user2] = await ethers.getSigners();
 
     // Deploy mock tokens
-    const MockToken = await ethers.getContractFactory('MockToken');
-    stakingToken = await MockToken.deploy('Staking Token', 'STK', 18);
-    rewardToken = await MockToken.deploy('Reward Token', 'RWD', 18);
+    const MockERC20 = await ethers.getContractFactory('MockERC20');
+    stakingToken = await MockERC20.deploy('Staking Token', 'STK', 18);
+    rewardToken = await MockERC20.deploy('Reward Token', 'RWD', 18);
 
     // Deploy W3Token
     const W3Token = await ethers.getContractFactory('W3Token');

@@ -14,8 +14,8 @@ contract MockSwapRouter is ISwapRouter {
     }
 
     function exactInputSingle(ExactInputSingleParams calldata params) external payable override returns (uint256 amountOut) {
-        // Simple mock: Transfer 1 ETH (WETH) for any input
-        amountOut = 1e18; 
+        // Simple mock: Transfer 1:1 for any input
+        amountOut = params.amountIn; 
         
         // Transfer input token from RevenueRouter to mock
         IERC20(params.tokenIn).transferFrom(msg.sender, address(this), params.amountIn);

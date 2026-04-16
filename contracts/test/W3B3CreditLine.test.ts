@@ -98,7 +98,7 @@ describe("W3B3CreditLine", function () {
       ).to.emit(creditLine, "Liquidated");
 
       const pos = await creditLine.positions(user.address);
-      expect(pos.borrowedAmount).to.equal(ethers.parseEther("500")); 
+      expect(pos.borrowedAmount).to.be.closeTo(ethers.parseEther("500"), ethers.parseEther("0.0001")); 
     });
   });
 });

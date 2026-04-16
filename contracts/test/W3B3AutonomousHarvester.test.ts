@@ -20,7 +20,7 @@ describe("W3B3AutonomousHarvester", function () {
     targetAsset = await ERC20Factory.deploy("Target LST", "tLST", 18) as unknown as MockERC20;
 
     const RouterFactory = await ethers.getContractFactory("MockSwapRouter");
-    dexRouter = await RouterFactory.deploy() as unknown as MockSwapRouter;
+    dexRouter = await RouterFactory.deploy(await targetAsset.getAddress()) as unknown as MockSwapRouter;
 
     const HarvesterFactory = await ethers.getContractFactory("W3B3AutonomousHarvester");
     autonomousHarvester = await HarvesterFactory.deploy(

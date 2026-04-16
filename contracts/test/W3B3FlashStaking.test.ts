@@ -20,7 +20,7 @@ describe("W3B3FlashStaking", function () {
     toLST = await ERC20Factory.deploy("Target LST", "tLST", 18) as unknown as MockERC20;
 
     const RouterFactory = await ethers.getContractFactory("MockSwapRouter");
-    dexRouter = await RouterFactory.deploy() as unknown as MockSwapRouter;
+    dexRouter = await RouterFactory.deploy(await toLST.getAddress()) as unknown as MockSwapRouter;
 
     const FlashStakingFactory = await ethers.getContractFactory("W3B3FlashStaking");
     flashStaking = await FlashStakingFactory.deploy(

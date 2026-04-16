@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { W3B3RewardDistributor, MockToken } from "../typechain-types";
+import { W3B3RewardDistributor, MockERC20 } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
 describe("W3B3RewardDistributor", function () {
   let distributor: W3B3RewardDistributor;
-  let stakingToken: MockToken;
-  let rewardToken: MockToken;
+  let stakingToken: MockERC20;
+  let rewardToken: MockERC20;
   let owner: SignerWithAddress;
   let user1: SignerWithAddress;
   let user2: SignerWithAddress;
@@ -15,9 +15,9 @@ describe("W3B3RewardDistributor", function () {
     [owner, user1, user2] = await ethers.getSigners();
 
     // Deploy Mock Tokens
-    const MockTokenFactory = await ethers.getContractFactory("MockToken");
-    stakingToken = await MockTokenFactory.deploy("W3B3 Token", "W3B3", 18);
-    rewardToken = await MockTokenFactory.deploy("Wrapped ETH", "WETH", 18);
+    const MockERC20Factory = await ethers.getContractFactory("MockERC20");
+    stakingToken = await MockERC20Factory.deploy("W3B3 Token", "W3B3", 18);
+    rewardToken = await MockERC20Factory.deploy("Wrapped ETH", "WETH", 18);
 
     // Deploy Distributor
     const DistributorFactory = await ethers.getContractFactory("W3B3RewardDistributor");
