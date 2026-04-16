@@ -76,12 +76,16 @@ contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
         // 2. Perform open market or internal pool swap execution
         IERC20(sourceAsset).approve(address(dexRouter), amountIn);
 
-        uint256 amountOut = dexRouter.exactInputSingle(
-            sourceAsset,
-            targetAsset,
-            amountIn,
-            minAmountOut
-        );
+        uint256 amountOut = dexRouter.exactInputSingle(ISwapRouter.ExactInputSingleParams({
+            tokenIn: sourceAsset,
+            tokenOut: targetAsset,
+            fee: 3000,
+            recipient: address(this),
+            deadline: block.timestamp,
+            amountIn: amountIn,
+            amountOutMinimum: minAmountOut,
+            sqrtPriceLimitX96: 0
+        }));
 
         // 3. Return the newly rebalanced (better yielding) asset to the user silently
         IERC20(targetAsset).safeTransfer(user, amountOut);

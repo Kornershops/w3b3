@@ -70,12 +70,16 @@ contract W3B3FlashStaking is Ownable, ReentrancyGuard {
         IERC20(fromLST).approve(address(dexRouter), netSwapAmount);
         
         // Exact input swap routing
-        uint256 amountOut = dexRouter.exactInputSingle(
-            fromLST,
-            toLST,
-            netSwapAmount,
-            minAmountOut
-        );
+        uint256 amountOut = dexRouter.exactInputSingle(ISwapRouter.ExactInputSingleParams({
+            tokenIn: fromLST,
+            tokenOut: toLST,
+            fee: 3000,
+            recipient: address(this),
+            deadline: block.timestamp,
+            amountIn: netSwapAmount,
+            amountOutMinimum: minAmountOut,
+            sqrtPriceLimitX96: 0
+        }));
 
         // 4. Return new target staked asset to the user 
         IERC20(toLST).safeTransfer(msg.sender, amountOut);
