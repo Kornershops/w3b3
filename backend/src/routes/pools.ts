@@ -20,7 +20,7 @@ router.get('/', optionalAuthMiddleware, async (req: Request, res: Response) => {
     let result = await poolService.getPools({ chainId, isActive: true }, page, limit);
 
     // If database is completely empty (first run), auto-seed to provide immediate value
-    if (result.count === 0 && !chainId) {
+    if (result.pagination.total === 0 && !chainId) {
         const totalCount = await prisma.stakingPool.count();
         if (totalCount === 0) {
             logger.info('Database empty, performing automatic boot-sequence seed...');
