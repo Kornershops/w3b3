@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import { poolService } from '../services/poolService';
 import { optionalAuthMiddleware } from '../middleware/auth';
 import logger from '../utils/logger';
+import prisma from '../config/database';
+import { seed } from '../utils/bootstrap';
 
 const router = Router();
 
@@ -15,7 +17,17 @@ router.get('/', optionalAuthMiddleware, async (req: Request, res: Response) => {
     const chainParam = req.query.chain as string;
     const chainId = (chainParam && !isNaN(parseInt(chainParam))) ? parseInt(chainParam) : undefined;
 
-    const result = await poolService.getPools({ chainId, isActive: true }, page, limit);
+    let result = await poolService.getPools({ chainId, isActive: true }, page, limit);
+
+    // If database is completely empty (first run), auto-seed to provide immediate value
+    if (result.count === 0 && !chainId) {
+        const totalCount = await prisma.stakingPool.count();
+        if (totalCount === 0) {
+            logger.info('Database empty, performing automatic boot-sequence seed...');
+            await seed(prisma);
+            result = await poolService.getPools({ isActive: true }, page, limit);
+        }
+    }
 
     return res.json(result);
   } catch (error) {

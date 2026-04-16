@@ -6,3 +6,8 @@ base = "/"
 [build.environment]
 SECRETS_SCAN_ENABLED = "false"
 NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
