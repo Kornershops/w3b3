@@ -4,56 +4,48 @@
 
 Turn the historical Phase 1–13 “Gold Master” declaration into a reproducibly verified production baseline before Phase 15 expansion.
 
-## Exit rule
+## Historical phase status
 
-Phase 14 passes only when implementation, tests, CI enforcement, documentation, deployment evidence, and security/operational acceptance criteria are all satisfied.
+The repository's changelog continues to mark Phases 1–13 as completed. Phase 14 is a verification/hardening phase and does **not** reopen those phases by default; it reconciles their claims against implementation and evidence before final production sign-off. fileciteturn136file0
 
-## Concurrent workstreams
+## Current sprint closeout
 
-- 14.01 Historical phase reconciliation
-- 14.02 CI/build/test and security gates
-- 14.03 Smart-contract security and financial invariants
-- 14.04 Backend/API/data security
-- 14.05 Frontend/wallet journey verification
-- 14.06 Deployment/runtime verification
-- 14.07 Repository governance and operational readiness
+Sprint 14.02's **security-gate design** is complete: production dependency audit is now a hard CI gate. The gate has correctly exposed an unresolved production dependency vulnerability backlog, so security remediation remains open.
+
+Sprint 14.04's **recursive input/strategy-limit implementation** is complete at code level and regression coverage has been added through the backend's actual Jest discovery path. Final CI evidence and on-chain enforcement remain open.
+
+Sprint 14.01 remains partial because evidence-level reconciliation of every historical Phase 1–13 claim is not yet complete.
 
 ## Current baseline
 
 - Default branch: `main`
 - Verification branch: `phase-14/production-assurance`
-- Baseline commit: `944bf68a22033b4df43c99877c449105f85ea293`
-
-## Initial findings
-
-### Passing evidence
-
-- CI lint/typecheck, backend tests, contract tests, frontend tests and build have completed successfully on the current baseline.
-- Deployment automation has completed successfully for backend, contracts and frontend.
-- Documented API surface substantially matches backend route topology.
-- Recursive backend simulation contains the documented 1.12 health-factor threshold.
-
-### Blocking gaps
-
-1. Dependency security audit currently uses `continue-on-error: true`; vulnerability findings therefore cannot fail CI.
-2. Yield-backed credit still uses a mock/owner-controlled price oracle and does not yet demonstrate the specified yield-offset behavior.
-3. Recursive risk checks require proof at the actual transaction/on-chain execution boundary, not only backend simulation.
-4. Recursive input and strategy-limit validation requires explicit enforcement.
-5. Production runtime/deployment equivalence and operational recovery still require verification.
-6. Main branch protection and required status checks require verification/enforcement.
+- Original Phase 14 baseline: `944bf68a22033b4df43c99877c449105f85ea293`
 
 ## Phase 14 acceptance matrix
 
-| Track | State |
-|---|---|
-| 14.01 Phase reconciliation | IN PROGRESS |
-| 14.02 CI/build/test | FUNCTIONAL PASS; security gate GAP |
-| 14.03 Contract assurance | BLOCKED |
-| 14.04 Backend assurance | IN PROGRESS |
-| 14.05 Frontend assurance | IN PROGRESS |
-| 14.06 Deployment/runtime | AUTOMATION PASS; runtime verification pending |
-| 14.07 Operations/governance | BLOCKED |
+| Track | State | Carry-over |
+|---|---|---|
+| 14.01 Phase reconciliation | PARTIAL | Yes |
+| 14.02 CI/build/security | PARTIAL | Yes — vulnerability remediation |
+| 14.03 Contract/financial safety | BLOCKED | Yes |
+| 14.04 Backend/API/data | PARTIAL | Yes — CI evidence + full reconciliation |
+| 14.05 Frontend/wallet | NOT CLOSED | Yes |
+| 14.06 Deployment/runtime | PARTIAL | Yes |
+| 14.07 Governance/operations | BLOCKED | Yes |
 
-## Rule
+## Next sprint
 
-Do not advance to Phase 15 until every blocking gap is either fixed and verified or explicitly accepted through a documented production-risk decision.
+**Sprint 14.08 — Production Security & Financial Safety**
+
+1. Remediate production dependency vulnerabilities by compatible dependency families and re-run the full CI matrix after each family.
+2. Close recursive validation with passing automated CI evidence, then prove execution-boundary/on-chain enforcement.
+3. Productionize the credit oracle and implement/test yield-offset behavior with adversarial financial-invariant coverage.
+4. Complete backend/API and frontend/wallet verification.
+5. Establish deployed-commit/runtime and rollback evidence.
+6. Enforce `main` protection and required CI/security checks.
+7. Finish historical Phase 1–13 evidence reconciliation.
+
+## Exit rule
+
+Phase 14 passes only when implementation, tests, CI enforcement, documentation, deployment evidence, and security/operational acceptance criteria are all satisfied. No Phase 15 advancement while a production blocker remains unresolved unless there is an explicit documented risk acceptance.
