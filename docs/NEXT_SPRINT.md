@@ -5,27 +5,32 @@
 **Phase:** 14 — Production Assurance  
 **Status:** ACTIVE / GATED  
 **Working branch:** `phase-14/production-assurance`  
-**Current focus:** contract oracle hardening + CI verification + dependency remediation
+**Current focus:** oracle verification + dependency remediation + recursive execution safety
 
 ### Objective
 
 Clear the remaining production-security and financial-safety blockers discovered during Phase 14 verification. Phase 15 remains gated until Phase 14 exit criteria pass.
 
-### Current sprint progress
+### Progress advanced
 
 - [x] CI dependency audit converted into a hard release gate.
 - [x] Recursive controller input/authentication validation implemented.
 - [x] Recursive strategy maximum-leverage validation implemented.
 - [x] Recursive controller regression suite added to the repository's actual Jest discovery path.
-- [x] Corrected recursive test mock isolation after CI exposed the repository's `resetMocks` interaction.
+- [x] Recursive test mock-isolation defect corrected after CI exposed the Jest reset interaction.
 - [x] Credit-line mock price state replaced by an explicit oracle interface.
 - [x] Chainlink oracle adapter added with 18-decimal normalization and stale/invalid/incomplete-round rejection.
 - [x] Chainlink adapter hardened against future timestamps and `answeredInRound < roundId` responses.
 - [x] Credit-line tests migrated to the oracle architecture.
-- [x] Added adversarial Chainlink fixture coverage for future timestamps and incomplete rounds.
-- [ ] CI verification of the latest recursive/oracle changes.
+- [x] Credit-line construction and oracle rotation now reject EOAs/non-contract addresses.
+- [x] Added adversarial coverage for invalid oracle configuration.
+
+### Remaining sprint gates
+
+- [ ] Fresh CI verification of the latest oracle and recursive changes.
 - [ ] Production dependency vulnerability remediation.
-- [ ] Yield-offset credit implementation and adversarial tests.
+- [ ] Approved production Chainlink feed configuration and deployment evidence.
+- [ ] Yield-offset credit implementation and adversarial financial-invariant tests.
 - [ ] Recursive 1.12 enforcement at the actual transaction/on-chain execution boundary.
 - [ ] Backend/API and frontend/wallet verification.
 - [ ] Deployment/runtime provenance and rollback verification.
@@ -34,18 +39,18 @@ Clear the remaining production-security and financial-safety blockers discovered
 
 ### Execution order
 
-1. **Verify the current contract/oracle wave** — compile, contract tests, full CI, and inspect failures before further financial changes.
+1. **Verification when Actions is available** — compile, contract tests, backend/frontend tests, security audit, and inspect failures.
 2. **Dependency security** — remediate production high/critical findings by compatible dependency families; run the complete CI matrix after each family.
 3. **Recursive safety** — prove regression coverage, then prove the 1.12 health-factor requirement at the transaction/on-chain execution boundary.
-4. **Credit safety** — establish the authoritative yield-offset requirements, implement the model, add adversarial financial-invariant tests, and wire approved production oracle/feed configuration.
+4. **Credit safety** — establish authoritative yield-offset requirements, implement the model, add adversarial financial-invariant tests, and wire approved production oracle/feed configuration.
 5. **Application verification** — complete backend/API and frontend/wallet journey reconciliation.
 6. **Runtime assurance** — prove deployed-commit provenance, health checks, environment/configuration correctness and rollback/recovery.
 7. **Governance** — enforce `main` protection and required CI/security checks.
 8. **Historical evidence** — finish Phase 1–13 implementation/test/deployment evidence reconciliation.
 
-### Latest CI evidence
+### Actions-runtime constraint
 
-CI run #210 passed lint/typecheck, contract tests and frontend tests. Backend failed in the recursive controller regression suite because the test mock was incompatible with the repository's Jest reset behavior; the branch now contains the correction. The security job correctly failed on the existing 96 high/critical production vulnerability findings.
+GitHub Actions runtime exhaustion does **not** change the definition of done. Work that does not require Actions may continue. CI-dependent items remain open until the repository can execute the required checks again.
 
 ### Exit criteria
 
