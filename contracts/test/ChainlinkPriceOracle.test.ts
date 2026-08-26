@@ -30,8 +30,19 @@ describe("ChainlinkPriceOracle", function () {
     await expect(oracle.getPrice()).to.be.revertedWithCustomError(oracle, "StalePrice");
   });
 
-  it("rejects incomplete rounds", async function () {
+  it("rejects future-dated observations", async function () {
+    const now = (await ethers.provider.getBlock("latest"))!.timestamp;
+    await feed.setUpdatedAt(now + 7200);
+    await expect(oracle.getPrice()).to.be.revertedWithCustomError(oracle, "StalePrice");
+  });
+
+  it("rejects zero rounds", async function () {
     await feed.setRound(0);
+    await expect(oracle.getPrice()).to.be.revertedWithCustomError(oracle, "IncompleteRound");
+  });
+
+  it("rejects observations answered by an older round", async function () {
+    await feed.setRoundData(5, 4);
     await expect(oracle.getPrice()).to.be.revertedWithCustomError(oracle, "IncompleteRound");
   });
 });
