@@ -51,6 +51,7 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
         if (_borrowAsset == address(0) || _collateralAsset == address(0) || _priceOracle == address(0)) {
             revert InvalidOracle();
         }
+        if (_priceOracle.code.length == 0) revert InvalidOracle();
 
         borrowAsset = IERC20(_borrowAsset);
         collateralAsset = IERC20(_collateralAsset);
@@ -138,7 +139,7 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
     }
 
     function setPriceOracle(address newOracle) external onlyOwner {
-        if (newOracle == address(0)) revert InvalidOracle();
+        if (newOracle == address(0) || newOracle.code.length == 0) revert InvalidOracle();
         address previousOracle = address(priceOracle);
         priceOracle = IPriceOracle(newOracle);
         emit PriceOracleUpdated(previousOracle, newOracle);
