@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ChainlinkPriceOracle, MockAggregatorV3 } from "../typechain-types";
-import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("ChainlinkPriceOracle", function () {
   let feed: MockAggregatorV3;
@@ -32,8 +31,7 @@ describe("ChainlinkPriceOracle", function () {
   });
 
   it("rejects incomplete rounds", async function () {
-    await feed.setAnswer(1000n * 10n ** 8n);
-    // A zero round is not possible through the normal setter; deploy-time state is valid.
-    expect((await oracle.getPrice())[0]).to.be.gt(0);
+    await feed.setRound(0);
+    await expect(oracle.getPrice()).to.be.revertedWithCustomError(oracle, "IncompleteRound");
   });
 });
