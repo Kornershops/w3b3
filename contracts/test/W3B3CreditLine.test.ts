@@ -42,9 +42,29 @@ describe("W3B3CreditLine", function () {
   });
 
   describe("Oracle safety", function () {
+    it("rejects an externally owned address as the initial oracle", async function () {
+      const [eoa] = await ethers.getSigners();
+      const CreditLineFactory = await ethers.getContractFactory("W3B3CreditLine");
+
+      await expect(
+        CreditLineFactory.deploy(
+          await borrowAsset.getAddress(),
+          await collateralAsset.getAddress(),
+          eoa.address,
+          owner.address
+        )
+      ).to.be.revertedWithCustomError(CreditLineFactory, "InvalidOracle");
+    });
+
     it("uses the configured oracle rather than owner-controlled price state", async function () {
       expect(await creditLine.priceOracle()).to.equal(await oracle.getAddress());
       await expect(creditLine.connect(owner).setPriceOracle(ethers.ZeroAddress))
+        .to.be.revertedWithCustomError(creditLine, "InvalidOracle");
+    });
+
+    it("rejects an externally owned address during oracle rotation", async function () {
+      const [eoa] = await ethers.getSigners();
+      await expect(creditLine.connect(owner).setPriceOracle(eoa.address))
         .to.be.revertedWithCustomError(creditLine, "InvalidOracle");
     });
 
