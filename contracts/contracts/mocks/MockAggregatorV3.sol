@@ -5,6 +5,7 @@ contract MockAggregatorV3 {
     uint8 public immutable decimals;
     int256 public answer;
     uint256 public updatedAt;
+    uint80 public roundId;
     uint80 public answeredInRound;
 
     constructor(uint8 feedDecimals, int256 initialAnswer) {
@@ -15,7 +16,8 @@ contract MockAggregatorV3 {
     function setAnswer(int256 newAnswer) public {
         answer = newAnswer;
         updatedAt = block.timestamp;
-        answeredInRound += 1;
+        roundId += 1;
+        answeredInRound = roundId;
     }
 
     function setUpdatedAt(uint256 timestamp) external {
@@ -23,7 +25,13 @@ contract MockAggregatorV3 {
     }
 
     function setRound(uint80 round) external {
+        roundId = round;
         answeredInRound = round;
+    }
+
+    function setRoundData(uint80 newRoundId, uint80 newAnsweredInRound) external {
+        roundId = newRoundId;
+        answeredInRound = newAnsweredInRound;
     }
 
     function latestRoundData()
@@ -31,6 +39,6 @@ contract MockAggregatorV3 {
         view
         returns (uint80, int256, uint256, uint256, uint80)
     {
-        return (answeredInRound, answer, updatedAt, updatedAt, answeredInRound);
+        return (roundId, answer, updatedAt, updatedAt, answeredInRound);
     }
 }
