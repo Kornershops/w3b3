@@ -22,6 +22,10 @@ contract MockAggregatorV3 {
         updatedAt = timestamp;
     }
 
+    function setRound(uint80 round) external {
+        answeredInRound = round;
+    }
+
     function latestRoundData()
         external
         view
