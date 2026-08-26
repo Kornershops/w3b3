@@ -37,10 +37,10 @@ contract ChainlinkPriceOracle is IPriceOracle {
     }
 
     function getPrice() external view returns (uint256 price, uint256 updatedAt) {
-        (, int256 answer, , uint256 timestamp, uint80 answeredInRound) = feed.latestRoundData();
+        (uint80 roundId, int256 answer, , uint256 timestamp, uint80 answeredInRound) = feed.latestRoundData();
         if (answer <= 0) revert InvalidPrice();
-        if (timestamp == 0 || block.timestamp - timestamp > maxAge) revert StalePrice();
-        if (answeredInRound == 0) revert IncompleteRound();
+        if (timestamp == 0 || timestamp > block.timestamp || block.timestamp - timestamp > maxAge) revert StalePrice();
+        if (roundId == 0 || answeredInRound == 0 || answeredInRound < roundId) revert IncompleteRound();
 
         uint8 feedDecimals = feed.decimals();
         uint256 rawPrice = uint256(answer);
