@@ -56,6 +56,7 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
         borrowAsset = IERC20(_borrowAsset);
         collateralAsset = IERC20(_collateralAsset);
         priceOracle = IPriceOracle(_priceOracle);
+        _validateOracle(priceOracle);
     }
 
     function depositCollateral(uint256 amount) external nonReentrant {
@@ -140,9 +141,17 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
 
     function setPriceOracle(address newOracle) external onlyOwner {
         if (newOracle == address(0) || newOracle.code.length == 0) revert InvalidOracle();
+        IPriceOracle candidate = IPriceOracle(newOracle);
+        _validateOracle(candidate);
+
         address previousOracle = address(priceOracle);
-        priceOracle = IPriceOracle(newOracle);
+        priceOracle = candidate;
         emit PriceOracleUpdated(previousOracle, newOracle);
+    }
+
+    function _validateOracle(IPriceOracle candidate) internal view {
+        (uint256 price, uint256 updatedAt) = candidate.getPrice();
+        if (price == 0 || updatedAt == 0 || updatedAt > block.timestamp) revert InvalidOraclePrice();
     }
 
     function _price() internal view returns (uint256 price) {
