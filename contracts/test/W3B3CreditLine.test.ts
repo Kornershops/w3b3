@@ -56,15 +56,21 @@ describe("W3B3CreditLine", function () {
       ).to.be.revertedWithCustomError(CreditLineFactory, "InvalidOracle");
     });
 
-    it("rejects a contract oracle with no valid current observation during rotation", async function () {
+    it("rejects a contract oracle with an invalid observation during rotation", async function () {
       const OracleFactory = await ethers.getContractFactory("MockPriceOracle");
       const replacement = await OracleFactory.deploy(initialPrice) as unknown as MockPriceOracle;
+      const replacementAddress = await replacement.getAddress();
+      const block = await ethers.provider.getBlock("latest");
+      const staleTimestamp = BigInt((block?.timestamp ?? 0) - 3601);
 
-      await time.increase(60);
-      await expect(creditLine.connect(owner).setPriceOracle(await replacement.getAddress()))
-        .to.emit(creditLine, "PriceOracleUpdated");
+      await ethers.provider.send("hardhat_setStorageAt", [
+        replacementAddress,
+        "0x1",
+        ethers.zeroPadValue(ethers.toBeHex(staleTimestamp), 32),
+      ]);
 
-      expect(await creditLine.priceOracle()).to.equal(await replacement.getAddress());
+      await expect(creditLine.connect(owner).setPriceOracle(replacementAddress))
+        .to.be.revertedWithCustomError(creditLine, "InvalidOraclePrice");
     });
 
     it("rejects an oracle that reports zero price", async function () {
@@ -72,7 +78,6 @@ describe("W3B3CreditLine", function () {
       const replacement = await OracleFactory.deploy(initialPrice) as unknown as MockPriceOracle;
       const oracleAddress = await replacement.getAddress();
 
-      // Directly corrupt the mock storage so the credit-line validation is exercised.
       await ethers.provider.send("hardhat_setStorageAt", [oracleAddress, "0x0", ethers.zeroPadValue("0x00", 32)]);
 
       await expect(creditLine.connect(owner).setPriceOracle(oracleAddress))
