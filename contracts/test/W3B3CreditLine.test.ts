@@ -31,12 +31,20 @@ describe("W3B3CreditLine", function () {
     await collateralAsset.connect(user).approve(await creditLine.getAddress(), ethers.MaxUint256);
   });
 
-  describe("Oracle safety", function () {
+  describe("Configuration safety", function () {
+    it("rejects externally owned asset addresses", async function () {
+      const CreditLineFactory = await ethers.getContractFactory("W3B3CreditLine");
+      await expect(CreditLineFactory.deploy(owner.address, await collateralAsset.getAddress(), await oracle.getAddress(), owner.address)).to.be.revertedWithCustomError(CreditLineFactory, "InvalidAsset");
+      await expect(CreditLineFactory.deploy(await borrowAsset.getAddress(), owner.address, await oracle.getAddress(), owner.address)).to.be.revertedWithCustomError(CreditLineFactory, "InvalidAsset");
+    });
+
     it("rejects an externally owned address as the initial oracle", async function () {
       const CreditLineFactory = await ethers.getContractFactory("W3B3CreditLine");
       await expect(CreditLineFactory.deploy(await borrowAsset.getAddress(), await collateralAsset.getAddress(), owner.address, owner.address)).to.be.revertedWithCustomError(CreditLineFactory, "InvalidOracle");
     });
+  });
 
+  describe("Oracle safety", function () {
     it("rejects an initial oracle with a zero price", async function () {
       const OracleFactory = await ethers.getContractFactory("MockPriceOracle");
       const invalidOracle = await OracleFactory.deploy(initialPrice) as unknown as MockPriceOracle;
