@@ -31,7 +31,7 @@ contract ChainlinkPriceOracle is IPriceOracle {
     error IncompleteRound();
 
     constructor(address feedAddress, uint256 maxAgeSeconds) {
-        if (feedAddress == address(0) || maxAgeSeconds == 0) revert InvalidFeed();
+        if (feedAddress == address(0) || maxAgeSeconds == 0 || feedAddress.code.length == 0) revert InvalidFeed();
         feed = AggregatorV3Interface(feedAddress);
         maxAge = maxAgeSeconds;
     }
