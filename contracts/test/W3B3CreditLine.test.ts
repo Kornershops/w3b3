@@ -56,6 +56,27 @@ describe("W3B3CreditLine", function () {
       ).to.be.revertedWithCustomError(CreditLineFactory, "InvalidOracle");
     });
 
+    it("rejects an initial oracle with an invalid observation", async function () {
+      const OracleFactory = await ethers.getContractFactory("MockPriceOracle");
+      const invalidOracle = await OracleFactory.deploy(initialPrice) as unknown as MockPriceOracle;
+      const invalidOracleAddress = await invalidOracle.getAddress();
+      await ethers.provider.send("hardhat_setStorageAt", [
+        invalidOracleAddress,
+        "0x0",
+        ethers.zeroPadValue("0x00", 32),
+      ]);
+
+      const CreditLineFactory = await ethers.getContractFactory("W3B3CreditLine");
+      await expect(
+        CreditLineFactory.deploy(
+          await borrowAsset.getAddress(),
+          await collateralAsset.getAddress(),
+          invalidOracleAddress,
+          owner.address
+        )
+      ).to.be.revertedWithCustomError(CreditLineFactory, "InvalidOraclePrice");
+    });
+
     it("rejects a contract oracle with an invalid observation during rotation", async function () {
       const OracleFactory = await ethers.getContractFactory("MockPriceOracle");
       const replacement = await OracleFactory.deploy(initialPrice) as unknown as MockPriceOracle;
