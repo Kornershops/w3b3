@@ -25,6 +25,7 @@
 - [x] Added deployment preflight/configuration requirements for the production oracle path.
 - [x] Added explicit Phase 14 financial safety invariants for oracle and position behavior.
 - [x] Added credit-line regression coverage for LTV, withdrawal, repayment, liquidation and interest invariants.
+- [x] Added credit-line access-control and zero-amount regression coverage.
 - [x] Added a Sprint 14.08 execution ledger separating implementation completion from verification gates.
 - [x] Refreshed the next-sprint execution plan around the remaining production blockers.
 
