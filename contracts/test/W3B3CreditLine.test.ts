@@ -79,6 +79,22 @@ describe("W3B3CreditLine", function () {
     });
   });
 
+  describe("Access and amount guards", function () {
+    it("restricts oracle rotation to the owner", async function () {
+      await expect(creditLine.connect(user).setPriceOracle(await oracle.getAddress())).to.be.revertedWithCustomError(creditLine, "OwnableUnauthorizedAccount");
+    });
+
+    it("rejects zero collateral deposits and zero borrows", async function () {
+      await expect(creditLine.connect(user).depositCollateral(0)).to.be.revertedWith("Amount must be > 0");
+      await expect(creditLine.connect(user).borrow(0)).to.be.revertedWith("Amount must be > 0");
+    });
+
+    it("rejects zero liquidation and zero repayment when there is no debt", async function () {
+      await expect(creditLine.connect(liquidator).liquidate(user.address, 0)).to.be.revertedWith("Position is healthy");
+      await expect(creditLine.connect(user).repay(0)).to.be.revertedWith("No debt to repay");
+    });
+  });
+
   describe("Collateral and debt invariants", function () {
     it("prevents borrowing beyond MAX_LTV", async function () {
       await creditLine.connect(user).depositCollateral(ethers.parseEther("2"));
