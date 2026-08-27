@@ -19,6 +19,22 @@ describe("ChainlinkPriceOracle", function () {
     expect(price).to.equal(ethers.parseEther("1000"));
   });
 
+  it("rejects a zero feed address", async function () {
+    const OracleFactory = await ethers.getContractFactory("ChainlinkPriceOracle");
+    await expect(OracleFactory.deploy(ethers.ZeroAddress, 3600)).to.be.revertedWithCustomError(OracleFactory, "InvalidFeed");
+  });
+
+  it("rejects an externally owned address as a feed", async function () {
+    const [, eoa] = await ethers.getSigners();
+    const OracleFactory = await ethers.getContractFactory("ChainlinkPriceOracle");
+    await expect(OracleFactory.deploy(eoa.address, 3600)).to.be.revertedWithCustomError(OracleFactory, "InvalidFeed");
+  });
+
+  it("rejects a zero max age", async function () {
+    const OracleFactory = await ethers.getContractFactory("ChainlinkPriceOracle");
+    await expect(OracleFactory.deploy(await feed.getAddress(), 0)).to.be.revertedWithCustomError(OracleFactory, "InvalidFeed");
+  });
+
   it("rejects a non-positive answer", async function () {
     await feed.setAnswer(0);
     await expect(oracle.getPrice()).to.be.revertedWithCustomError(oracle, "InvalidPrice");
