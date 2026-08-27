@@ -1,12 +1,12 @@
-# W3B3 Active Tasks — Sprint 14.08 Handover
+# W3B3 Active Tasks — Sprint 14.08
 
 ## Phase 14 — Production Security & Financial Safety
 
-**Status:** ACTIVE / GATED — HANDOVER
-**Working branch:** `phase-14/production-assurance`
+**Status:** ACTIVE / GATED  
+**Working branch:** `phase-14/production-assurance`  
 **Phase 15:** GATED
 
-### Completed this sprint
+### Completed implementation tasks
 
 - [x] Established Phase 14 production-assurance execution branch and sprint tracking.
 - [x] Converted the production dependency audit into a hard CI release gate.
@@ -19,17 +19,18 @@
 - [x] Added stale, future-timestamp, invalid-price and incomplete-round rejection.
 - [x] Added Chainlink `answeredInRound < roundId` protection.
 - [x] Added contract-code validation so EOAs/non-contracts cannot be configured as the oracle.
+- [x] Added live observation validation when constructing or rotating the credit-line oracle.
 - [x] Added deterministic oracle/feed fixtures and adversarial configuration tests.
 - [x] Migrated credit-line tests to the oracle architecture.
 - [x] Added deployment preflight/configuration requirements for the production oracle path.
-- [x] Updated sprint and task documentation for handover.
+- [x] Refreshed the next-sprint execution plan around the remaining production blockers.
 
 ### Remaining / carried forward
 
 #### P0 — Production blockers
 
 - [ ] **Dependency security remediation** — resolve/mitigate outstanding high/critical production findings by compatible dependency families. Do not use blind `npm audit fix --force`.
-- [ ] **Production credit oracle verification** — implementation is advanced; remaining approved feed configuration, deployment evidence and fresh CI/adversarial integration evidence.
+- [ ] **Production credit oracle verification** — implementation is advanced; remaining approved feed/network configuration, deployment evidence and fresh CI/adversarial integration evidence.
 - [ ] **Yield-offset credit** — establish authoritative requirements, implement the intended model, and prove financial invariants. No financial semantics should be invented.
 - [ ] **Recursive execution safety** — prove the 1.12 health-factor requirement at the actual transaction/on-chain execution boundary.
 
@@ -50,12 +51,12 @@
 
 ### Verification constraint
 
-GitHub Actions runtime exhaustion is an infrastructure constraint. It does not convert implementation into verified completion. CI-dependent items above remain open until the repository can execute the required checks again.
+GitHub Actions runtime exhaustion is an infrastructure constraint. It does not convert implementation into verified completion. CI-dependent items remain open until the repository can execute the required checks again.
 
 ### Handover rule
 
-This sprint is handed over with all **implemented tasks marked complete** and all **verification/release blockers explicitly carried forward**. No task is marked production-complete solely because code exists.
+Implemented work is marked complete only as an implementation milestone. Production PASS requires the evidence defined above. This sprint may continue without Actions for non-CI implementation work, while CI-dependent gates remain explicitly open.
 
-### Next sprint entry point
+### Next execution entry point
 
-Resume with the carried-forward P0 blockers, beginning with fresh CI/security verification, dependency remediation, approved oracle deployment evidence, yield-offset requirements, and on-chain recursive execution safety.
+Resume with dependency-family remediation, approved oracle deployment/integration evidence, authoritative yield-offset requirements, and actual on-chain recursive execution safety. Then run the complete verification matrix as soon as Actions runtime is available.
