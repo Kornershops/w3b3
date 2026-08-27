@@ -41,6 +41,7 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
 
     error InvalidOracle();
     error InvalidOraclePrice();
+    error InvalidAsset();
 
     constructor(
         address _borrowAsset,
@@ -48,10 +49,9 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
         address _priceOracle,
         address initialOwner
     ) Ownable(initialOwner) {
-        if (_borrowAsset == address(0) || _collateralAsset == address(0) || _priceOracle == address(0)) {
-            revert InvalidOracle();
-        }
-        if (_priceOracle.code.length == 0) revert InvalidOracle();
+        if (_borrowAsset == address(0) || _collateralAsset == address(0)) revert InvalidAsset();
+        if (_borrowAsset.code.length == 0 || _collateralAsset.code.length == 0) revert InvalidAsset();
+        if (_priceOracle == address(0) || _priceOracle.code.length == 0) revert InvalidOracle();
 
         borrowAsset = IERC20(_borrowAsset);
         collateralAsset = IERC20(_collateralAsset);
