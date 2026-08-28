@@ -24,13 +24,7 @@ contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
     event KeeperUpdated(address indexed keeper, bool status);
     event AssetApprovalUpdated(address indexed asset, bool status);
     event UserOptedIn(address indexed user, address indexed asset, bool status);
-    event AutonomousRebalance(
-        address indexed user,
-        address indexed sourceAsset,
-        address indexed targetAsset,
-        uint256 amountIn,
-        uint256 amountOut
-    );
+    event AutonomousRebalance(address indexed user, address indexed sourceAsset, address indexed targetAsset, uint256 amountIn, uint256 amountOut);
 
     modifier onlyKeeper() {
         require(isAuthorizedKeeper[msg.sender] || msg.sender == owner(), "Unauthorized keeper");
@@ -51,13 +45,7 @@ contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
         emit UserOptedIn(msg.sender, asset, status);
     }
 
-    function executeAutonomousRebalance(
-        address user,
-        address sourceAsset,
-        address targetAsset,
-        uint256 amountIn,
-        uint256 minAmountOut
-    ) external onlyKeeper nonReentrant {
+    function executeAutonomousRebalance(address user, address sourceAsset, address targetAsset, uint256 amountIn, uint256 minAmountOut) external onlyKeeper nonReentrant {
         require(user != address(0), "Invalid user");
         require(amountIn > 0, "Amount > 0 required");
         require(isApprovedAsset[sourceAsset], "Source asset not approved");
@@ -65,7 +53,7 @@ contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
         require(userOptIn[user][sourceAsset], "User has not opted in this asset");
 
         IERC20(sourceAsset).safeTransferFrom(user, address(this), amountIn);
-        IERC20(sourceAsset).approve(address(dexRouter), amountIn);
+        IERC20(sourceAsset).forceApprove(address(dexRouter), amountIn);
 
         uint256 amountOut = dexRouter.exactInputSingle(ISwapRouter.ExactInputSingleParams({
             tokenIn: sourceAsset,
@@ -78,6 +66,7 @@ contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
             sqrtPriceLimitX96: 0
         }));
 
+        IERC20(sourceAsset).forceApprove(address(dexRouter), 0);
         IERC20(targetAsset).safeTransfer(user, amountOut);
         emit AutonomousRebalance(user, sourceAsset, targetAsset, amountIn, amountOut);
     }
