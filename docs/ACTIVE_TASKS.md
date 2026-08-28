@@ -30,6 +30,7 @@
 - [x] Added credit-line access-control and zero-amount regression coverage.
 - [x] Added a Sprint 14.08 execution ledger separating implementation completion from verification gates.
 - [x] Refreshed the next-sprint execution plan around the remaining production blockers.
+- [x] Added generic oracle observation regression coverage for valuation-time invalid observations.
 
 ### Remaining / carried forward
 
