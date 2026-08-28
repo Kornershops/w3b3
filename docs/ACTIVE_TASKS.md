@@ -30,6 +30,7 @@
 - [x] Added credit-line access-control and zero-amount regression coverage.
 - [x] Added generic oracle observation regression coverage for valuation-time invalid observations.
 - [x] Added a dependency-security baseline documenting the current manifest/lockfile state and remediation policy.
+- [x] Clarified the dependency audit execution gate: remediation requires a reproducible npm-capable audit and resolved dependency inventory.
 - [x] Added a Sprint 14.08 execution ledger separating implementation completion from verification gates.
 - [x] Refreshed the next-sprint execution plan around the remaining production blockers.
 
