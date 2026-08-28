@@ -28,15 +28,16 @@
 - [x] Added explicit Phase 14 financial safety invariants for oracle and position behavior.
 - [x] Added credit-line regression coverage for LTV, withdrawal, repayment, liquidation and interest invariants.
 - [x] Added credit-line access-control and zero-amount regression coverage.
+- [x] Added generic oracle observation regression coverage for valuation-time invalid observations.
+- [x] Added a dependency-security baseline documenting the current manifest/lockfile state and remediation policy.
 - [x] Added a Sprint 14.08 execution ledger separating implementation completion from verification gates.
 - [x] Refreshed the next-sprint execution plan around the remaining production blockers.
-- [x] Added generic oracle observation regression coverage for valuation-time invalid observations.
 
 ### Remaining / carried forward
 
 #### P0 — Production blockers
 
-- [ ] **Dependency security remediation** — resolve/mitigate outstanding high/critical production findings by compatible dependency families. Do not use blind `npm audit fix --force`.
+- [ ] **Dependency security remediation** — generate a reproducible audit, resolve/mitigate confirmed high/critical production findings by compatible dependency families, regenerate authoritative lockfiles, and verify. Do not use blind `npm audit fix --force`.
 - [ ] **Production credit oracle verification** — implementation is advanced; remaining approved feed/network configuration, deployment evidence and fresh CI/adversarial integration evidence.
 - [ ] **Yield-offset credit** — establish authoritative requirements, implement the intended model, and prove financial invariants. No financial semantics should be invented.
 - [ ] **Recursive execution safety** — prove the 1.12 health-factor requirement at the actual transaction/on-chain execution boundary.
@@ -66,4 +67,4 @@ Implemented work is marked complete only as an implementation milestone. Product
 
 ### Next execution entry point
 
-Resume with dependency-family remediation, approved oracle deployment/integration evidence, authoritative yield-offset requirements, and actual on-chain recursive execution safety. Then run the complete verification matrix as soon as Actions runtime is available.
+Generate the reproducible dependency audit and resolved workspace inventory first. Then remediate compatible dependency families, followed by approved oracle deployment/integration evidence, authoritative yield-offset requirements, and actual on-chain recursive execution safety. Run the complete verification matrix as soon as Actions runtime is available.
