@@ -155,8 +155,9 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
     }
 
     function _price() internal view returns (uint256 price) {
-        (price, ) = priceOracle.getPrice();
-        if (price == 0) revert InvalidOraclePrice();
+        uint256 updatedAt;
+        (price, updatedAt) = priceOracle.getPrice();
+        if (price == 0 || updatedAt == 0 || updatedAt > block.timestamp) revert InvalidOraclePrice();
     }
 
     function _collateralValue(uint256 collateralAmount) internal view returns (uint256) {
