@@ -16,9 +16,11 @@ Reduce the remaining production blockers with evidence-backed implementation and
 #### P0 — Financial and security blockers
 
 1. **Dependency security**
-   - Remediate production high/critical findings by compatible dependency families.
+   - Establish resolved dependency inventories in an npm-capable environment.
+   - Generate reproducible audits for root/workspaces.
+   - Remediate confirmed high/critical findings by compatible dependency families.
    - Avoid blind major-version or `npm audit fix --force` changes.
-   - Re-run the complete application/contract test matrix after each upgrade group.
+   - Regenerate authoritative lockfiles and re-run the complete application/contract test matrix after each upgrade group.
 
 2. **Credit-line oracle**
    - Verify hardened oracle behavior against the intended production feed/network.
@@ -27,6 +29,7 @@ Reduce the remaining production blockers with evidence-backed implementation and
 
 3. **Yield-offset credit**
    - Recover the authoritative product/protocol requirements.
+   - Map the specified accounting model into the existing credit-line architecture.
    - Implement only the specified semantics.
    - Add adversarial financial-invariant tests for accounting, debt, collateral and liquidation behavior.
 
@@ -54,9 +57,12 @@ Reduce the remaining production blockers with evidence-backed implementation and
 - Explicit `IPriceOracle` credit-line boundary.
 - Chainlink normalization and stale/future/incomplete/invalid observation checks.
 - Oracle contract-code validation and governance rotation checks.
+- Runtime validation of zero/future oracle observations during valuation.
+- Credit-line regression coverage for LTV, withdrawal, repayment, liquidation, interest, access control and amount guards.
 - Recursive request validation and strategy maximum-leverage enforcement.
 - Recursive controller regression coverage through the actual backend Jest discovery path.
 - CI dependency audit converted to a hard release gate.
+- Dependency-security baseline and reproducible-audit execution policy.
 - Deployment oracle preflight requirements.
 
 ### Verification constraint
