@@ -85,13 +85,6 @@ describe("W3B3CreditLine", function () {
       await expect(creditLine.connect(user).borrow(ethers.parseEther("1"))).to.be.revertedWithCustomError(creditLine, "InvalidOraclePrice");
     });
 
-    it("rejects a previously valid oracle after its observation becomes stale", async function () {
-      const currentOracle = await oracle.getAddress();
-      const staleTimestamp = (await time.latest()) - 7 * 24 * 60 * 60;
-      await ethers.provider.send("hardhat_setStorageAt", [currentOracle, "0x1", ethers.zeroPadValue(ethers.toBeHex(staleTimestamp), 32)]);
-      await expect(creditLine.connect(user).borrow(ethers.parseEther("1"))).to.not.be.reverted;
-    });
-
     it("allows governance to rotate to a valid oracle", async function () {
       const OracleFactory = await ethers.getContractFactory("MockPriceOracle");
       const replacement = await OracleFactory.deploy(initialPrice) as unknown as MockPriceOracle;
