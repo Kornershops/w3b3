@@ -10,23 +10,19 @@ import "./interfaces/ISwapRouter.sol";
 
 /**
  * @title W3B3AutonomousHarvester
- * @dev Allows trusted AI Keepers (or relayer networks like Gelato) to automatically 
- * rebalance a user's portfolio between whitelisted LST vaults to optimize yield,
- * without exposing raw withdrawal privileges.
+ * @dev Allows trusted AI Keepers (or relayer networks like Gelato) to automatically
+ * rebalance a user's portfolio between approved LST assets.
  */
 contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    // Authorized AI keeper/relayer
     mapping(address => bool) public isAuthorizedKeeper;
-
+    mapping(address => bool) public isApprovedAsset;
     ISwapRouter public dexRouter;
-
-    // User allowances bounding what the AI can manage
-    // User => LST Asset => Allowed to be rebalanced?
     mapping(address => mapping(address => bool)) public userOptIn;
 
     event KeeperUpdated(address indexed keeper, bool status);
+    event AssetApprovalUpdated(address indexed asset, bool status);
     event UserOptedIn(address indexed user, address indexed asset, bool status);
     event AutonomousRebalance(
         address indexed user,
@@ -43,23 +39,18 @@ contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
 
     constructor(address _dexRouter, address initialOwner) Ownable(initialOwner) {
         require(_dexRouter != address(0), "Invalid router address");
+        require(_dexRouter.code.length > 0, "Invalid router contract");
         dexRouter = ISwapRouter(_dexRouter);
         isAuthorizedKeeper[initialOwner] = true;
     }
 
-    /**
-     * @dev User opt-in to allow the global AI keeper to route their specific asset.
-     */
     function setOptIn(address asset, bool status) external {
+        require(asset != address(0) && asset.code.length > 0, "Invalid asset");
+        require(!status || isApprovedAsset[asset], "Asset not approved");
         userOptIn[msg.sender][asset] = status;
         emit UserOptedIn(msg.sender, asset, status);
     }
 
-    /**
-     * @dev Executed by the AI Keeper to harvest/rebalance a position.
-     * The LST is pulled from the user (requires prior ERC20 approval to this contract),
-     * instantly swapped for the better yielding target LST, and sent immediately back.
-     */
     function executeAutonomousRebalance(
         address user,
         address sourceAsset,
@@ -67,13 +58,13 @@ contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
         uint256 amountIn,
         uint256 minAmountOut
     ) external onlyKeeper nonReentrant {
+        require(user != address(0), "Invalid user");
         require(amountIn > 0, "Amount > 0 required");
+        require(isApprovedAsset[sourceAsset], "Source asset not approved");
+        require(isApprovedAsset[targetAsset], "Target asset not approved");
         require(userOptIn[user][sourceAsset], "User has not opted in this asset");
 
-        // 1. Pull asset securely
         IERC20(sourceAsset).safeTransferFrom(user, address(this), amountIn);
-
-        // 2. Perform open market or internal pool swap execution
         IERC20(sourceAsset).approve(address(dexRouter), amountIn);
 
         uint256 amountOut = dexRouter.exactInputSingle(ISwapRouter.ExactInputSingleParams({
@@ -87,15 +78,19 @@ contract W3B3AutonomousHarvester is Ownable, ReentrancyGuard {
             sqrtPriceLimitX96: 0
         }));
 
-        // 3. Return the newly rebalanced (better yielding) asset to the user silently
         IERC20(targetAsset).safeTransfer(user, amountOut);
-
         emit AutonomousRebalance(user, sourceAsset, targetAsset, amountIn, amountOut);
     }
 
-    // --- Admin Config ---
     function setKeeperAuth(address _keeper, bool _status) external onlyOwner {
+        require(_keeper != address(0), "Invalid keeper");
         isAuthorizedKeeper[_keeper] = _status;
         emit KeeperUpdated(_keeper, _status);
+    }
+
+    function setAssetApproval(address _asset, bool _status) external onlyOwner {
+        require(_asset != address(0) && _asset.code.length > 0, "Invalid asset");
+        isApprovedAsset[_asset] = _status;
+        emit AssetApprovalUpdated(_asset, _status);
     }
 }
