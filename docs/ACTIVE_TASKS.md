@@ -20,7 +20,9 @@
 - [x] Added Chainlink `answeredInRound < roundId` protection.
 - [x] Added contract-code validation so EOAs/non-contracts cannot be configured as the oracle.
 - [x] Added live observation validation when constructing or rotating the credit-line oracle.
+- [x] Added runtime oracle observation validation on every collateral valuation/price read.
 - [x] Added deterministic oracle/feed fixtures and adversarial configuration tests.
+- [x] Added regression coverage for oracle failures occurring after a previously valid configuration.
 - [x] Migrated credit-line tests to the oracle architecture.
 - [x] Added deployment preflight/configuration requirements for the production oracle path.
 - [x] Added explicit Phase 14 financial safety invariants for oracle and position behavior.
