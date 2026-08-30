@@ -13,94 +13,83 @@ v3.0.0 → April 15, 2026 → Institutional Graduation → Multi-Sig Vaults, Gov
 
 ## Completed Phases — Historical Record
 
-Phase 1–5 → Infrastructure → Wagmi v2, RainbowKit v2, ERC-4337 Account Abstraction, autonomous DB seeding. **Complete.**
-Phase 6–10 → Intelligence & Experience → Predictive APY models, AI Harvesters, premium marketplace, sparklines. **Complete.**
-Phase 11 → Institutional Inventory → 35-asset Platinum Registry, live CoinGecko sync. **Complete.**
-Phase 12 → Security & Custody → Multi-Sig Vaults, weighted governance, proposal/approval rails. **Complete.**
-Phase 13 → Global Analytics → Cross-vault aggregation, portfolio performance visualization, recursive yield engine. **Complete.**
+Phase 1–5 → Infrastructure → Wagmi v2, RainbowKit v2, ERC-4337 Account Abstraction, autonomous DB seeding. **Implementation milestone complete.**
+Phase 6–10 → Intelligence & Experience → Predictive APY models, AI Harvesters, premium marketplace, sparklines. **Implementation milestone complete.**
+Phase 11 → Institutional Inventory → 35-asset Platinum Registry, live CoinGecko sync. **Implementation milestone complete.**
+Phase 12 → Security & Custody → Multi-Sig Vaults, weighted governance, proposal/approval rails. **Implementation milestone complete.**
+Phase 13 → Global Analytics → Cross-vault aggregation, portfolio performance visualization, recursive yield engine. **Implementation milestone complete.**
 
-> Phase 1–13 completion status is the preserved historical record. Phase 14 is the active production-assurance gate.
+> Phase 1–13 completion is preserved as historical implementation status. It is not a blanket production certification.
 
 ---
 
 ## Phase 14 — Production Assurance
 
-**Status: Active / CI Failing. Not merged to main.**
+**Status: Active / Gated. Hardening branch merged to `main` on August 30, 2026.**
 
-Branch: `origin/phase-14/production-assurance` (~80 commits ahead of local `main`).
+### Landed hardening
 
-### Shipped on phase-14 (pending merge)
+- Oracle observation validation at price-read time in credit-line/restaking paths.
+- Chainlink round completeness, timestamp and invalid-price protections.
+- Credit-line asset/oracle validation.
+- Recursive simulation input validation and leverage bounds.
+- Autonomous harvester source/target asset allowlisting.
+- Safe ERC20 router approvals with allowance cleanup.
+- Related adversarial/regression coverage.
+- Next.js 15 build compatibility correction.
+- Credential scrub and dependency-security tracking.
 
-- Oracle observation validation at every price read (`W3B3CreditLine`, `W3B3RestakingHub`)
-- Chainlink round completeness + timestamp staleness guards
-- Credit line asset/oracle non-zero address rejection
-- ERC20 `safeApprove` → `approve` hardening in `W3B3AutonomousHarvester`
-- Rebalance asset allowlist enforcement
-- Axios backend security upgrade
-- Next.js bumped from `^14.2.0` to `^15.5.24` security line
-- Recursive simulation input validation + leverage bounds enforcement
+### Remaining production gates
 
-### Active CI Blockers
+- [ ] Reproduce and audit the resolved dependency graph; remediate confirmed high/critical findings or document approved compensating controls/risk acceptance.
+- [ ] Verify authoritative production oracle feeds, networks, decimals, freshness policy and deployment addresses.
+- [ ] Enforce and prove the 1.12 recursive health-factor invariant at the actual state-changing/on-chain execution boundary.
+- [ ] Approve and implement authoritative yield-offset credit accounting and prove financial invariants.
+- [ ] Complete fresh CI/release matrix and deployment/recovery evidence.
+- [ ] Complete governance persistence and remaining runtime/stub reconciliation.
 
-1. **`build` job** — `frontend/src/app/pool/[id]/page.tsx` uses Next 14 sync params signature `{ params: { id: string } }`. Next 15 requires `params: Promise<{id: string}>` with an async page component.
-2. **`security` job** — `npm audit --audit-level=high` exits non-zero. 38 high/critical transitive vulns in `viem`, `@alchemy/aa-*`, `@coinbase/wallet-sdk`, `@safe-global`, `@tanstack/form`, `@babel/plugin-transform-modules-systemjs`. Job has `continue-on-error: true` but still marks the run failed.
+### Important distinction
 
-### Passing on phase-14
-
-- `lint-and-typecheck` ✓
-- `test-backend` ✓
-- `test-contracts` ✓
-- `test-frontend` ✓
-
-### Sprint 14 Carry-Forward (Next Sprint Gates)
-
-- [ ] Fix `pool/[id]/page.tsx` for Next 15 async `PageProps`
-- [ ] Resolve or scope-exclude the 38 audit vulns
-- [ ] Merge phase-14 → main after CI green
-- [ ] Governance vote persistence (`GovernanceVote` model + `castVote` DB write)
-- [ ] Replace `Math.random()` mandate weights with real vote tally reads
-- [ ] Re-enable `poolService.test.js.skipped` and `stakeService.test.js.skipped`
-- [ ] Governance financial safety invariant verification
+Phase-14 merge means the hardening code is on `main`; it does **not** mean W3B3 has received production certification. Implementation, verification and operational readiness remain separate gates.
 
 ---
 
 ## Phase 15 — Runtime Completions & SDK Hardening
 
-**Status: Planned. Not started.**
+**Status: Planned / gated by production-critical Phase 14 work.**
 
-Targets the remaining stub/mock implementations that exist at the service and SDK layer.
+Purpose: replace remaining production-path mocks, stubs and hardcoded values with real integrations while preserving the existing blueprint.
 
-- [ ] `RevenueRouterService.executeSwapToEth` — integrate 1inch v6 SDK for real fee harvesting
-- [ ] `SafeService.proposeInstitutionalStake` — integrate `@safe-global/protocol-kit` for real Safe tx proposals
-- [ ] `GasService.sponsorUserOperation` — end-to-end ERC-4337 paymaster test with real `ALCHEMY_GAS_POLICY_ID`
-- [ ] `W3B3SDK.executeDeposit` / `deployCustomVault` — wire to real contracts and backend API (remove mock tx hashes)
-- [ ] `portfolioService` institutional vault value — replace hardcoded `+15000` mock with real on-chain balance reads
-- [ ] `predictiveAnalytics` historical data — persist real time-series to `PoolAnalytics` table instead of `Math.random()`
-- [ ] `W3B3RestakingHub` withdrawal — implement real EigenLayer 7-day withdrawal queue
-- [ ] `W3B3CreditLine` oracle — replace `collateralPriceAsset` mock price with live Chainlink feed (post phase-14 merge)
-- [ ] Leaderboard referral link — replace `YOUR_CODE_HERE` placeholder with real per-user referral code
+Primary sprint families:
+- Governance persistence and real mandate tally reads.
+- Revenue router / 1inch integration.
+- Safe transaction proposal and confirmation integration.
+- ERC-4337 paymaster integration.
+- W3B3 SDK contract/API wiring.
+- Real institutional-vault valuation.
+- Persisted predictive analytics time-series.
+- Credit-line frontend/oracle integration gaps.
+- EigenLayer withdrawal queue.
+- Referral data and previously skipped tests.
 
 ---
 
 ## Phase 16 — Mobile-First Ecosystem
 
-**Status: Planned. Not started.**
+**Status: Planned.**
 
-- [ ] Glassmorphic mobile-responsive redesign across all 8 pages
-- [ ] iOS/Android cross-chain staking wallet (React Native or PWA upgrade)
-- [ ] Replace deprecated `next-pwa` v5 with a maintained PWA solution for Next 15 App Router
-
----
+- Mobile-responsive product experience.
+- iOS/Android cross-chain staking wallet direction.
+- Maintained PWA strategy compatible with the active Next.js architecture.
 
 ## Phase 17 — App-Chain Graduation
 
-**Status: Vision. Not started.**
+**Status: Vision / Planned.**
 
-- [ ] `BridgeService` — replace `ALPHA_BRIDGE_STUB_READY` stub with real Hyperlane/CCIP integration
-- [ ] Standalone W3B3 L3 App-Chain architecture
-- [ ] Decentralized Insurance Fund / `$w3USD` global safety net expansion
+- Real Hyperlane/CCIP bridge integration.
+- Standalone W3B3 L3/app-chain architecture.
+- Decentralized Insurance Fund / `$w3USD` safety-net expansion.
 
----
+## Documentation rule
 
-Technical details documented in [API.md](./API.md) and [ARCHITECTURE.md](./ARCHITECTURE.md).
-Detailed setup in [INSTALL.md](./INSTALL.md).
+The roadmap defines phases, `ACTIVE_TASKS.md` defines executable work, implementation specs define technical acceptance criteria, and `PRODUCTION_READINESS.md` defines evidence required for release. When documents disagree, current verified repository state takes precedence and the stale document must be corrected rather than silently ignored.
