@@ -1,56 +1,74 @@
 # W3B3 — Project Status & Enterprise Brief
 
-Strategic assessment of the W3B3 multi-chain portal's current state and delivery roadmap.
+## Executive status
 
-## Completed Work
+W3B3 remains the original real-yield marketplace / liquidity aggregator and recursive-yield blueprint. Phases 1–13 are preserved as historical implementation milestones. Phase 14 is the active production-assurance gate; Phases 15–17 remain planned runtime completion, mobile and app-chain expansion.
 
-Design & UX → Overhauled to premium dark-glassmorphism visuals across 8 pages.
-Wallet Integration → Standardized on RainbowKit v2 + Wagmi v2 with chain-sync detection.
-Smart Contracts → Full suite of 14 contracts compiled, tested, and artifact-generated. StakingPoolFactory and W3B3 Governance tokens deployed and verified.
-Backend API → Full Dual-JWT session rotation and relational Postgres schema active. 20+ service modules covering staking, governance, custody, credit, analytics, and reporting.
-Scalability → Factory-pattern enabled for autonomous pool deployment across 4 networks.
-Security → Rate limiting, RBAC, Staking Guard circuit breakers, KYC/AML compliance middleware implemented.
-Tokenomics → Protocol-Owned Liquidity (POL) Treasury and Value Accrual Engine integrated.
-Institutional Suite → Multi-Sig Vaults, weighted proposal/approval rails, custody service, and KYB middleware live.
-Recursive Yield → Leveraged LST looping engine with health factor simulation and 1.12 minimum guardrail.
-Governance → Voting power calculation, yield multiplier tiers (1.0x–1.5x), and gauge voting UI live.
-Analytics → 35-asset Platinum Registry with keyless CoinGecko sync, predictive APY forecasting, and portfolio aggregation.
+The Phase 14 production-assurance branch has now been merged to `main`. Recent security work includes Chainlink/oracle observation hardening, recursive input/leverage validation, autonomous-harvester asset authorization and ERC20 approval hardening, and related regression coverage.
 
-## Active Gate — Phase 14
+**Production certification: NOT YET GRANTED.** The merge is a source-control milestone, not an operational, economic or deployment sign-off.
 
-Phase 14 branch (`origin/phase-14/production-assurance`) is ~80 commits ahead of `main` and not yet merged. CI is failing on two blockers:
+## Completed implementation milestones
 
-1. Next.js 15 `PageProps` type error in `pool/[id]/page.tsx` — requires async params.
-2. 38 high/critical transitive dependency vulnerabilities failing the `npm audit` security gate.
+- Premium multi-page frontend and wallet integration using the project's current Next.js/Wagmi/RainbowKit architecture.
+- Smart-contract suite covering staking, governance, institutional custody, recursive-yield and credit-line capabilities.
+- Backend services for staking, governance, custody, credit, analytics and reporting.
+- Factory-based pool deployment and multi-network foundations.
+- Predictive analytics, marketplace and portfolio aggregation foundations.
+- Institutional multi-sig custody and governance mandate framework.
+- Recursive-yield simulation with a 1.12 minimum health-factor policy at the application layer.
+- Credit-line oracle abstraction with runtime observation validation and financial regression coverage.
+- Autonomous harvester keeper/user authorization, approved source/target asset controls and safe router allowance lifecycle.
 
-All test jobs (backend, contracts, frontend, lint) are passing on the phase-14 branch.
+## Phase 14 — Production Assurance
 
-## Remaining Roadmap
+### P0 gates
 
-Phase 14 Carry-Forward → CI fixes, governance vote persistence, merge to main → Active.
-Phase 15 → Runtime Completions → Wire stub services (1inch swap, Safe SDK, ERC-4337 paymaster, SDK deposits) to real implementations → Targeted Q3 2026.
-Phase 16 → Mobile-First Ecosystem → Responsive redesign and iOS/Android wallet → Targeted Q3 2026.
-Phase 17 → App-Chain Graduation → Hyperlane/CCIP bridge, L3 architecture, Insurance Fund → Targeted 2027.
+- **Dependency security:** produce a reproducible resolved dependency inventory; audit; remediate confirmed high/critical findings or document explicit risk acceptance; regenerate authoritative lockfiles and verify.
+- **Production oracle:** confirm authoritative feeds, networks, decimals, freshness policy, deployment addresses and runtime integration.
+- **Recursive execution:** enforce the 1.12 health-factor invariant at the actual transaction/on-chain authorization boundary, not only in simulation/controller code.
+- **Yield-offset credit:** recover authoritative accounting requirements before implementing financial semantics; prove collateral, debt, yield, liquidation and rounding invariants.
 
-## Known Stubs (Not Production-Ready)
+### P1 release assurance
 
-- `RevenueRouterService.executeSwapToEth` — 1inch integration planned, currently returns `PLANNING_COMPLETED`
-- `SafeService.proposeInstitutionalStake` — returns mock tx hash, not wired to `@safe-global/protocol-kit`
-- `BridgeService.settleCrossChainYield` — explicit stub, returns `ALPHA_BRIDGE_STUB_READY`
-- `W3B3SDK.executeDeposit` / `deployCustomVault` — mock tx hashes, not wired to contracts
-- `GovernanceService.castVote` — not persisted to DB (no `GovernanceVote` model yet)
-- `predictiveAnalytics` historical data — `Math.random()` generated, not real time-series
-- `portfolioService` institutional vault value — hardcoded `+15000` mock per executed proposal
+- Fresh full CI matrix: lint/typecheck, backend, contracts, frontend, build and security.
+- Route/controller/service/test reconciliation.
+- Wallet and transaction pending/rejected/failed/stale-state verification.
+- Deployment provenance, environment, migrations, health checks and contract-address verification.
+- Rollback and recovery rehearsal.
 
-## Enterprise Readiness Assessment
+### P2 governance / operations
 
-Stability → Verified → 100% pass rate in backend (Jest) and contract (Hardhat) suites on phase-14.
-Code Health → Strictly Typed → Clean TypeScript with zero-bypass linting.
-Security → Hardened → Contract-level guards and dual-secret JWT rotation active. Phase-14 adds Chainlink oracle guards (pending merge).
-Production Ready → Conditional → Protocol is feature-complete at the service layer. Phase-14 merge required to land security hardening on main.
+- Branch protection and required checks on `main`.
+- Secret/dependency scanning, monitoring and incident controls.
+- Evidence-level reconciliation of historical Phase 1–13 completion claims.
 
----
+## Important distinctions
 
-Detailed technical guides in [API.md](./API.md) and [ARCHITECTURE.md](./ARCHITECTURE.md).
-Release history in [CHANGELOG.md](./CHANGELOG.md).
-Full roadmap in [IMPLEMENTATION_ROADMAP_V2.md](./IMPLEMENTATION_ROADMAP_V2.md).
+**Implemented ≠ verified.** Code existing in `main` is an implementation milestone; production PASS requires evidence.
+
+**Simulation ≠ authorization.** A backend health-factor calculation cannot replace an on-chain execution invariant.
+
+**Configuration ≠ code.** Correct oracle logic still needs correct production feed/network/address configuration.
+
+**Dependency advisory ≠ automatic upgrade.** Remediation must preserve compatibility and be followed by verification.
+
+**Historical completion ≠ production certification.** Phases 1–13 remain part of the original blueprint while their evidence is reconciled where required.
+
+## Phase 15 — Runtime Completions & SDK Hardening
+
+After the applicable Phase 14 release gates, Phase 15 converts remaining mocks/stubs/hardcoded production-path values into real integrations: governance persistence, fee swapping, Safe transactions, ERC-4337 paymaster flow, SDK contract/API wiring, real institutional-vault balances, persisted analytics, EigenLayer withdrawal queue, referral data and remaining integration gaps.
+
+## Phase 16 — Mobile-First Ecosystem
+
+Planned mobile-responsive experience, cross-chain wallet direction and a maintained Next.js-compatible PWA approach.
+
+## Phase 17 — App-Chain Graduation
+
+Vision-stage cross-chain bridge integration, standalone W3B3 L3/app-chain architecture and decentralized insurance / `$w3USD` safety-net expansion.
+
+## Production readiness principle
+
+W3B3 should progress by **verified invariants and operational evidence**, not by feature count or commit count. The original product blueprint remains intact; production assurance determines when each capability is safe to expose.
+
+See `IMPLEMENTATION_ROADMAP_V2.md`, `PHASE_15_SPEC.md`, `YIELD_CREDIT_SPEC.md` and `PRODUCTION_READINESS.md` for execution details.
