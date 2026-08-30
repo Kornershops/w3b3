@@ -10,6 +10,10 @@ backend/.env
 frontend/.env.local
 contracts/.env
 
+# ENV EXAMPLES — never commit real credentials
+# These are tracked but must only contain placeholder values.
+# If a real credential is found in any .env.example, rotate it immediately.
+
 # DEPENDENCIES
 node_modules/
 /.pnp

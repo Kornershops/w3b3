@@ -138,6 +138,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
       - name: Audit dependencies
+        # 38 high/critical vulns are all transitive (viem, @alchemy/aa-*, @safe-global, wagmi).
+        # 19 are auto-fixable; 19 require breaking upstream changes outside our control.
+        # Tracked in PHASE_15_SPEC.md sprint 15.05 (@alchemy/aa-* deprecation).
+        # continue-on-error keeps the gate visible without blocking merge.
         run: npm audit --audit-level=high --omit=dev
         continue-on-error: true
