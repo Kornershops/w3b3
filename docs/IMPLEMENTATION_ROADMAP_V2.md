@@ -1,137 +1,141 @@
 # W3B3: Industrial-Grade Real-Yield Marketplace
-## Implementation Roadmap V2 — Current State
+## Implementation Roadmap V2 — Production-Aligned State
 
-> **PHASES 1–13 SHIPPED** | **PHASE 14 ACTIVE (CI FAILING)** | **PHASES 15–17 PLANNED**
+> **PHASES 1–13: HISTORICAL IMPLEMENTATION MILESTONES** | **PHASE 14: ACTIVE PRODUCTION ASSURANCE** | **PHASES 15–17: PLANNED**
 
----
+## Original Blueprint
 
-## System Architecture
+W3B3 remains a real-yield marketplace / liquidity aggregator and recursive-yield hub. The roadmap preserves the original progression: frictionless wallet and staking infrastructure → intelligence and analytics → autonomous harvesting → institutional custody/governance → recursive yield and yield-backed credit → runtime completion → mobile → cross-chain/app-chain expansion.
 
-```mermaid
-graph TD
-    User((Institutional User)) -- "Gasless Ops" --> SDK[W3B3 SDK]
-    SDK -- "Zap Logic" --> Orchestrator[Zap Orchestrator]
-    Orchestrator -- "Logic" --> Treasury[Institutional Treasury]
+Production assurance is a gate across these capabilities, not a replacement for the product blueprint.
 
-    subgraph "Backend Services"
-        Harvest[AI Harvester]
-        Predict[Predictive Analytics]
-        Governance[Multi-Sig & Mandate]
-    end
+## Phases 1–13 — Historical Milestones
 
-    Treasury -- "Fee Management" --> Harvest
-    Predict -- "Confidence Score" --> Treasury
-    Governance -- "Mandate Weight" --> User
+### Phase 1–5: Infrastructure
+- Wagmi v2 / RainbowKit v2 wallet foundation.
+- ERC-4337 account-abstraction foundations.
+- Backend, database and autonomous seeding infrastructure.
+- Staking and factory-based deployment foundations.
 
-    subgraph "Data Persistence"
-        DB[(PostgreSQL / Prisma)]
-        Redis[(Redis Cache)]
-    end
-
-    Harvest --> DB
-    Treasury --> DB
-    SDK --> Redis
-```
-
----
-
-## Completed Milestone Highlights
-
-### Phase 1–5: The Infrastructure
-- **Wagmi v2 & RainbowKit v2**: Re-engineered frontend for industrial stability.
-- **Account Abstraction (ERC-4337)**: Native support for gasless, multi-sig, and biometric transactions.
-- **Autonomous Seeding**: Automated build-time database bootstrapping for production readiness.
-
-### Phase 6–10: Intelligence & Interactive Layer
-- **Predictive APY Models**: ML engines forecasting 7-day trajectories with 85%+ confidence scores.
-- **Autonomous Harvesters**: AI agents that rebalance positions based on gas-efficient decay models.
-- **Premium Marketplace**: Glassmorphic analytics and high-fidelity historical sparklines for all assets.
+### Phase 6–10: Intelligence & Experience
+- Predictive APY foundations.
+- Autonomous harvesting.
+- Premium marketplace and analytics presentation.
+- Portfolio and market-data foundations.
 
 ### Phase 11–13: Institutional Graduation
-- **Platinum Scaling**: 35-asset blue-chip registry operational and live-syncing via keyless CoinGecko.
-- **Institutional Custody**: Native Multi-Sig Vaults with weighted governance and approval rails.
-- **Recursive Yield Engine**: Advanced mathematical simulation for leveraged looping and health factor monitoring.
-- **Governance Mandate**: Voting power & yield multiplier logic (up to 1.5x) fully operational.
-- **Global Portfolio Aggregator**: Unified net worth calculation integrating personal and institutional holdings.
+- 35-asset registry and market-data synchronization.
+- Institutional multi-sig custody and governance rails.
+- Recursive-yield simulation and health-factor monitoring.
+- Governance mandate / yield multiplier framework.
+- Global portfolio aggregation.
 
----
+**Historical status:** implementation milestones remain recorded as complete. Evidence reconciliation is still required where production certification depends on it.
 
-## Phase 14: Production Assurance — Active (CI Failing)
+## Phase 14 — Production Assurance
 
-**Branch**: `origin/phase-14/production-assurance` | ~80 commits ahead of local `main` | Not merged.
+**Status: ACTIVE / GATED**  
+**Phase-14 hardening branch:** merged to `main`.
 
-### Shipped on phase-14 (pending merge)
-- Oracle observation validation at every price read (`W3B3CreditLine`, `W3B3RestakingHub`)
-- Chainlink round completeness + timestamp staleness guards
-- Credit line asset/oracle non-zero address rejection
-- ERC20 safe router approvals (`W3B3AutonomousHarvester`)
-- Rebalance asset allowlist enforcement
-- Axios backend security upgrade
-- Next.js bumped to `^15.5.24` security line
-- Recursive simulation input validation + leverage bounds enforcement
+### Completed implementation hardening
+- Oracle observation validation at price-read time.
+- Chainlink round completeness, timestamp and invalid-price protections.
+- Credit-line asset/oracle validation.
+- Recursive simulation input validation and leverage bounds.
+- Autonomous harvester source/target asset allowlisting.
+- Safe ERC20 router approvals and allowance cleanup.
+- Regression coverage for security boundaries.
+- Next.js 15 compatibility/build correction.
+- Credential scrub and security-gate tracking.
 
-### CI Blockers
-1. **`build` job** — `frontend/src/app/pool/[id]/page.tsx` Next 15 `PageProps` type error. Next 15 requires `params: Promise<{id: string}>` with an async page component.
-2. **`security` job** — `npm audit --audit-level=high` exits non-zero. 38 high/critical transitive vulns: `viem`, `@alchemy/aa-*`, `@coinbase/wallet-sdk`, `@safe-global`, `@tanstack/form`, `@babel/plugin-transform-modules-systemjs`.
+### P0 — Must close for production
+1. Dependency inventory/audit/remediation or explicit risk acceptance for findings without upstream fixes.
+2. Production oracle feed/network/address/decimal/freshness verification.
+3. On-chain recursive execution enforcement of minimum **1.12 health factor**.
+4. Authoritative yield-offset credit requirements, implementation and financial invariants.
 
-### Passing on phase-14
-- `lint-and-typecheck` ✓ | `test-backend` ✓ | `test-contracts` ✓ | `test-frontend` ✓
+### P1 — Release assurance
+- Fresh complete CI matrix.
+- Backend route/controller/service/persistence/test reconciliation.
+- Frontend wallet and transaction failure-state verification.
+- Deployment provenance, configuration, migrations, health and contract-address verification.
+- Rollback/recovery rehearsal.
 
-### Sprint 14 Carry-Forward
-- [ ] Fix `pool/[id]/page.tsx` for Next 15 async params
-- [ ] Resolve or scope-exclude the 38 audit vulns
-- [ ] Merge phase-14 → main after CI green
-- [ ] Governance vote persistence (`GovernanceVote` model + `castVote` DB write)
-- [ ] Replace `Math.random()` mandate weights with real vote tally reads
-- [ ] Re-enable `poolService.test.js.skipped` and `stakeService.test.js.skipped`
-- [ ] Governance financial safety invariant verification
+### P2 — Governance and operations
+- Branch protection and required checks.
+- Secret/dependency scanning and monitoring.
+- Evidence-level reconciliation of historical completion claims.
 
----
+### Phase 14 exit gate
 
-## Phase 15: Runtime Completions & SDK Hardening — Planned
+Phase 14 exits only when P0/P1 items have evidence-backed closure or an explicitly documented and approved risk acceptance. A merge to `main` is not, by itself, a production certification.
 
-Targets all remaining stub/mock implementations at the service and SDK layer.
+## Phase 15 — Runtime Completions & SDK Hardening
 
-- [ ] `RevenueRouterService.executeSwapToEth` — 1inch v6 SDK integration for real fee harvesting
-- [ ] `SafeService.proposeInstitutionalStake` — `@safe-global/protocol-kit` real Safe tx proposals
-- [ ] `GasService.sponsorUserOperation` — end-to-end ERC-4337 paymaster test with real policy ID
-- [ ] `W3B3SDK.executeDeposit` / `deployCustomVault` — wire to real contracts and backend API
-- [ ] `portfolioService` institutional vault value — replace `+15000` mock with real on-chain balance reads
-- [ ] `predictiveAnalytics` historical data — persist real time-series to `PoolAnalytics` table
-- [ ] `W3B3RestakingHub` withdrawal — implement real EigenLayer 7-day withdrawal queue
-- [ ] `W3B3CreditLine` oracle — replace mock price with live Chainlink feed (post phase-14 merge)
-- [ ] Leaderboard referral link — replace `YOUR_CODE_HERE` with real per-user referral code
+**Status: PLANNED / GATED**
 
----
+Purpose: remove production-path mocks, stubs and hardcoded values and wire existing features end-to-end. No new product direction is introduced.
 
-## Phase 16: Mobile-First Ecosystem — Planned
+Planned sprint families:
 
-- [ ] Glassmorphic mobile-responsive redesign across all 8 pages
-- [ ] iOS/Android cross-chain staking wallet (React Native or PWA upgrade)
-- [ ] Replace deprecated `next-pwa` v5 with a maintained PWA solution for Next 15 App Router
+1. Governance persistence and real mandate tally reads.
+2. Revenue router / 1inch integration.
+3. Safe transaction proposal and confirmation integration.
+4. ERC-4337 paymaster integration and policy configuration.
+5. W3B3 SDK API/contract wiring.
+6. Real institutional-vault portfolio valuation.
+7. Persisted predictive analytics time-series.
+8. Remaining credit-line/oracle integration gaps and frontend credit UX.
+9. EigenLayer withdrawal queue with an explicit release period.
+10. Referral data and previously skipped test suites.
 
----
+**Important:** each sprint must remove a real production-path placeholder and add corresponding tests/integration evidence. Phase 15 does not override unresolved Phase 14 safety gates.
 
-## Phase 17: App-Chain Graduation — Vision
+## Phase 16 — Mobile-First Ecosystem
 
-- [ ] `BridgeService` — replace stub with real Hyperlane/CCIP integration
-- [ ] Standalone W3B3 L3 App-Chain architecture
-- [ ] Decentralized Insurance Fund / `$w3USD` global safety net expansion
+**Status: PLANNED**
 
----
+- Mobile-responsive product experience.
+- iOS/Android cross-chain staking wallet direction.
+- Maintained PWA strategy compatible with the active Next.js architecture.
 
-## Production State
+Phase 16 begins only after the production-critical runtime/security gates have been satisfied for the capabilities being exposed.
 
-| Area | Status |
-|---|---|
-| Type-Safety | ✅ Clean `tsc` — lint-and-typecheck passing on phase-14 |
-| Tests | ✅ Backend, contracts, and frontend test jobs passing on phase-14 |
-| Database | ✅ Operational Render PostgreSQL with `sslmode=require` |
-| Networking | ✅ Protocol-strict CORS and environment-validated routing |
-| Build | ❌ Next 15 `PageProps` fix required before merge |
-| Security Audit | ❌ 38 high/critical transitive vulns to resolve before merge |
-| Phase-14 Merge | ❌ Blocked by above two items |
+## Phase 17 — App-Chain Graduation
 
----
+**Status: VISION / PLANNED**
 
-*Authorized Deployment — W3B3 Protocol*
+- Real Hyperlane/CCIP bridge integration.
+- Standalone W3B3 L3/app-chain architecture.
+- Decentralized insurance fund / `$w3USD` safety-net expansion.
+
+## Critical Pro Tips
+
+- Prefer invariant-driven delivery over feature-count delivery.
+- Keep financial calculations authoritative at the state-changing boundary.
+- Treat oracle configuration as production security configuration, not merely deployment metadata.
+- Use compatible, evidence-backed dependency remediation; do not force major upgrades merely to make an audit green.
+- Make every autonomous/keeper action least-privilege and explicitly allowlisted.
+- Preserve reproducible lockfiles and deployment provenance.
+- Separate testnet evidence, staging evidence and mainnet evidence.
+- Keep rollback and emergency controls part of the Definition of Done for financial systems.
+
+## Important Distinctions
+
+**Implemented ≠ verified.**  
+**Simulation ≠ authorization.**  
+**Configuration ≠ deployment evidence.**  
+**Dependency advisory ≠ automatic upgrade.**  
+**Historical phase completion ≠ production certification.**  
+**CI unavailable ≠ implementation blocked, but CI-dependent PASS claims remain open.**
+
+## Source-of-truth documentation hierarchy
+
+`PROJECT_BRIEF.md` → executive state  
+`IMPLEMENTATION_ROADMAP_V2.md` → phases and gates  
+`ACTIVE_TASKS.md` → current executable work  
+`PHASE_15_SPEC.md` → Phase 15 implementation detail  
+`YIELD_CREDIT_SPEC.md` → credit semantics  
+`ARCHITECTURE.md` / `API.md` → technical contracts  
+`CHANGELOG.md` → historical delivery record  
+`PRODUCTION_READINESS.md` → release/evidence gates
