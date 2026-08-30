@@ -8,10 +8,6 @@ import logger from '../utils/logger';
  * High-performance engine for calculating and executing recursive yield strategies (Leveraged LST Looping).
  */
 export class RecursiveYieldService {
-  /**
-   * Calculates the net APR for a recursive strategy.
-   * Formula: (Base Staking Yield * Leverage) - (Borrow Cost * (Leverage - 1)) - Protocol Fee
-   */
   calculateNetApy(baseYield: number, borrowCost: number, leverage: number, fee: number = 0.05): number {
     const grossYield = baseYield * leverage;
     const interestExpense = borrowCost * (leverage - 1);
@@ -20,34 +16,44 @@ export class RecursiveYieldService {
   }
 
   /**
-   * Simulates a "Loop" action to verify health factors before on-chain execution.
-   * Linked to the Real-Time Analytics engine for 100% market truth.
+   * Simulates a Loop action to verify health factors before on-chain execution.
+   * This is advisory simulation only; transaction execution must enforce the same limits on-chain.
    */
   async simulateLoop(userId: string, strategyId: string, amount: string, targetLeverage: number) {
+    if (!userId) throw new Error('Authenticated user required');
+    if (!strategyId) throw new Error('Strategy ID required');
+
+    const numericAmount = Number(amount);
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      throw new Error('Amount must be a positive finite number');
+    }
+    if (!Number.isFinite(targetLeverage) || targetLeverage <= 0) {
+      throw new Error('Leverage must be a positive finite number');
+    }
+
     try {
-      // 1. Fetch the specific strategy definition
       const strategies = await this.getActiveStrategies();
       const strategy = strategies.find(s => s.id === strategyId);
       if (!strategy) throw new Error('Strategy not found');
+      if (targetLeverage > strategy.maxLeverage) {
+        throw new Error('Requested leverage exceeds strategy maximum');
+      }
 
-      // 2. Fetch current prices & market context based on strategy assets
-      const baseAssetId = strategy.baseAsset.toLowerCase() === 'eth' ? 'ethereum' : 
+      const baseAssetId = strategy.baseAsset.toLowerCase() === 'eth' ? 'ethereum' :
                         strategy.baseAsset.toLowerCase() === 'sol' ? 'solana' : 'usd-coin';
       const basePrice = await priceService.getPrice(baseAssetId);
-      
+
       const pool = await prisma.stakingPool.findFirst({
         where: { tokenSymbol: strategy.targetAsset, isActive: true },
       });
-      
-      const targetYield = pool ? Number(pool.apyPercentage) / 100 : 0.05; 
-      const borrowRate = strategy.baseAsset === 'USDC' ? 0.08 : 0.035; // Example spread
 
-      // 3. Calculate projections
+      const targetYield = pool ? Number(pool.apyPercentage) / 100 : 0.05;
+      const borrowRate = strategy.baseAsset === 'USDC' ? 0.08 : 0.035;
       const projectedApy = this.calculateNetApy(targetYield, borrowRate, targetLeverage);
-      
-      const ltv = strategy.metadata?.liquidationThreshold || 0.8; 
-      const healthFactor = 1 / (ltv * targetLeverage / (targetLeverage - 1 + ltv));
-      
+      const ltv = strategy.metadata?.liquidationThreshold || 0.8;
+      const denominator = targetLeverage - 1 + ltv;
+      const healthFactor = denominator > 0 ? 1 / (ltv * targetLeverage / denominator) : Number.POSITIVE_INFINITY;
+
       return {
         canExecute: healthFactor > 1.12,
         projectedApy: Number((projectedApy * 100).toFixed(2)),
@@ -56,21 +62,20 @@ export class RecursiveYieldService {
         marketContext: {
           assetPrice: basePrice,
           baseYield: (targetYield * 100).toFixed(2),
-          borrowRate: (borrowRate * 100).toFixed(2)
+          borrowRate: (borrowRate * 100).toFixed(2),
+          requestedLeverage: targetLeverage,
+          maximumLeverage: strategy.maxLeverage,
         }
       };
     } catch (error) {
-       logger.error('Simulation Failed:', error);
-       throw error;
+      logger.error('Simulation Failed:', error);
+      throw error;
     }
   }
 
-  /**
-   * Returns available recursive strategies based on current market spreads.
-   */
   async getActiveStrategies(): Promise<RecursiveStrategy[]> {
     const stEthPool = await prisma.stakingPool.findFirst({ where: { tokenSymbol: 'stETH' } });
-    const w3usdPool = await prisma.stakingPool.findFirst({ where: { tokenSymbol: 'USDC' } }); // Mocking w3USD with USDC for now
+    const w3usdPool = await prisma.stakingPool.findFirst({ where: { tokenSymbol: 'USDC' } });
 
     return [
       {

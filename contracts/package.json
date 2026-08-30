@@ -10,6 +10,7 @@
     "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai",
     "deploy:base-sepolia": "hardhat run scripts/deploy.js --network baseSepolia",
     "deploy:mainnet": "hardhat run scripts/deploy.js --network mainnet",
+    "deploy:credit-line": "hardhat run scripts/deployCreditLine.js",
     "verify": "hardhat verify",
     "gas-report": "REPORT_GAS=true hardhat test",
     "clean": "hardhat clean",

@@ -150,4 +150,3 @@ jobs:
         # Tracked in PHASE_15_SPEC.md sprint 15.05 (@alchemy/aa-* deprecation).
         # continue-on-error keeps the gate visible without blocking merge.
         run: npm audit --audit-level=high --omit=dev
-        continue-on-error: true
