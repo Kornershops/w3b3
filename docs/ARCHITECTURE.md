@@ -1,106 +1,73 @@
 # W3B3 Strategic Architecture
 
-Structural overview of the W3B3 multi-chain portal.
+Structural overview of the W3B3 multi-chain portal and its production boundaries.
 
 ## Vision-Led Infrastructure
 
-Every architectural decision in W3B3 is designed to support the mission of zero-friction institutional staking.
+Every architectural decision supports the original mission of low-friction staking, real-yield access, institutional custody and progressive capital-efficiency strategies.
 
-Interactive UI → Premium Experience → Next.js 15 SPA with real-time reward interpolation.
-Wallet Context → Multi-Chain Unified → RainbowKit v2 + Wagmi v2 with chain-sync detection.
-Backend API → Resilient Scaling → JWT secret rotation + Redis-backed pool discovery.
-Storage Layer → Data Integrity → Relational Postgres schema managed via Prisma ORM.
-Smart Contracts → Protocol Security → Audit-standard Solidity 0.8.24 with Pausable logic and Chainlink oracle guards.
-
-> Note: Next.js 15 is live on `origin/phase-14/production-assurance`. Local `main` is still on Next.js 14 pending phase-14 merge.
+Interactive UI -> Premium Experience -> Next.js application with wallet-aware transaction states.
+Wallet Context -> Multi-Chain Unified -> RainbowKit + Wagmi with chain-sync detection.
+Backend API -> Resilient Scaling -> authenticated routes, service layer, Redis-backed discovery and operational controls.
+Storage Layer -> Data Integrity -> relational PostgreSQL schema managed through Prisma.
+Smart Contracts -> Protocol Security -> Solidity financial state, access control, oracle validation and emergency controls.
 
 ## Infrastructure Matrix
 
-→ Deployment Hosting → Netlify (Front) / Render (Back) → High-availability CI/CD.
-→ Blockchain Access → Alchemy → Unified multi-chain RPC node layer.
-→ Database Persistence → Render PostgreSQL (`sslmode=require`) → Structured data for users/stakes.
-→ Cache & Real-Time → Redis & Socket.io → Performance and live updates.
+-> Deployment Hosting -> Frontend/backend deployment platforms -> reproducible CI/CD.
+-> Blockchain Access -> RPC provider layer -> network-specific transaction/read access.
+-> Database Persistence -> PostgreSQL -> structured application and governance data.
+-> Cache & Real-Time -> Redis & Socket.io -> performance and live updates.
 
 ## Project Organization
 
-/frontend → Web Interface → App Router (8 pages), Components, Hooks, and Stores.
-/backend → Core API → Routes, Services (20+), Middleware, and Database Schema.
-/contracts → DeFi Logic → 14 Solidity contracts with full TypeChain types and Hardhat test suite.
-/shared → SDK & Models → W3B3SDK white-label class and shared TypeScript models.
-/docs → Knowledge Base → Deployment, API, roadmap, and setup guides.
-
-## Frontend Pages
-
-/ → Landing → Hero, feature trays, CTA.
-/explore → Pool Discovery → 35-asset registry with stake modal.
-/portfolio → Institutional Portfolio → Net worth aggregation, live reward ticker, treasury dashboard.
-/governance → Protocol Mandate → Yield gauge voting, voting power, multiplier tiers.
-/recursive → Recursive Yield → Leveraged LST looping strategies and health factor simulation.
-/institutional → Custody Suite → Multi-sig vault creation, proposal/approval rails.
-/factory → Vault Factory → Permissionless vault deployment UI.
-/leaderboard → Referral Rankings → Global point leaderboard.
+/frontend -> Web Interface -> App Router, components, hooks and stores.
+/backend -> Core API -> routes, controllers, services, middleware and database schema.
+/contracts -> DeFi Logic -> staking, governance, custody, recursive and credit-line contracts.
+/docs -> Knowledge Base -> roadmap, API, implementation specs, production gates and setup guides.
 
 ## Critical Design Principles
 
-→ Frictionless Wallet UX → Automatic network switching and high-speed account abstraction logins.
-→ Institutional Trust → Native Multi-Sig Vaults with weighted governance and approval rails.
-→ Keyless Analytics Suite → Pro-grade charting and resilient, throttled CoinGecko integration (zero API keys).
-→ Capital Efficiency → Recursive yield looping and real-time health factor simulation (min 1.12 guardrail).
-→ Protocol Mandate → Community-driven yield weights and tiered loyalty multipliers (1.0x–1.5x).
+-> Frictionless Wallet UX -> automatic network handling and transaction-state visibility.
+-> Institutional Trust -> multi-sig custody with explicit proposal/approval rails.
+-> Keyless Analytics -> resilient public market-data ingestion with throttling and fallbacks.
+-> Capital Efficiency -> recursive-yield simulation plus an on-chain execution invariant for unsafe states.
+-> Protocol Mandate -> governance-derived weights and tiered loyalty multipliers.
+-> Least Privilege -> keeper, governance, oracle and integration authorities are explicitly bounded.
+-> Fail Closed -> invalid oracle observations, unauthorized assets and unsafe financial states block state changes.
 
-## Backend Service Layer
+## Advanced Service Layers
 
-- **AuthService** → SIWE signature verification, dual-JWT rotation.
-- **StakeService** → Create, unstake, and reward claim lifecycle.
-- **PoolService** → Pool discovery, filtering, and analytics.
-- **PortfolioService** → Global net worth aggregation (personal + institutional vaults).
-- **InstitutionalVaultService** → Multi-sig vault CRUD, proposal, and approval logic.
-- **InstitutionalCustodyService** → Authorized signer verification, double-approval prevention, atomic DB transactions.
-- **RecursiveYieldService** → Net APY calculation, loop simulation, health factor projection.
-- **GovernanceService** → Voting power calculation, yield multiplier tiers, vote casting.
-- **AIHarvestService** → Algorithmic rebalancing recommendations based on APY spread and chain.
-- **PredictiveAnalyticsService** → 7-day APY trajectory forecasting with TVL momentum indicators.
-- **ZapOrchestratorService** → One-tap multi-step stake + recursive strategy attachment.
-- **TreasuryService** → Protocol treasury holdings and fee tracking.
-- **RevenueRouterService** → Fee harvesting cycle (stub: 1inch swap integration pending Phase 15).
-- **CreditService** → Yield-backed credit position lifecycle (open, update, liquidate).
-- **ReportService** → Tax-ready CSV export and FIFO P&L calculation.
-- **GasService** → ERC-4337 Alchemy Paymaster sponsorship (wired, end-to-end test pending Phase 15).
-- **SafeService** → Gnosis Safe proposal generation (stub: `@safe-global/protocol-kit` integration pending Phase 15).
-- **BridgeService** → Cross-chain yield settlement (stub: Hyperlane/CCIP integration pending Phase 17).
-- **PriceService** → CoinGecko price fetching with 1-minute in-memory cache.
-- **NotificationService** → Socket.io alpha opportunity broadcasts.
+- **InstitutionalVaultService** -> multi-sig proposal, approval and weighted-threshold logic.
+- **RecursiveYieldService** -> leverage strategy calculation, health-factor simulation and execution preparation.
+- **GovernanceService** -> voting power, multiplier and governance persistence responsibilities.
+- **ZapOrchestratorService** -> zero-friction transaction orchestration.
+- **YieldResilienceHub** -> market-data resilience and uptime-oriented ingestion.
 
-## Smart Contract Suite (Solidity 0.8.24)
+## Production Boundary Rules
 
-- **StakingPool** → Core staking, reward accrual, and claim logic.
-- **StakingPoolFactory** → Permissionless pool deployment across chains.
-- **W3B3Token** → Native governance and reward token.
-- **W3B3Treasury** → Protocol-owned liquidity vault.
-- **RevenueRouter** → Fee harvesting and ETH distribution to stakers.
-- **W3B3CreditLine** → Yield-backed collateral borrowing with liquidation.
-- **W3B3RestakingHub** → EigenLayer/cross-chain LST delegation abstraction.
-- **W3B3AutonomousHarvester** → AI keeper-driven LST rebalancing via DEX router.
-- **W3B3RewardDistributor** → Merkle-based reward distribution.
-- **W3B3SubDAO** → Sub-governance module for protocol mandates.
-- **W3B3PositionNFT** → Tokenized staking position receipts.
-- **W3B3FlashStaking** → Flash loan-style single-block staking.
-- **W3B3InsuranceWrapper** → Protocol insurance fund wrapper.
-- **W3B3Stablecoin** → `$w3USD` stablecoin with seigniorage fee routing.
+### Simulation vs authorization
 
-## Known Stubs (Phase 15 Targets)
+Backend services may calculate health factors and prepare strategies, but a financial state-changing transaction must enforce its safety invariant at the authoritative execution boundary. The current production gate requires minimum recursive health factor **1.12** to be proven at that boundary.
 
-| Service | Status |
-|---|---|
-| `RevenueRouterService.executeSwapToEth` | Stub — 1inch v6 integration pending |
-| `SafeService.proposeInstitutionalStake` | Stub — `@safe-global/protocol-kit` pending |
-| `BridgeService.settleCrossChainYield` | Stub — Hyperlane/CCIP pending (Phase 17) |
-| `W3B3SDK.executeDeposit` | Mock tx hash — real contract wiring pending |
-| `GovernanceService.castVote` | Not persisted — `GovernanceVote` model pending |
-| `predictiveAnalytics` historical data | `Math.random()` — real time-series pending |
-| `portfolioService` vault value | Hardcoded mock — on-chain balance reads pending |
+### Oracle architecture
+
+Credit-line/restaking valuation uses an explicit price-oracle abstraction. Oracle observations must be valid at the time they are consumed; production readiness additionally requires authoritative feed, network, decimals, freshness and deployment evidence.
+
+### Autonomous execution
+
+Keeper-driven harvesting/rebalancing is constrained by keeper authorization, user opt-in and approved source/target assets. Router approvals use a bounded allowance lifecycle.
+
+### Application vs production readiness
+
+A service may be implemented and tested while still depending on production configuration, external-provider integration, deployment evidence or operational controls. Those are separate release gates.
+
+## Phase Relationship
+
+Phase 1–13 define the historical product foundation. Phase 14 hardens production security and financial safety. Phase 15 wires remaining runtime integrations. Phase 16 extends the experience to mobile. Phase 17 carries the cross-chain/app-chain vision.
+
+See `IMPLEMENTATION_ROADMAP_V2.md` for phases, `ACTIVE_TASKS.md` for executable work, `PHASE_15_SPEC.md` for Phase 15 acceptance criteria, and `PRODUCTION_READINESS.md` for release evidence.
 
 ---
 
-Historical records in [CHANGELOG.md](./CHANGELOG.md).
-Full roadmap in [IMPLEMENTATION_ROADMAP_V2.md](./IMPLEMENTATION_ROADMAP_V2.md).
+Historical records are detailed in `CHANGELOG.md`.
