@@ -21,29 +21,37 @@
 
 ## P0 — Production blockers
 
-### 1. Dependency security
+### 1. Dependency security — 🔴 OPEN / ENVIRONMENT-BLOCKED
 - [x] Record and correct the tracked root lockfile state in the dependency-security baseline.
 - [x] Make CI dependency installation reproducible from the committed lockfile with `npm ci`.
-- [ ] Reproduce the current resolved dependency inventory in a networked npm-capable environment.
+- [ ] **DEPENDENCY:** Networked npm execution is required to reproduce the resolved dependency inventory.
 - [ ] Re-run `npm audit` and classify advisories by direct/transitive exposure and production reachability.
 - [ ] Upgrade compatible dependency families where fixes exist.
 - [ ] Where upstream fixes do not exist, document compensating controls and explicit risk acceptance rather than forcing breaking upgrades.
 - [ ] Regenerate authoritative lockfiles after dependency changes.
 - [ ] Re-run application, contract and security verification.
 
-### 2. Production oracle
+### 2. Production oracle — 🔴 OPEN / EXTERNAL EVIDENCE REQUIRED
+- [ ] **DEPENDENCY:** Authoritative network/feed selection is required before production addresses can be approved.
+- [ ] **DEPENDENCY:** Authoritative feed decimals, heartbeat/freshness limits and deployment addresses are required.
+- [ ] **DEPENDENCY:** Testnet/production deployment evidence and runtime environment values are required.
 - [ ] Confirm authoritative production feeds and networks.
 - [ ] Confirm decimals, freshness/heartbeat policy and deployment addresses.
 - [ ] Verify deployment configuration and runtime integration.
 - [ ] Capture production/testnet evidence.
 
-### 3. Recursive execution safety
+### 3. Recursive execution safety — 🔴 NEXT CODE TASK / ARCHITECTURE GAP
+- [x] Confirm backend recursive simulation is advisory rather than an authorization boundary.
+- [x] Confirm no `W3B3RecursiveVault` execution surface exists at the expected contract path.
+- [ ] **DEPENDENCY:** The authoritative state-changing recursive executor/transaction path must be identified before an on-chain HF guard can be safely implemented.
 - [ ] Locate the authoritative state-changing recursive execution boundary.
 - [ ] Enforce minimum health factor **1.12** at that boundary.
 - [ ] Prove backend simulation cannot authorize a transaction that violates the on-chain invariant.
 - [ ] Add boundary and adversarial regression tests.
 
-### 4. Yield-offset credit
+### 4. Yield-offset credit — 🔴 OPEN / SPECIFICATION DEPENDENCY
+- [ ] **DEPENDENCY:** Product/financial authority approval of the yield-offset accounting model is required before implementation.
+- [ ] **DEPENDENCY:** Authoritative definitions are required for principal, gross/net yield, debt, collateral, liquidation, losses, timing and rounding.
 - [ ] Recover/approve authoritative accounting requirements.
 - [ ] Define principal, yield, debt, collateral, liquidation, loss and rounding semantics.
 - [ ] Implement only the approved model.
@@ -52,6 +60,7 @@
 ## P1 — Release assurance
 
 - [ ] Fresh CI matrix: lint/typecheck, backend, contracts, frontend, build and security.
+- [ ] **DEPENDENCY:** GitHub Actions capacity/networked package installation is required for release CI certification.
 - [ ] Reconcile route → controller → service → persistence → test paths.
 - [ ] Verify wallet transaction pending/rejected/failed/stale states.
 - [ ] Verify deployment provenance, environment, migrations, health checks and contract addresses.
