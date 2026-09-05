@@ -14,6 +14,7 @@
 - [x] Autonomous harvester safe ERC20 router approvals and allowance cleanup.
 - [x] Regression coverage for the above security boundaries.
 - [x] Dependency-security baseline and explicit audit/remediation policy.
+- [x] CI dependency installation switched from `npm install` to lockfile-reproducible `npm ci` with npm caching.
 - [x] Next.js 15 build compatibility fix.
 - [x] Security credential scrub and CI security-job tracking.
 - [x] Phase 14 merge into `main`.
@@ -21,11 +22,13 @@
 ## P0 — Production blockers
 
 ### 1. Dependency security
-- [ ] Reproduce the current resolved dependency inventory in an npm-capable environment.
+- [x] Record and correct the tracked root lockfile state in the dependency-security baseline.
+- [x] Make CI dependency installation reproducible from the committed lockfile with `npm ci`.
+- [ ] Reproduce the current resolved dependency inventory in a networked npm-capable environment.
 - [ ] Re-run `npm audit` and classify advisories by direct/transitive exposure and production reachability.
 - [ ] Upgrade compatible dependency families where fixes exist.
 - [ ] Where upstream fixes do not exist, document compensating controls and explicit risk acceptance rather than forcing breaking upgrades.
-- [ ] Regenerate authoritative lockfiles.
+- [ ] Regenerate authoritative lockfiles after dependency changes.
 - [ ] Re-run application, contract and security verification.
 
 ### 2. Production oracle
