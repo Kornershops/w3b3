@@ -31,14 +31,23 @@
 - [ ] Regenerate authoritative lockfiles after dependency changes.
 - [ ] Re-run application, contract and security verification.
 
-### 2. Production oracle — 🔴 OPEN / EXTERNAL EVIDENCE REQUIRED
+### 2. Production oracle — 🟠 OPEN / EXTERNAL EVIDENCE REQUIRED
+**Implementation hardening:** COMPLETE  
+**Production approval:** BLOCKED pending authoritative deployment evidence.
+
+- [x] Oracle adapter rejects invalid/future/stale observations and incomplete rounds.
+- [x] Oracle adapter normalizes feed values to 18 decimals.
+- [x] Credit-line constructor/setter validates oracle contract presence and live observation.
+- [x] Credit-line deployment preflight validates target chain ID, oracle feed address, oracle `maxAge`, live feed code and observation freshness.
+- [x] `.env.example` documents the explicit oracle evidence inputs required by deployment.
+- [x] Canonical evidence checklist created at `docs/ORACLE_PRODUCTION_EVIDENCE.md`.
 - [ ] **DEPENDENCY:** Authoritative network/feed selection is required before production addresses can be approved.
 - [ ] **DEPENDENCY:** Authoritative feed decimals, heartbeat/freshness limits and deployment addresses are required.
 - [ ] **DEPENDENCY:** Testnet/production deployment evidence and runtime environment values are required.
 - [ ] Confirm authoritative production feeds and networks.
 - [ ] Confirm decimals, freshness/heartbeat policy and deployment addresses.
-- [ ] Verify deployment configuration and runtime integration.
-- [ ] Capture production/testnet evidence.
+- [ ] Verify deployment configuration and runtime integration on the selected network.
+- [ ] Capture signed/traceable production and testnet deployment evidence.
 
 ### 3. Recursive execution safety — 🔴 NEXT CODE TASK / ARCHITECTURE GAP
 - [x] Confirm backend recursive simulation is advisory rather than an authorization boundary.
