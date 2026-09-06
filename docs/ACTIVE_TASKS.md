@@ -10,6 +10,7 @@
 - [x] Phase 14 oracle observation validation and Chainlink round/timestamp guards.
 - [x] Oracle deployment preflight requires explicit chain/feed/decimal/freshness configuration and a non-zero deployment key.
 - [x] Credit-line asset/oracle address validation and runtime valuation checks.
+- [x] Explicit credit-line minimum health-factor constant/guard at borrow and collateral-withdrawal mutation boundaries.
 - [x] Recursive simulation input validation and leverage bounds.
 - [x] Autonomous harvester source/target asset allowlisting.
 - [x] Autonomous harvester safe ERC20 router approvals and allowance cleanup.
@@ -52,14 +53,17 @@
 - [ ] Capture signed/traceable production and testnet deployment evidence.
 - [ ] **VERIFICATION:** Full networked deployment test remains pending until the required network/secrets/evidence are available.
 
-### 3. Recursive execution safety — 🔴 NEXT CODE TASK / ARCHITECTURE GAP
+### 3. Recursive execution safety — 🔴 OPEN / ARCHITECTURE DEPENDENCY
 - [x] Confirm backend recursive simulation is advisory rather than an authorization boundary.
 - [x] Confirm no `W3B3RecursiveVault` execution surface exists at the expected contract path.
-- [ ] **DEPENDENCY:** The authoritative state-changing recursive executor/transaction path must be identified before an on-chain HF guard can be safely implemented.
+- [x] Add an explicit **1.12 minimum health-factor guard** to the existing credit-line borrow/withdrawal mutation boundaries as defense in depth.
+- [x] Add regression coverage for the declared health-factor floor and existing LTV boundaries.
+- [ ] **DEPENDENCY:** The authoritative state-changing recursive executor/transaction path must be identified before an on-chain recursive-loop guard can be safely implemented.
 - [ ] Locate the authoritative state-changing recursive execution boundary.
-- [ ] Enforce minimum health factor **1.12** at that boundary.
+- [ ] Wire the same minimum health-factor invariant into the recursive executor itself once that boundary is identified.
 - [ ] Prove backend simulation cannot authorize a transaction that violates the on-chain invariant.
-- [ ] Add boundary and adversarial regression tests.
+- [ ] Add executor-boundary and adversarial recursive-loop regression tests.
+- [ ] **VERIFICATION:** Local/CI contract test execution remains pending where the current environment cannot provide the required package/runtime execution; no passing result is claimed.
 
 ### 4. Yield-offset credit — 🔴 OPEN / SPECIFICATION DEPENDENCY
 - [ ] **DEPENDENCY:** Product/financial authority approval of the yield-offset accounting model is required before implementation.
