@@ -22,6 +22,7 @@
 - [x] Phase 14 merge into `main`.
 - [x] P0-4 gap analysis: current yield-offset semantics are explicitly unapproved and no production accounting implementation is authorized.
 - [x] P0-4 reviewable accounting proposal added at `docs/YIELD_OFFSET_ACCOUNTING_PROPOSAL.md`.
+- [x] P1 yield analytics no longer fabricates APY/TVL, harvest amounts or estimated harvest timing when authoritative evidence is unavailable.
 
 ## P0 — Production blockers
 
@@ -83,6 +84,16 @@
 
 ## P1 — Release assurance
 
+### 1. Authoritative yield/analytics data — 🔴 OPEN / ADAPTER DEPENDENCY
+- [x] Remove synthetic/random APY, TVL and price generation from the yield synchronization path.
+- [x] Remove hardcoded harvest amount and fabricated harvest schedule from yield statistics.
+- [x] Only persist CoinGecko market history when an identifier and successful response exist.
+- [ ] **DEPENDENCY:** Implement and verify an authoritative staking/pool adapter that reads APY/TVL from the actual protocol/pool contracts or another explicitly approved source.
+- [ ] Define provenance, freshness, decimals and failure semantics for each yield field.
+- [ ] Add adapter-level tests for stale, malformed, unavailable and boundary responses.
+- [ ] Reconcile the adapter output with the accounting/credit model before using yield as financial input.
+
+### 2. Release verification
 - [ ] Fresh CI matrix: lint/typecheck, backend, contracts, frontend, build and security.
 - [ ] **DEPENDENCY:** GitHub Actions capacity/networked package installation is required for release CI certification.
 - [ ] Reconcile route → controller → service → persistence → test paths.
