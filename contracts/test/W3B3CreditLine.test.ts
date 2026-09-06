@@ -110,6 +110,12 @@ describe("W3B3CreditLine", function () {
   });
 
   describe("Collateral and debt invariants", function () {
+    it("exposes and enforces the minimum health factor floor", async function () {
+      expect(await creditLine.MIN_HEALTH_FACTOR()).to.equal(ethers.parseEther("1.12"));
+      await creditLine.connect(user).depositCollateral(ethers.parseEther("2"));
+      await expect(creditLine.connect(user).borrow(ethers.parseEther("1001"))).to.be.revertedWith("LTV exceeded");
+    });
+
     it("prevents borrowing beyond MAX_LTV", async function () {
       await creditLine.connect(user).depositCollateral(ethers.parseEther("2"));
       await expect(creditLine.connect(user).borrow(ethers.parseEther("1001"))).to.be.revertedWith("LTV exceeded");
