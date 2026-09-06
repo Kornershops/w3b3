@@ -34,7 +34,7 @@ Do not fill these values from memory, examples, or an unauthoritative aggregator
 
 `ChainlinkPriceOracle` rejects zero/negative prices, future observations, stale observations, and incomplete rounds, and normalizes feed values to 18 decimals. The credit-line contract also rejects a missing oracle contract and validates that the oracle can return a live observation. See the oracle and credit-line implementations for the executable controls.
 
-The credit-line deployment preflight additionally requires an explicit expected chain ID, oracle feed address, and oracle `maxAge`, then verifies the live feed code and observation before deployment. This prevents a deployment from silently targeting a different chain, feed, or freshness policy.
+The credit-line deployment preflight requires an explicit expected chain ID, oracle feed address, feed decimals, oracle `maxAge`, a real non-zero deployment key, live feed/oracle contract code and a fresh observation before deployment. It also verifies that the live feed's `decimals()` matches the approved manifest value. This prevents a deployment from silently targeting a different chain, feed, decimal assumption, or freshness policy.
 
 ## Approval checklist
 
@@ -55,5 +55,9 @@ The credit-line deployment preflight additionally requires an explicit expected 
 ## Current blocker
 
 No production feed/network/address manifest is approved in this repository yet. This is intentional: inventing or copying a feed address without deployment evidence would create false production assurance.
+
+## Verification state
+
+Code-level hardening is implemented and pushed to `main`. Full networked deployment verification remains pending because it requires the selected network, live feed, approved runtime secrets, and actual deployment evidence. Do not convert this pending state into a production PASS based only on static code inspection.
 
 **Gate rule:** P0-2 remains OPEN until the completed manifest and deployment evidence are attached to the release record. Code-level validation alone is not a production PASS.
