@@ -23,6 +23,7 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
     uint256 public constant LIQUIDATION_THRESHOLD = 6000;
     uint256 public constant LIQUIDATION_PENALTY = 500;
     uint256 public constant INTEREST_RATE_BP = 200;
+    uint256 public constant MIN_HEALTH_FACTOR = 1.12e18;
 
     struct Position {
         uint256 collateralAmount;
@@ -42,6 +43,7 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
     error InvalidOracle();
     error InvalidOraclePrice();
     error InvalidAsset();
+    error HealthFactorTooLow();
 
     constructor(
         address _borrowAsset,
@@ -80,6 +82,7 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
         uint256 collateralValue = _collateralValue(pos.collateralAmount);
         uint256 maxBorrow = (collateralValue * MAX_LTV) / 10000;
         require(pos.borrowedAmount <= maxBorrow, "LTV exceeded");
+        _enforceMinimumHealthFactor(collateralValue, pos.borrowedAmount);
 
         borrowAsset.safeTransfer(msg.sender, amount);
         emit AssetBorrowed(msg.sender, amount);
@@ -105,8 +108,10 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
         pos.collateralAmount -= amount;
 
         if (pos.borrowedAmount > 0) {
-            uint256 newMaxBorrow = (_collateralValue(pos.collateralAmount) * MAX_LTV) / 10000;
+            uint256 newCollateralValue = _collateralValue(pos.collateralAmount);
+            uint256 newMaxBorrow = (newCollateralValue * MAX_LTV) / 10000;
             require(pos.borrowedAmount <= newMaxBorrow, "LTV exceeded after withdrawal");
+            _enforceMinimumHealthFactor(newCollateralValue, pos.borrowedAmount);
         }
 
         collateralAsset.safeTransfer(msg.sender, amount);
@@ -162,6 +167,12 @@ contract W3B3CreditLine is Ownable, ReentrancyGuard {
 
     function _collateralValue(uint256 collateralAmount) internal view returns (uint256) {
         return (collateralAmount * _price()) / 1e18;
+    }
+
+    function _enforceMinimumHealthFactor(uint256 collateralValue, uint256 debt) internal pure {
+        if (debt == 0) return;
+        // Health factor = collateral value / debt, expressed at 18 decimals.
+        if ((collateralValue * 1e18) / debt < MIN_HEALTH_FACTOR) revert HealthFactorTooLow();
     }
 
     function _accrueInterest(address user) internal {
