@@ -20,6 +20,8 @@
 - [x] Next.js 15 build compatibility fix.
 - [x] Security credential scrub and CI security-job tracking.
 - [x] Phase 14 merge into `main`.
+- [x] P0-4 gap analysis: current yield-offset semantics are explicitly unapproved and no production accounting implementation is authorized.
+- [x] P0-4 reviewable accounting proposal added at `docs/YIELD_OFFSET_ACCOUNTING_PROPOSAL.md`.
 
 ## P0 — Production blockers
 
@@ -66,12 +68,18 @@
 - [ ] **VERIFICATION:** Local/CI contract test execution remains pending where the current environment cannot provide the required package/runtime execution; no passing result is claimed.
 
 ### 4. Yield-offset credit — 🔴 OPEN / SPECIFICATION DEPENDENCY
-- [ ] **DEPENDENCY:** Product/financial authority approval of the yield-offset accounting model is required before implementation.
-- [ ] **DEPENDENCY:** Authoritative definitions are required for principal, gross/net yield, debt, collateral, liquidation, losses, timing and rounding.
-- [ ] Recover/approve authoritative accounting requirements.
-- [ ] Define principal, yield, debt, collateral, liquidation, loss and rounding semantics.
-- [ ] Implement only the approved model.
-- [ ] Add adversarial financial-invariant tests.
+**Implementation:** NOT AUTHORIZED until the financial/accounting model is approved.  
+**Review artifact:** `docs/YIELD_OFFSET_ACCOUNTING_PROPOSAL.md`
+
+- [x] Gap analysis confirms `CreditPosition` stores collateral/borrowed amounts but has no authoritative yield-offset ledger.
+- [x] Gap analysis confirms backend `CreditService` still contains non-authoritative/mock health-factor behavior and cannot be the economic source of truth.
+- [x] Create a conservative, reviewable accounting proposal without treating it as an approved requirement.
+- [ ] **DEPENDENCY:** Product/financial authority must approve the accounting model.
+- [ ] **DEPENDENCY:** Authority must define principal, gross/net yield, debt, collateral, liquidation, losses, timing and rounding.
+- [ ] Record explicit approval/rejection decisions for all proposal questions.
+- [ ] Implement only the approved model at the authoritative state-changing boundary.
+- [ ] Add adversarial financial-invariant tests covering yield/debt/collateral/liquidation/rounding and duplicate events.
+- [ ] **VERIFICATION:** No AC4 production PASS is claimed until approved semantics, implementation, automated tests and required deployment/operational evidence exist.
 
 ## P1 — Release assurance
 
