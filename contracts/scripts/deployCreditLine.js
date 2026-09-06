@@ -6,6 +6,10 @@ const ORACLE_ABI = [
   'function maxAge() view returns (uint256)',
 ];
 
+const FEED_ABI = [
+  'function decimals() view returns (uint8)',
+];
+
 function required(name) {
   const value = process.env[name];
   if (!value) throw new Error(`${name} is required`);
@@ -26,7 +30,16 @@ function requiredUint(name) {
   return BigInt(value);
 }
 
+function requireDeploymentKey() {
+  const key = process.env.PRIVATE_KEY;
+  if (!key || !/^0x[0-9a-fA-F]{64}$/.test(key) || /^0x0{64}$/i.test(key)) {
+    throw new Error('PRIVATE_KEY must be a real non-zero 32-byte deployment key');
+  }
+}
+
 async function main() {
+  requireDeploymentKey();
+
   const [deployer] = await ethers.getSigners();
   const network = await ethers.provider.getNetwork();
   const expectedChainId = requiredUint('CREDIT_EXPECTED_CHAIN_ID');
@@ -38,6 +51,7 @@ async function main() {
   const collateralAsset = requiredAddress('CREDIT_COLLATERAL_ASSET');
   const oracle = requiredAddress('CREDIT_ORACLE');
   const expectedFeed = requiredAddress('CREDIT_ORACLE_FEED');
+  const expectedFeedDecimals = requiredUint('CREDIT_ORACLE_FEED_DECIMALS');
   const expectedMaxAge = requiredUint('CREDIT_ORACLE_MAX_AGE_SECONDS');
   const owner = process.env.CREDIT_OWNER || deployer.address;
 
@@ -45,6 +59,7 @@ async function main() {
     throw new Error('CREDIT_OWNER must be a non-zero EVM address');
   }
   if (expectedMaxAge === 0n) throw new Error('CREDIT_ORACLE_MAX_AGE_SECONDS must be greater than zero');
+  if (expectedFeedDecimals > 255n) throw new Error('CREDIT_ORACLE_FEED_DECIMALS must fit uint8');
 
   const oracleCode = await ethers.provider.getCode(oracle);
   if (oracleCode === '0x') {
@@ -66,6 +81,12 @@ async function main() {
 
   const feedCode = await ethers.provider.getCode(feed);
   if (feedCode === '0x') throw new Error(`CREDIT_ORACLE_FEED has no deployed contract code: ${feed}`);
+
+  const feedContract = new ethers.Contract(feed, FEED_ABI, ethers.provider);
+  const feedDecimals = await feedContract.decimals();
+  if (BigInt(feedDecimals) !== expectedFeedDecimals) {
+    throw new Error(`CREDIT_ORACLE_FEED decimals mismatch: expected ${expectedFeedDecimals}, got ${feedDecimals}`);
+  }
 
   const [price, updatedAt] = await oracleContract.getPrice();
   if (price <= 0n || updatedAt === 0n) {
@@ -93,6 +114,7 @@ async function main() {
     collateralAsset,
     oracle,
     oracleFeed: feed,
+    oracleFeedDecimals: feedDecimals.toString(),
     oracleMaxAgeSeconds: maxAge.toString(),
     oraclePrice: price.toString(),
     oracleUpdatedAt: updatedAt.toString(),
