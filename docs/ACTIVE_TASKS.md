@@ -28,6 +28,9 @@
 - [x] Production configuration helper now rejects all configured fallbacks when `NODE_ENV=production`.
 - [x] Backend `/health` is now a lightweight liveness probe.
 - [x] Backend `/readyz` now verifies database connectivity and authoritative Web3 RPC connectivity and reports the resolved chain ID without exposing credentials.
+- [x] Frontend transaction status model now distinguishes `pending`, `confirmed`, `failed`, `rejected` and `stale`.
+- [x] Deterministic frontend transaction lifecycle helper added for wallet rejection, receipt success/revert and confirmation timeout states.
+- [x] Regression tests added for transaction lifecycle classification and timeout behavior.
 
 ## P0 — Production blockers
 
@@ -114,7 +117,10 @@
 - [ ] Fresh CI matrix: lint/typecheck, backend, contracts, frontend, build and security.
 - [ ] **DEPENDENCY:** GitHub Actions capacity/networked package installation is required for release CI certification.
 - [ ] Reconcile route → controller → service → persistence → test paths.
-- [ ] Verify wallet transaction pending/rejected/failed/stale states.
+- [x] Add deterministic transaction lifecycle handling primitives for pending/rejected/failed/stale/confirmed outcomes.
+- [ ] Integrate lifecycle handling into all user-facing EOA and AA transaction flows.
+- [ ] Persist/expose transaction lifecycle states to the UI and backend transaction history where required.
+- [ ] Verify wallet transaction pending/rejected/failed/stale states end-to-end.
 - [ ] Verify deployment provenance, environment, migrations, health checks and contract addresses.
 - [ ] Rehearse rollback/recovery.
 
