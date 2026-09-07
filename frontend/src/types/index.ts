@@ -8,6 +8,13 @@ export type Reward = Shared.Reward;
 export type Portfolio = Shared.Portfolio;
 export type PortfolioBreakdown = Shared.PortfolioBreakdown;
 
+export type TransactionStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'failed'
+  | 'rejected'
+  | 'stale';
+
 export interface Transaction {
   id: string;
   type: 'stake' | 'unstake' | 'claim';
@@ -15,7 +22,7 @@ export interface Transaction {
   token: string;
   chainId: number;
   transactionHash: string;
-  status: 'pending' | 'confirmed' | 'failed';
+  status: TransactionStatus;
   timestamp: string;
 }
 
