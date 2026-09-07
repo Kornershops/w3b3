@@ -25,6 +25,7 @@
 - [x] P1 yield analytics no longer fabricates APY/TVL, harvest amounts or estimated harvest timing when authoritative evidence is unavailable.
 - [x] P1 production configuration hardening: insecure production auth-secret fallbacks are rejected and treasury reads require an explicit authoritative RPC/address.
 - [x] Backend environment example documents `WEB3_RPC_URL`, `TREASURY_ADDRESS` and production secret requirements.
+- [x] Production configuration helper now rejects all configured fallbacks when `NODE_ENV=production`.
 
 ## P0 — Production blockers
 
@@ -100,6 +101,7 @@
 - [x] Add explicit `WEB3_RPC_URL` configuration and require a non-local authoritative RPC for treasury reads.
 - [x] Reject missing, zero or invalid `TREASURY_ADDRESS` instead of returning financial placeholders.
 - [x] Document the new production inputs in `backend/.env.example`.
+- [x] Ensure the production configuration helper does not permit any development fallback when `NODE_ENV=production`.
 - [ ] Verify all production deployment environments provide the required secrets/RPC/treasury values.
 - [ ] Add automated configuration tests for missing/zero/invalid production values.
 - [ ] Confirm the selected RPC and treasury address against deployment provenance/evidence.
