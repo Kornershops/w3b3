@@ -8,6 +8,8 @@ import { initSocket } from './utils/socket';
 import rateLimit from 'express-rate-limit';
 import logger from './utils/logger';
 import { PrismaClient } from '@prisma/client';
+import { JsonRpcProvider } from 'ethers';
+import config from './config/env';
 
 import authRoutes from './routes/auth';
 import poolRoutes from './routes/pools';
@@ -26,7 +28,8 @@ dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 3001;
+const web3Provider = new JsonRpcProvider(config.web3.rpcUrl);
+const PORT = config.port;
 const httpServer = createServer(app);
 initSocket(httpServer);
 
@@ -68,23 +71,44 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check with DB probe
-app.get('/health', async (req, res) => {
+// Liveness check: the process is running and can serve requests.
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Readiness check: both authoritative persistence and Web3 RPC must be reachable.
+app.get('/readyz', async (req, res) => {
+  const checks: { database: string; web3Rpc: string; chainId?: string } = {
+    database: 'unknown',
+    web3Rpc: 'unknown',
+  };
+
   try {
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ 
-      status: 'ok', 
-      timestamp: new Date().toISOString(),
-      database: 'connected'
-    });
+    checks.database = 'connected';
   } catch (error) {
-    logger.error('Health check failed', error);
-    res.status(503).json({ 
-      status: 'error', 
-      database: 'disconnected',
-      timestamp: new Date().toISOString() 
-    });
+    logger.error('Readiness database probe failed', error);
+    checks.database = 'disconnected';
   }
+
+  try {
+    const network = await web3Provider.getNetwork();
+    checks.web3Rpc = 'connected';
+    checks.chainId = network.chainId.toString();
+  } catch (error) {
+    logger.error('Readiness Web3 RPC probe failed', error);
+    checks.web3Rpc = 'disconnected';
+  }
+
+  const ready = checks.database === 'connected' && checks.web3Rpc === 'connected';
+  res.status(ready ? 200 : 503).json({
+    status: ready ? 'ready' : 'not_ready',
+    timestamp: new Date().toISOString(),
+    checks,
+  });
 });
 
 // API Routes
@@ -144,6 +168,7 @@ const shutdown = async (signal: string) => {
     logger.info('HTTP server closed.');
     try {
       await prisma.$disconnect();
+      web3Provider.destroy();
       logger.info('Prisma disconnected.');
       process.exit(0);
     } catch (err) {
