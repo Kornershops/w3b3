@@ -26,6 +26,8 @@
 - [x] P1 production configuration hardening: insecure production auth-secret fallbacks are rejected and treasury reads require an explicit authoritative RPC/address.
 - [x] Backend environment example documents `WEB3_RPC_URL`, `TREASURY_ADDRESS` and production secret requirements.
 - [x] Production configuration helper now rejects all configured fallbacks when `NODE_ENV=production`.
+- [x] Backend `/health` is now a lightweight liveness probe.
+- [x] Backend `/readyz` now verifies database connectivity and authoritative Web3 RPC connectivity and reports the resolved chain ID without exposing credentials.
 
 ## P0 — Production blockers
 
@@ -102,6 +104,7 @@
 - [x] Reject missing, zero or invalid `TREASURY_ADDRESS` instead of returning financial placeholders.
 - [x] Document the new production inputs in `backend/.env.example`.
 - [x] Ensure the production configuration helper does not permit any development fallback when `NODE_ENV=production`.
+- [x] Add a `/readyz` readiness gate covering both database and Web3 RPC connectivity.
 - [ ] Verify all production deployment environments provide the required secrets/RPC/treasury values.
 - [ ] Add automated configuration tests for missing/zero/invalid production values.
 - [ ] Confirm the selected RPC and treasury address against deployment provenance/evidence.
