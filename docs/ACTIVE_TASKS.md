@@ -1,131 +1,120 @@
-# W3B3 Active Tasks — Phase 14 Production Assurance
+# W3B3 Active Tasks — Phase 15 Production Readiness Handover
 
 **Status:** ACTIVE / GATED  
 **Current branch:** `main`  
-**Phase 14 hardening branch:** merged to `main`  
-**Phase 15:** PLANNED / GATED
+**Phase 14:** HARDENING COMPLETE / MERGED  
+**Phase 15:** ACTIVE / GATED — production readiness  
+**Next sprint:** Sprint 15.01 — close P0/P1 production gates
 
-## Implementation milestones completed
+## Handover rule
+
+Phase 15 is a production-assurance phase, not a feature-expansion phase. Do not advance to new product features until the P0/P1 gates below have authoritative implementation, automated-test, deployment/configuration and operational evidence as applicable.
+
+## Completed baseline handed into Phase 15
 
 - [x] Phase 14 oracle observation validation and Chainlink round/timestamp guards.
 - [x] Oracle deployment preflight requires explicit chain/feed/decimal/freshness configuration and a non-zero deployment key.
 - [x] Credit-line asset/oracle address validation and runtime valuation checks.
-- [x] Explicit credit-line minimum health-factor constant/guard at borrow and collateral-withdrawal mutation boundaries.
+- [x] Explicit credit-line minimum health-factor guard at borrow and collateral-withdrawal mutation boundaries.
 - [x] Recursive simulation input validation and leverage bounds.
-- [x] Autonomous harvester source/target asset allowlisting.
-- [x] Autonomous harvester safe ERC20 router approvals and allowance cleanup.
-- [x] Regression coverage for the above security boundaries.
-- [x] Dependency-security baseline and explicit audit/remediation policy.
-- [x] CI dependency installation switched from `npm install` to lockfile-reproducible `npm ci` with npm caching.
-- [x] Next.js 15 build compatibility fix.
-- [x] Security credential scrub and CI security-job tracking.
-- [x] Phase 14 merge into `main`.
-- [x] P0-4 gap analysis: current yield-offset semantics are explicitly unapproved and no production accounting implementation is authorized.
-- [x] P0-4 reviewable accounting proposal added at `docs/YIELD_OFFSET_ACCOUNTING_PROPOSAL.md`.
-- [x] P1 yield analytics no longer fabricates APY/TVL, harvest amounts or estimated harvest timing when authoritative evidence is unavailable.
-- [x] P1 production configuration hardening: insecure production auth-secret fallbacks are rejected and treasury reads require an explicit authoritative RPC/address.
-- [x] Backend environment example documents `WEB3_RPC_URL`, `TREASURY_ADDRESS` and production secret requirements.
-- [x] Production configuration helper now rejects all configured fallbacks when `NODE_ENV=production`.
-- [x] Backend `/health` is now a lightweight liveness probe.
-- [x] Backend `/readyz` now verifies database connectivity and authoritative Web3 RPC connectivity and reports the resolved chain ID without exposing credentials.
-- [x] Frontend transaction status model now distinguishes `pending`, `confirmed`, `failed`, `rejected` and `stale`.
-- [x] Deterministic frontend transaction lifecycle helper added for wallet rejection, receipt success/revert and confirmation timeout states.
-- [x] Regression tests added for transaction lifecycle classification and timeout behavior.
-- [x] Account Abstraction execution is now explicitly opt-in at the wallet integration boundary; default wallet connections remain on the EOA path.
+- [x] Autonomous harvester source/target asset allowlisting and safe ERC20 approval lifecycle.
+- [x] Regression coverage for completed security boundaries.
+- [x] Dependency-security baseline and reproducible `npm ci` installation policy.
+- [x] P0-4 yield-offset gap analysis and reviewable accounting proposal; production accounting remains unauthorized.
+- [x] Yield analytics no longer fabricates APY/TVL, harvest amounts or estimated harvest timing without authoritative evidence.
+- [x] Production auth-secret, RPC and treasury configuration hardening.
+- [x] Backend `/health` liveness and `/readyz` dependency readiness probes.
+- [x] Frontend transaction status model: `pending`, `confirmed`, `failed`, `rejected`, `stale`.
+- [x] Deterministic frontend transaction lifecycle primitives and regression tests.
+- [x] Current Sepolia-bound AA path explicitly gated behind `NEXT_PUBLIC_AA_ENABLED=true`; EOA remains the default.
 
 ## P0 — Production blockers
 
-### 1. Dependency security — 🔴 OPEN / ENVIRONMENT-BLOCKED
-- [x] Record and correct the tracked root lockfile state in the dependency-security baseline.
-- [x] Make CI dependency installation reproducible from the committed lockfile with `npm ci`.
-- [ ] **DEPENDENCY:** Networked npm execution is required to reproduce the resolved dependency inventory.
-- [ ] Re-run `npm audit` and classify advisories by direct/transitive exposure and production reachability.
-- [ ] Upgrade compatible dependency families where fixes exist.
-- [ ] Where upstream fixes do not exist, document compensating controls and explicit risk acceptance rather than forcing breaking upgrades.
-- [ ] Regenerate authoritative lockfiles after dependency changes.
-- [ ] Re-run application, contract and security verification.
+### P0.1 Dependency security — 🔴 OPEN / ENVIRONMENT-BLOCKED
+- [x] Correct tracked root lockfile baseline.
+- [x] CI uses lockfile-reproducible `npm ci`.
+- [ ] Restore networked npm execution and reproduce the resolved dependency inventory.
+- [ ] Run fresh `npm audit`; classify direct/transitive exposure and production reachability.
+- [ ] Apply compatible security upgrades without blind force upgrades.
+- [ ] Document compensating controls/risk acceptance where no safe upstream fix exists.
+- [ ] Regenerate authoritative lockfiles and rerun verification.
 
-### 2. Production oracle — 🟠 OPEN / EXTERNAL EVIDENCE REQUIRED
-**Implementation hardening:** COMPLETE  
-**Production approval:** BLOCKED pending authoritative deployment evidence.
+**Exit evidence:** audit output + remediation record + committed lockfile + application/contract/security verification.
 
-- [x] Oracle adapter rejects invalid/future/stale observations and incomplete rounds.
-- [x] Oracle adapter normalizes feed values to 18 decimals.
-- [x] Credit-line constructor/setter validates oracle contract presence and live observation.
-- [x] Credit-line deployment preflight validates target chain ID, oracle feed address, feed decimals, oracle `maxAge`, live feed code and observation freshness.
-- [x] Credit-line deployment preflight rejects absent/zero deployment credentials instead of silently using the Hardhat zero-key fallback.
-- [x] `.env.example` documents the explicit oracle evidence inputs required by deployment.
-- [x] Canonical evidence checklist maintained at `docs/ORACLE_PRODUCTION_EVIDENCE.md`.
-- [ ] **DEPENDENCY:** Authoritative network/feed selection is required before production addresses can be approved.
-- [ ] **DEPENDENCY:** Authoritative feed decimals, heartbeat/freshness limits and deployment addresses are required.
-- [ ] **DEPENDENCY:** Testnet/production deployment evidence and runtime environment values are required.
-- [ ] Confirm authoritative production feeds and networks.
-- [ ] Confirm decimals, freshness/heartbeat policy and deployment addresses.
-- [ ] Verify deployment configuration and runtime integration on the selected network.
-- [ ] Capture signed/traceable production and testnet deployment evidence.
-- [ ] **VERIFICATION:** Full networked deployment test remains pending until the required network/secrets/evidence are available.
+### P0.2 Production oracle — 🟠 OPEN / EXTERNAL EVIDENCE REQUIRED
+- [x] Observation validity/freshness/round guards.
+- [x] 18-decimal normalization.
+- [x] Deployment preflight for chain/feed/decimals/maxAge/code/freshness/credentials.
+- [x] Production evidence checklist.
+- [ ] Approve authoritative production network and oracle feed.
+- [ ] Approve authoritative feed decimals, heartbeat/freshness policy and deployment addresses.
+- [ ] Deploy/verify on selected network and capture traceable evidence.
+- [ ] Verify runtime environment against the same provenance.
 
-### 3. Recursive execution safety — 🔴 OPEN / ARCHITECTURE DEPENDENCY
-- [x] Confirm backend recursive simulation is advisory rather than an authorization boundary.
-- [x] Confirm no `W3B3RecursiveVault` execution surface exists at the expected contract path.
-- [x] Add an explicit **1.12 minimum health-factor guard** to the existing credit-line borrow/withdrawal mutation boundaries as defense in depth.
-- [x] Add regression coverage for the declared health-factor floor and existing LTV boundaries.
-- [ ] **DEPENDENCY:** The authoritative state-changing recursive executor/transaction path must be identified before an on-chain recursive-loop guard can be safely implemented.
-- [ ] Locate the authoritative state-changing recursive execution boundary.
-- [ ] Wire the same minimum health-factor invariant into the recursive executor itself once that boundary is identified.
-- [ ] Prove backend simulation cannot authorize a transaction that violates the on-chain invariant.
-- [ ] Add executor-boundary and adversarial recursive-loop regression tests.
-- [ ] **VERIFICATION:** Local/CI contract test execution remains pending where the current environment cannot provide the required package/runtime execution; no passing result is claimed.
+**Exit evidence:** authoritative network/feed record + deployment transaction/address evidence + runtime verification.
 
-### 4. Yield-offset credit — 🔴 OPEN / SPECIFICATION DEPENDENCY
-**Implementation:** NOT AUTHORIZED until the financial/accounting model is approved.  
-**Review artifact:** `docs/YIELD_OFFSET_ACCOUNTING_PROPOSAL.md`
+### P0.3 Recursive execution safety — 🔴 OPEN / ARCHITECTURE DEPENDENCY
+- [x] Confirm simulation is advisory, not authorization.
+- [x] Confirm expected `W3B3RecursiveVault` execution surface is absent at the inspected path.
+- [x] Add 1.12 minimum health-factor defense-in-depth guard to credit-line borrow/withdrawal boundaries.
+- [x] Add guard/LTV regression coverage.
+- [ ] Identify the authoritative state-changing recursive executor.
+- [ ] Apply the same invariant at the executor boundary.
+- [ ] Prove simulation cannot authorize an unsafe transaction.
+- [ ] Add executor-boundary and adversarial loop tests.
 
-- [x] Gap analysis confirms `CreditPosition` stores collateral/borrowed amounts but has no authoritative yield-offset ledger.
-- [x] Gap analysis confirms backend `CreditService` still contains non-authoritative/mock health-factor behavior and cannot be the economic source of truth.
-- [x] Create a conservative, reviewable accounting proposal without treating it as an approved requirement.
-- [ ] **DEPENDENCY:** Product/financial authority must approve the accounting model.
-- [ ] **DEPENDENCY:** Authority must define principal, gross/net yield, debt, collateral, liquidation, losses, timing and rounding.
-- [ ] Record explicit approval/rejection decisions for all proposal questions.
+**Exit evidence:** identified executor + on-chain invariant + adversarial tests + verified transaction path.
+
+### P0.4 Yield-offset credit — 🔴 OPEN / SPECIFICATION DEPENDENCY
+- [x] Gap analysis completed.
+- [x] Conservative accounting proposal at `docs/YIELD_OFFSET_ACCOUNTING_PROPOSAL.md`.
+- [ ] Product/financial authority approves or rejects proposal decisions.
+- [ ] Define principal, gross/net yield, debt, collateral, liquidation, losses, timing, rounding and duplicate-event semantics.
 - [ ] Implement only the approved model at the authoritative state-changing boundary.
-- [ ] Add adversarial financial-invariant tests covering yield/debt/collateral/liquidation/rounding and duplicate events.
-- [ ] **VERIFICATION:** No AC4 production PASS is claimed until approved semantics, implementation, automated tests and required deployment/operational evidence exist.
+- [ ] Add adversarial financial-invariant tests.
+
+**Exit evidence:** signed/traceable model approval + authoritative implementation + tests + deployment/accounting evidence.
 
 ## P1 — Release assurance
 
-### 1. Authoritative yield/analytics data — 🔴 OPEN / ADAPTER DEPENDENCY
-- [x] Remove synthetic/random APY, TVL and price generation from the yield synchronization path.
-- [x] Remove hardcoded harvest amount and fabricated harvest schedule from yield statistics.
-- [x] Only persist CoinGecko market history when an identifier and successful response exist.
-- [ ] **DEPENDENCY:** Implement and verify an authoritative staking/pool adapter that reads APY/TVL from the actual protocol/pool contracts or another explicitly approved source.
-- [ ] Define provenance, freshness, decimals and failure semantics for each yield field.
-- [ ] Add adapter-level tests for stale, malformed, unavailable and boundary responses.
-- [ ] Reconcile the adapter output with the accounting/credit model before using yield as financial input.
+### P1.1 Authoritative yield/analytics — 🔴 OPEN / ADAPTER DEPENDENCY
+- [x] Remove synthetic/random APY, TVL and price generation.
+- [x] Remove fabricated harvest amount/schedule.
+- [x] Persist market history only on valid identifier + successful response.
+- [ ] Implement authoritative staking/pool adapter from approved protocol contracts/source.
+- [ ] Define provenance, freshness, decimals and failure semantics for every financial field.
+- [ ] Add stale/malformed/unavailable/boundary adapter tests.
+- [ ] Reconcile adapter output with approved accounting/credit semantics.
 
-### 2. Production configuration and treasury integrity — 🟠 HARDENED / VERIFICATION OPEN
-- [x] Remove insecure production fallbacks for `ADMIN_SECRET`, `JWT_SECRET` and `JWT_REFRESH_SECRET`.
-- [x] Add explicit `WEB3_RPC_URL` configuration and require a non-local authoritative RPC for treasury reads.
-- [x] Reject missing, zero or invalid `TREASURY_ADDRESS` instead of returning financial placeholders.
-- [x] Document the new production inputs in `backend/.env.example`.
-- [x] Ensure the production configuration helper does not permit any development fallback when `NODE_ENV=production`.
-- [x] Add a `/readyz` readiness gate covering both database and Web3 RPC connectivity.
-- [ ] Verify all production deployment environments provide the required secrets/RPC/treasury values.
+### P1.2 Production configuration/treasury — 🟠 HARDENED / VERIFICATION OPEN
+- [x] Remove production auth-secret fallbacks.
+- [x] Require explicit authoritative `WEB3_RPC_URL`.
+- [x] Reject missing/zero/invalid `TREASURY_ADDRESS`.
+- [x] Reject development fallbacks when `NODE_ENV=production`.
+- [x] Add `/readyz` DB + Web3 readiness gate.
+- [ ] Verify every deployment environment has required secrets/RPC/treasury values.
 - [ ] Add automated configuration tests for missing/zero/invalid production values.
-- [ ] Confirm the selected RPC and treasury address against deployment provenance/evidence.
-- [ ] **VERIFICATION:** Runtime/networked verification remains pending.
+- [ ] Reconcile RPC/treasury against deployment provenance.
+- [ ] Complete runtime/networked verification.
 
-### 3. Release verification
+### P1.3 Transaction lifecycle — 🟠 PRIMITIVES COMPLETE / INTEGRATION OPEN
+- [x] Status model distinguishes pending/confirmed/failed/rejected/stale.
+- [x] Deterministic lifecycle classification and timeout primitives.
+- [x] Regression tests for lifecycle primitives.
+- [x] AA activation is explicit opt-in.
+- [ ] Identify and migrate all user-facing EOA transaction call sites.
+- [ ] Integrate lifecycle state into user-facing transaction flows without breaking existing consumers.
+- [ ] Persist/expose transaction lifecycle state where backend history requires it.
+- [ ] Replace Sepolia-bound AA configuration with authoritative production network/bundler configuration before enabling AA in production.
+- [ ] Verify pending/rejected/failed/stale/confirmed states end-to-end.
+
+### P1.4 Release verification — 🔴 OPEN
 - [ ] Fresh CI matrix: lint/typecheck, backend, contracts, frontend, build and security.
 - [ ] **DEPENDENCY:** GitHub Actions capacity/networked package installation is required for release CI certification.
 - [ ] Reconcile route → controller → service → persistence → test paths.
-- [x] Add deterministic transaction lifecycle handling primitives for pending/rejected/failed/stale/confirmed outcomes.
-- [x] Gate the current Sepolia-bound AA integration behind explicit `NEXT_PUBLIC_AA_ENABLED=true` so it cannot silently activate in production.
-- [ ] Replace the current Sepolia-bound AA configuration with an authoritative production network/bundler configuration before AA is production-enabled.
-- [ ] Integrate lifecycle handling into all user-facing EOA and AA transaction flows.
-- [ ] Persist/expose transaction lifecycle states to the UI and backend transaction history where required.
-- [ ] Verify wallet transaction pending/rejected/failed/stale states end-to-end.
 - [ ] Verify deployment provenance, environment, migrations, health checks and contract addresses.
 - [ ] Rehearse rollback/recovery.
+- [ ] Produce release evidence pack and explicit go/no-go decision.
 
 ## P2 — Governance / operations
 
@@ -137,6 +126,17 @@
 
 A task is not a production PASS merely because code exists or a unit test passes. Financial/security controls require the appropriate combination of implementation, automated tests, deployment/configuration evidence and operational evidence.
 
-## Handover / next sprint
+## Next sprint activation
 
-When the P0/P1 Phase 14 gates are closed, create the Phase 15 execution branch and activate Sprint 15.01. Do not begin Phase 16/17 feature expansion as a substitute for production assurance.
+**Sprint 15.01 starts with P0/P1 gate closure in dependency order.** Work concurrently only where tasks are independent. Do not implement speculative financial semantics, recursive execution boundaries or production AA configuration without the required authority/evidence.
+
+### Sprint 15.01 priority order
+
+1. Dependency/security inventory and remediation.
+2. Authoritative oracle/network evidence.
+3. Recursive executor discovery and invariant enforcement.
+4. Financial-model approval for yield-offset credit.
+5. Authoritative yield adapter + provenance contract.
+6. Production configuration tests and environment verification.
+7. Transaction lifecycle call-site integration.
+8. Full release CI and deployment/rollback evidence.
