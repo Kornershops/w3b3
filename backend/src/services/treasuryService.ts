@@ -5,9 +5,11 @@ import { priceService } from './priceService';
 import config from '../config/env';
 import prisma from '../config/database';
 
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 // Example ERC20 ABI just for `balanceOf`
 const ERC20_ABI = [
-  "function balanceOf(address owner) view returns (uint256)"
+  'function balanceOf(address owner) view returns (uint256)'
 ];
 
 export class TreasuryService {
@@ -15,24 +17,28 @@ export class TreasuryService {
   private provider: ethers.JsonRpcProvider;
 
   constructor() {
-    this.treasuryAddress = process.env.TREASURY_ADDRESS || '0x0000000000000000000000000000000000000000';
-    
-    // Multi-provider fallback strategy:
-    const alchemyUrl = `https://eth-mainnet.g.alchemy.com/v2/${config.web3.alchemyApiKey}`;
-    const infuraUrl = `https://mainnet.infura.io/v3/${config.web3.infuraApiKey}`;
-    const rpcUrl = config.web3.alchemyApiKey ? alchemyUrl : (config.web3.infuraApiKey ? infuraUrl : 'https://eth.llamarpc.com');
+    this.treasuryAddress = process.env.TREASURY_ADDRESS || '';
 
-    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+    // Production must use an explicitly configured RPC. Development may use localhost.
+    this.provider = new ethers.JsonRpcProvider(config.web3.rpcUrl);
   }
 
   /**
    * Scans the treasury contract and reward distributor for Real Yield metrics.
+   * Missing configuration is an operational failure, never a financial zero.
    */
   async getTreasuryHoldings(): Promise<TreasuryHoldings> {
     try {
-      if (this.treasuryAddress === '0x0000000000000000000000000000000000000000') {
-        logger.warn('Treasury address is not set. Returning placeholders.');
-        return { totalValuationUsd: '0', assets: [], totalEthDistributed: '0', lastUpdated: new Date().toISOString() };
+      if (!this.treasuryAddress || this.treasuryAddress === ZERO_ADDRESS) {
+        throw new Error('TREASURY_ADDRESS is not configured with a non-zero address');
+      }
+
+      if (!ethers.isAddress(this.treasuryAddress)) {
+        throw new Error('TREASURY_ADDRESS is invalid');
+      }
+
+      if (!config.web3.rpcUrl || config.web3.rpcUrl === 'http://127.0.0.1:8545') {
+        throw new Error('WEB3_RPC_URL is not configured for authoritative treasury reads');
       }
 
       let totalValuation = 0;
@@ -81,7 +87,7 @@ export class TreasuryService {
       const rewardAggregation = await prisma.reward.aggregate({
         _sum: { amount: true }
       });
-      const totalEthDistributed = rewardAggregation._sum.amount?.toString() || "0";
+      const totalEthDistributed = rewardAggregation._sum.amount?.toString() || '0';
 
       return {
         totalValuationUsd: totalValuation.toString(),
@@ -91,7 +97,7 @@ export class TreasuryService {
       };
     } catch (error) {
       logger.error('Error fetching treasury holdings:', error);
-      throw new Error('Failed to index treasury holdings on-chain');
+      throw new Error('Failed to index authoritative treasury holdings on-chain');
     }
   }
 }
