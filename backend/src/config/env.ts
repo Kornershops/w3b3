@@ -12,12 +12,22 @@ function getRequiredEnv(name: string, fallback?: string): string {
   return value || '';
 }
 
+const adminSecret = isProduction
+  ? getRequiredEnv('ADMIN_SECRET')
+  : getRequiredEnv('ADMIN_SECRET', 'w3b3_alpha_secure_bootstrap_77x');
+const jwtSecret = isProduction
+  ? getRequiredEnv('JWT_SECRET')
+  : getRequiredEnv('JWT_SECRET', 'your_secret_key_change_in_production');
+const jwtRefreshSecret = isProduction
+  ? getRequiredEnv('JWT_REFRESH_SECRET')
+  : getRequiredEnv('JWT_REFRESH_SECRET', 'w3b3_alpha_refresh_secret_default_77x');
+
 export const config = {
   // Server
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3001', 10),
   logLevel: process.env.LOG_LEVEL || 'info',
-  adminSecret: getRequiredEnv('ADMIN_SECRET', 'w3b3_alpha_secure_bootstrap_77x'),
+  adminSecret,
 
   // Database
   database: {
@@ -33,8 +43,8 @@ export const config = {
   },
 
   jwt: {
-    secret: getRequiredEnv('JWT_SECRET', 'your_secret_key_change_in_production'),
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'w3b3_alpha_refresh_secret_default_77x',
+    secret: jwtSecret,
+    refreshSecret: jwtRefreshSecret,
     expiry: process.env.JWT_EXPIRY || '15m',
     refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
   },
@@ -45,6 +55,7 @@ export const config = {
     alchemyApiKey: process.env.ALCHEMY_API_KEY || '',
     infuraApiKey: process.env.INFURA_API_KEY || '',
     alchemyWebhookKey: process.env.ALCHEMY_WEBHOOK_SIGNING_KEY || '',
+    rpcUrl: getRequiredEnv('WEB3_RPC_URL', 'http://127.0.0.1:8545'),
   },
 
   // CORS
