@@ -23,6 +23,8 @@
 - [x] P0-4 gap analysis: current yield-offset semantics are explicitly unapproved and no production accounting implementation is authorized.
 - [x] P0-4 reviewable accounting proposal added at `docs/YIELD_OFFSET_ACCOUNTING_PROPOSAL.md`.
 - [x] P1 yield analytics no longer fabricates APY/TVL, harvest amounts or estimated harvest timing when authoritative evidence is unavailable.
+- [x] P1 production configuration hardening: insecure production auth-secret fallbacks are rejected and treasury reads require an explicit authoritative RPC/address.
+- [x] Backend environment example documents `WEB3_RPC_URL`, `TREASURY_ADDRESS` and production secret requirements.
 
 ## P0 — Production blockers
 
@@ -93,7 +95,17 @@
 - [ ] Add adapter-level tests for stale, malformed, unavailable and boundary responses.
 - [ ] Reconcile the adapter output with the accounting/credit model before using yield as financial input.
 
-### 2. Release verification
+### 2. Production configuration and treasury integrity — 🟠 HARDENED / VERIFICATION OPEN
+- [x] Remove insecure production fallbacks for `ADMIN_SECRET`, `JWT_SECRET` and `JWT_REFRESH_SECRET`.
+- [x] Add explicit `WEB3_RPC_URL` configuration and require a non-local authoritative RPC for treasury reads.
+- [x] Reject missing, zero or invalid `TREASURY_ADDRESS` instead of returning financial placeholders.
+- [x] Document the new production inputs in `backend/.env.example`.
+- [ ] Verify all production deployment environments provide the required secrets/RPC/treasury values.
+- [ ] Add automated configuration tests for missing/zero/invalid production values.
+- [ ] Confirm the selected RPC and treasury address against deployment provenance/evidence.
+- [ ] **VERIFICATION:** Runtime/networked verification remains pending.
+
+### 3. Release verification
 - [ ] Fresh CI matrix: lint/typecheck, backend, contracts, frontend, build and security.
 - [ ] **DEPENDENCY:** GitHub Actions capacity/networked package installation is required for release CI certification.
 - [ ] Reconcile route → controller → service → persistence → test paths.
