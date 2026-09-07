@@ -17,10 +17,10 @@ class Web3Service {
       this.provider = provider;
       this.signer = await provider.getSigner();
 
-      // Hook for Account Abstraction: If we have a signer, try to initialize a Smart Account
-      if (this.signer) {
+      // Account Abstraction is deliberately opt-in. The current AA service is
+      // explicitly Sepolia-bound, so an unset flag always preserves EOA mode.
+      if (this.signer && process.env.NEXT_PUBLIC_AA_ENABLED === 'true') {
         try {
-          // Wrapped in try/catch to ensure standard wallet still works if AA fails
           await aaService.initializeAccount(this.signer);
           console.log('Smart Account initialized:', aaService.getAddress());
         } catch (aaError) {
