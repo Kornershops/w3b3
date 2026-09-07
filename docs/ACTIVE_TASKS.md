@@ -31,6 +31,7 @@
 - [x] Frontend transaction status model now distinguishes `pending`, `confirmed`, `failed`, `rejected` and `stale`.
 - [x] Deterministic frontend transaction lifecycle helper added for wallet rejection, receipt success/revert and confirmation timeout states.
 - [x] Regression tests added for transaction lifecycle classification and timeout behavior.
+- [x] Account Abstraction execution is now explicitly opt-in at the wallet integration boundary; default wallet connections remain on the EOA path.
 
 ## P0 — Production blockers
 
@@ -118,6 +119,8 @@
 - [ ] **DEPENDENCY:** GitHub Actions capacity/networked package installation is required for release CI certification.
 - [ ] Reconcile route → controller → service → persistence → test paths.
 - [x] Add deterministic transaction lifecycle handling primitives for pending/rejected/failed/stale/confirmed outcomes.
+- [x] Gate the current Sepolia-bound AA integration behind explicit `NEXT_PUBLIC_AA_ENABLED=true` so it cannot silently activate in production.
+- [ ] Replace the current Sepolia-bound AA configuration with an authoritative production network/bundler configuration before AA is production-enabled.
 - [ ] Integrate lifecycle handling into all user-facing EOA and AA transaction flows.
 - [ ] Persist/expose transaction lifecycle states to the UI and backend transaction history where required.
 - [ ] Verify wallet transaction pending/rejected/failed/stale states end-to-end.
